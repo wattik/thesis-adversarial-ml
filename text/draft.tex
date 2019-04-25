@@ -1,0 +1,616 @@
+\documentclass[10pt]{article}
+
+% set smaller margins
+\usepackage[a4paper,margin=1in]{geometry}
+
+% use standard math symbols
+\usepackage{amssymb}
+
+% for \text inside formulas and for \eqref
+\usepackage{amsmath}
+
+% for bibliography
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+
+% enable full XeLaTeX power
+\usepackage{xltxtra}
+
+% select widely available fonts
+\setmainfont{Georgia}
+\setmonofont{Courier New}
+
+% substitute another font for a few Unicode glyphs missing in the main font
+\newfontfamily{\lucidafont}{Lucida Grande}
+\catcode`⌘=\active
+\protected\def ⌘{{\lucidafont\char`\⌘}}
+\catcode`⌥=\active
+\protected\def ⌥{{\lucidafont\char`\⌥}}
+\catcode`✓=\active
+\protected\def ✓{{\lucidafont\char`\✓}}
+
+% set paragraph margins
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+
+% prevent overfull lines
+\setlength{\emergencystretch}{3em}
+
+% for \includegraphics
+\usepackage{graphicx}
+\usepackage{grffile}
+
+% fit images in page width
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+\else\Gin@nat@width\fi}
+\makeatother
+\let\Oldincludegraphics\includegraphics
+\renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=\maxwidth]{#1}}
+
+% for exact placement of figures
+\usepackage{float}
+\makeatletter
+\def\fps@figure{H}
+\makeatother
+
+% for footnotes in tables
+\usepackage{longtable}
+\usepackage{booktabs}
+
+% for hyperlinks
+\usepackage[colorlinks,urlcolor=blue,filecolor=blue,linkcolor=black,citecolor=black]{hyperref}
+\usepackage[all]{hypcap}
+\urlstyle{same}
+
+% do not number sections
+\setcounter{secnumdepth}{0}
+
+
+% remove date completely
+\date{\vspace{-5ex}}
+
+\begin{document}
+
+
+\section{Introduction}
+
+In recent years, computer science has seen an advent of powerful
+algorithms that are able to learn from examples. Despite the notion of
+learnable algorithms was recognised and studied in pioneering times of
+the field already, its wide-range real-world applications were to be
+implemented only with the presence of big available data collections and
+vast memory and computational resources {[}cite: ML book{]}.
+
+Therefore, nowadays one meets the abundance of machine learning
+techniques used to solve various problems. The field spans from
+theoretical research to practical applications in areas such as medical
+diagnosis, financial predictions and, most importantly in case of this
+work, computer security.
+
+Most of the applications coin a similar scenario: a problem is
+formalised following a standard machine learning paradigm; a vast data
+set is collected and a proper algorithm giving the best results is found
+forming a model of the problem. However, in some applications once such
+a model is deployed to a complex real-world environment, one soon
+identifies the model performance deteriorates due to the key aspects of
+the reality that have been omitted in the standard machine learning
+point of view.
+
+An example of such an observation is seen in computer vision. It was
+found that deep neural networks that reign competitions in image
+classification {[}cite{]} are prone to so called adversarial images
+{[}cite{]}. In particular, the state-of-the-art image classifiers based
+on deep neural networks score very well in terms of prediction accuracy,
+when given genuine images. However, such a classifier can be fooled with
+an image that was purposely adjusted. To put it simply, what is seen as
+a unambiguous cat by a human observer can be confidently labelled as a
+dog by a classifier {[}cite{]}.
+
+For instance, this phenomenon challenges traffic sign classification
+used in autonomous vehicles because it has been shown {[}cite{]} that a
+few well-placed sticker is able to fool the classifier and make it
+mis-recognise a yield sign for a main road sign {[}check{]}.
+
+To reflect such weakness, problems are reframed to a game-theoretic
+setting in which two autonomous, rational players compete while
+following their mutually conflicting objectives. The aforementioned
+example with images is, consequently, extended in the following way. One
+of the players acts as an image classifier and aims to maximise
+classification accuracy, while the other player–the adversary–perturbs
+the images in order to lower prediction confidence or, better, to make
+the classifier misclassify the image.
+
+Of course, the same is seen in computer security–the field defined by
+adversarial nature. Intruders desire to obfuscate a detector by
+adjusting their attacks {[}cite{]}; malware is developed by optimising
+an executable binary {[}cite{]}, and spams are improved statistically to
+avoid detection {[}cite{]}.
+
+The task central to this work is the problem of user classification in
+the adversarial setting. First, we examine the task as an instance of
+the user classification problem viewed by standard machine learning
+paradigm. We show that omitting the adversarial nature in this
+particular problem exposes critical weaknesses, thus we extend the model
+to incorporate game-theoretic notions. Finally, we present a full model
+considering all reasonable aspects of a deployed classification model,
+accounting especially for dynamical re-training. (The last might not
+actually be included in the thesis.)
+
+As an instance of the user classification task, we consider a detector
+of malicious users that is deployed by an anti-malware company to see
+which users exploit their public API service. Section Datasets discusses
+publicly available collections of data that can be utilised when solving
+this task.
+
+\section{Related Work}
+
+(todo: intro)
+
+the original paper on neural networks
+
+(image examples) - maybe
+
+Lowd and Meek (2005) explore several obfuscate strategies yielding spam
+e-mails that are hard to detect. The authors show three simple methods
+of obfuscating detection models. The methods are based on adding words
+to a spammy e-mail, other modifications are not allowed. In the first
+obfuscate, random words from a dictionary are drawn; the second obfuscate
+utilises common legitimate e-mail words;~and in the third obfuscate, words
+that are likely to appear in legitimate e-mails but uncommon in spams
+are added. To select the final set of words with the greatest effect, a
+black box threat model is used. In particular, the attacker repeatedly
+calls the detector to identify words which make the detector label the
+spam as benign. As expected, the last obfuscate outperforms the others and
+proofs that additive changes are able to obfuscate the detector.
+Concretely, the authors claim they are able to transform 50 \% of the
+spams in such a way the tested detection models do not detect them.
+
+In addition, a defence strategy is proposed. The authors show that
+retraining the detectors on the data containing the attacks gives a
+robust detector. However, they comment, a repeated obfuscate with a new set
+of effective words may again defeat the detector. To overcome this
+weakness, successive works put focus on a detection model and consider
+possible attacks already during the model design.
+
+This approach is summarised by Madry et al. (2017) who study adversary
+examples in image classification. The authors identify the expected risk
+minimisation (ERM) when optimising the classification models does not
+necessarily give models robust to adversarially crafted samples. Their
+work extends the training framework based on ERM by a threat model in
+which each data point \(x \in \mathbb{R}^d\) is assigned a set of
+perturbations \(S \subseteq \mathbb{R}^d\) that is available to the
+adversary. The authors work with \(S_\epsilon\) that contains
+perturbations bounded by \(l_\infty\) creating an \(\epsilon\)-ball
+around each \(x\):
+
+\[
+S_\epsilon = \{\delta \in \mathbb{R}^d \, \mid \,  l_\infty(\delta) \, \leq \, \epsilon \}
+\]
+
+The norm \(l_\infty\) is used for simplicity and roughly represents
+human-undetectable image perturbations, however, other norms may very
+well be used {[}cite{]}.
+
+Having the adversary actions defined, the authors incorporate it into
+the ERM framework arriving at a saddle point problem:
+
+\[
+\min_{h \in \mathcal{H}} \, \mathbb{E}_{(x, c) \sim p} \Big[ \max_{\delta \in S_\epsilon} \,  L(h(x + \delta), c) \Big] 
+\]
+
+The authors train the network with stochastic gradient descent (SGD)
+while solving the inner optimisation task with projected gradient
+descent (PGD). The conclude the ERM framework extended by this specific
+threat model gives a training method that is able to train neural
+networks in the adversary setting.
+
+As soon as it was recognised the neural networks contain built-in
+vulnerabilities which are easily exploitable, endeavours to improve the
+architecture were carried out. Distillation (Papernot et al. 2016) was
+proposed to hide gradients for the attacker, \ldots{}.
+
+(others)
+
+To address the susceptibility to adversaries, several proposals of
+neural networks enhancements were submitted at ICLR 2018 {[}cite{]}.
+However, most of them were shown to be ineffective due to following a
+similar ineffective scheme of masking the gradients (Athalye, Carlini,
+and Wagner 2018).
+
+In their paper, Athalye, Carlini, and Wagner (2018) suggest there are
+three groups of gradient masking: firstly, a non-differentiable layer is
+inserted between the network layers; secondly, a classifier randomises
+its outputs; and thirdly, a function transforms the input in such a way
+the gradient explodes or vanishes. Showing that various defensive
+methods follow the schemes, the authors propose obfuscate methods based on
+projected gradient descent {[}cite{]} that successfully circumvents most
+of the defenses.
+
+Until now, all presented efforts to improve the neural networks
+susceptibility were approached empirically and usually without providing
+provable defenses. A method that aims to give provable resistance to
+adversarial samples was proposed by Kolter and Wong (2017) who examine a
+novel network architecture that provably classifies all objects in a
+convex neighbourhood of a given image correctly. To achieve that, they
+redefine a ReLU (cite) in such a way it is not a function anymore but
+rather a set of linear constrains yielding a convex polytope. With such
+a convex relaxation of ReLU, image classification can be rewritten as a
+linear program with all components of the network now being linear. The
+linear program then optimises the weights of the relaxed neural network
+so that it correctly classifies not only the input image but also its
+convex embedding. More specifically, using \(l_\infty\) a
+\(\epsilon\)-neighbourhood of a input sample is embedded by a convex
+polytope and the network learns to disallow any adversarial samples in
+it.
+
+(mention uneffectviness of this architecture)
+
+In contrast to image classification, the space of inputs is usually
+discrete in computer security. An image can be represented as a vector
+in \([0, 1]^n\), while executable binaries span a very sparse subset of
+the binary space \(\{0, 1\}^n\). Similarly, a set of executable source
+codes in a given programming language is a sparse subset of all
+character strings. Despite the theoretical difficulties several papers
+address the issue. Grosse et al. (2017) propose an obfuscate that optimises
+a malicious source code by applying some of the predefined
+modifications. The obfuscate method utilises the classifier’s gradient to
+choose the most appropriate code modification. The set of plausible
+modifications is given beforehand and allows only additive changes.
+Although this significantly limits the attacker’s action space, they
+claim reaching misclassification rates of up to 69 \%.
+
+As already shown, the problem of adversarial samples can be modelled as
+a game of two actors – a classifier and an attacker. Brückner and
+Scheffer (2011) utilise this setting and explore it using a
+game-theoretical point of view. They define a Stackelberg Prediction
+Game which contains a classifier, acting as a leader, and an attacker,
+acting as a follower. They argue the Stackelberg equilibrium is the most
+appropriate concept for trainable models, specifically compared to the
+Nash equilibrium. It is so, they claim, mainly because once a model is
+finalised and deployed, it is not changed anymore and thus the attacker
+can potentially learn all details of the model and adjust its actions.
+In other words, the actions – the choice of model parameters and the
+actual obfuscate~– are not carried out simultaneously, but instead the
+classifier commits to a specific parameters vector and the attacker
+utilises the information about the model and adjusts its attacking
+strategy accordingly. The later is modelled by a distribution shift at
+test time. The attacker transforms a probability of data \(p\) to a test
+time data probability \(\dot{p}\). In addition, the paper shows that
+linear and kernel-based models allow reformulating the problem to a
+quadratic program which yields the optimal model parameters vector.
+
+The Stackelberg Prediction Game assumes the model is fixed after
+deployment. In practice, however, engineers re-train the model on newly
+obtained data that might better represent its population. As this might
+be done periodically, the adversary shall take advantage of it and
+adjust its obfuscate strategy. Concretely, Rubinstein et al. (2009)
+elaborates on poisoning anomaly detectors.
+
+The poisoning attacks consists of purposely providing pre-crafted
+samples to the detector over a long period of time in belief, that the
+samples will create a blind spot in which all samples are considered
+benign by the detector. In particular, the authors show that the input
+space is usually governed by a distribution of benign samples which is
+concentrated only in certain areas, leaving the rest for anomalous
+activity. However, given substantial time, the adversary is gradually
+able to poison the detector by targeting the large empty parts of the
+input space and populating them with benign samples. In future
+re-training, the detector may mistakenly consider those re-populated
+areas a new phenomenon and label them benign. The attacker then simply
+crafts an obfuscate positioned near to the poisoned areas of the input
+space.
+
+The authors present that such an obfuscate is possible with an anomaly
+detector based on the principal component analysis method (PCA).
+Replacing variance in PCA with median absolute deviation, which in
+contrary is a robust scale estimator, their model is robust to data set
+poisoning and successfully performs anomaly detection in backbone
+networks.
+
+\section{Problem}
+
+In the present state of Internet, it is common for a site owner to run
+models classifying users or their behaviours. The task spans from user’s
+interests specification to detecting deviating user activity. Since such
+applications are becoming more popular, one may expect the users to
+modify their behaviour once they know they are being tracked and
+classified {[}cite{]}. Moreover, the behaviour modification may very
+well be of rational nature, especially when a malicious user exploits
+loopholes or carries out lawless activity. In other words, if there is a
+cost for being disclosed or seen as a certain category, the users will
+examine their actions to optimise for lower cost.
+
+As a result of it, machine learning models of any kind aiming to capture
+behaviours of those users necessarily need to have the adversary nature
+incorporated in their design.
+
+An instance of such a problem is the aforementioned user activity
+classifier. Let us assume a service is exposed via API to enable users
+query it. The task is to classify users of the system to a pre-defined
+set of categories. However, one needs to consider that users prefer to
+be labelled as a certain category and act in such a way this labelling
+is achieved. If the classifier aims to determine whether a user is
+benign or performs malicious activity, certainly we can expect the
+attackers to act under camouflage.
+
+The straight-forward approach is to collect many examples of both kinds
+of user activity, i.e. to asses a set of samples containing
+well-represented malicious and benign users. We regard this view of the
+problem as a Risk Based Model.
+
+However, one might arrive at difficulties during the construction of a
+balanced dataset for there is usually very few records of malicious
+activity, disproportionally less than the collection of normal, benign
+users. Also, and more importantly, the malicious actors change their
+obfuscate vectors once their method is exposed. Ergo, the setting may be
+considered a game of a classifier competing with an malicious attacker.
+We call this setting a Game Based Model.
+
+Last but not least, the activity classifier gets re-trained on newly
+collected more up-to-date data which, in the first place, is done to
+reflect data distribution changes. Yet, it is also an opportunity for
+the attacker to exhibit such a behaviour that affects, in its favour,
+future training sets of the classifier. This thorough setting is called
+Dynamic Game Based Model.
+
+(models names are ridiculous and probably a subject to change)
+
+This Section outlines the formal definition of an activity classifier.
+First, we examine a non-adversarial setting of classifiers that minimise
+expected risk. Then, the problem is extended to capture the
+game-theoretic foundations of it. Finally, we present a dynamic view of
+the problem in which all game participants are freed to exhibit any
+types of activity possible in the problem.
+
+\subsection{Risk Based Model}
+
+A classifier \(h \in \mathcal{H}\) is a mapping
+\(h: \mathbb{X} \mapsto \mathbb{C}\) that determines which class
+\(c \in \mathbb{C}\) a sample \(x \in \mathbb{X}\) belongs to. For
+practical reasons, we only describe binary classification in the
+following pages, however, the task is, naturally, expandable to a
+general discrete set \(\mathbb{C}\). In the classical risk theory, the
+classifier \(h\) is a subject to minimisation of expected risk \(R(h)\)
+given a cost function
+\(L: \mathbb{C} \times \mathbb{C} \mapsto \mathbb{R}\).
+
+\[
+R(h) = \mathbb{E}_{(x,c) \sim p} \left L(h(x), c) \right
+\]
+
+(Ex. omezeni na ERM - napr. muze i selhat, pokud ma X jiste vlasnosti.
+Pokud bude prostor, zminim.)
+
+Typically, when working with binary classification \(L\) is consider a
+\emph{1-0 loss} which assigns an equal cost of magnitude \emph{1} for
+misclassifying objects. The expected risk in this case accounts only for
+the rate of false positives and false negatives:
+
+\[
+R(h) = \sum_{c \in \mathbb{C}} \int_{x: h(x) \neq \mathsf{c}} p(c) \cdot p(x|c) \,  dx
+\]
+
+\[
+R(h) = p(\mathsf{N}) \cdot p(\mathsf{FP}) + p(\mathsf{P}) \cdot p(\mathsf{FN})
+\]
+
+(needs explanation + definition and derivation)
+
+-\/-\/-
+
+In practice, the probabilities are not known and, moreover, computing
+the expected risk often involves intractable integrals. Therefore, the
+risk is empirically estimated from observed samples. The empirical risk
+\(\hat{R}(h)\) estimated from a set of training samples
+\(T_m = \{ (x_i, c_i) \}_{i=1}^{m}\) is defined as follows:
+
+\[
+\hat{R}_{T_m}(h) = \frac{1}{m} \sum_{(x_i, c_i) \in T_m} L(h(x_i), c_i)
+\]
+
+(maybe answer: why exactly this form?)
+
+\subsubsection{Regularisation}
+
+When examining possible classifiers, we usually have a priori knowledge
+of a certain classifier instance suitability. Hence, some classifiers
+\(h\) correspond to models that are more likely to be inadequate, and
+some are a priori preferred. To capture this knowledge, a regularisation
+term \(\Omega_D: \mathcal{H} \mapsto \mathbb{R}\) penalising some
+classifiers \(h\) is often added to the risk.
+
+(links to a priori maximum likelihood may be here)
+
+\subsubsection{Non-adversary Problem Definition}
+
+A classifier minimising the expected risk with regularisation is
+formally given as follows:
+
+\[
+\min_{h \in \mathcal{H}} R(h) + \Omega_D(h)
+\]
+
+The Risk Based Model follows the classical machine learning paradigm in
+which data are collected and stored in the training set \(T_m\)
+beforehand. Then, the task is to choose an appropriate family of
+classifiers \(\mathcal{H}\) and perform the optimisation.
+
+To reflect back on the user classification problem, a user would be
+represented as \(x\). (\ldots{} to do)
+
+\subsection{Game Base Model}
+
+The aforementioned problem definition suffers from ignoring adversarial
+actors. Especially, malicious users querying the system API are most
+likely to pursue actions avoiding disclosure. This is modelled by
+distribution shift.
+
+Despite \(p(x, c)\) covers general population of samples and their
+classes, it is not seen during test time. In fact, the attacker changes
+\(p\) to \(\dot{p}\) due to optimising its actions. A rationally acting
+attacker does not generate activity \(x\) which is not optimal and, in
+consequence, changing \(p(x|\mathsf{P})\) to \(\dot{p}(x|\mathsf{P})\).
+
+(risk is changed too:)
+
+\[
+R(h) = p(\mathsf{N}) \cdot p(\mathsf{FP}) + p(\mathsf{P}) \cdot \int_{x: h(x)=\mathsf{N}} \dot{p}(x|\mathsf{P}) dx
+\]
+
+(similarly with regularisation {[}cite paper!!{]})
+
+\[
+\Omega_A(\dot{p}(x|\mathsf{P}))
+\]
+
+-\/-\/-
+
+The objective of the attacking player is therefore to minimise
+disclosure:
+
+\[
+\max_{\dot{p}(x|\mathsf{P})} \int_{x: h(x)=\mathsf{N}} \dot{p}(x|\mathsf{P}) dx + \Omega_A(\dot{p}(x|\mathsf{P}))
+\]
+
+\subsubsection{Stackelberg Game}
+
+(— mention why this is necessarily a stackelberg game + ciation)
+
+\[
+\min_{h} \max_{\dot{p}(x|\mathsf{P})} ...
+\]
+
+— it is not zero sum
+
+\section{User Activity Classifier}
+
+(not yet changed wrt to what I sent in the e-mail previously.)
+
+A defender collects information about objects u from U and evaluates
+them with f: U -\textgreater{} {[}0,1{]} while an attacker aspires to
+request a value f(u) for all objects u in its collection U\_a by
+exploiting a license l (from a list of licenses L) under which it
+communicates with the defender. To uncover exploited licenses, the
+defender maintains a detector g: L -\textgreater{} {[}0,1{]} which it
+uses to classify licenses for exploitation.~
+
+The goals of the defender are:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  to detect an exploited license l by assigning g(l) = 1, and thereby to
+  forbid the attacker further requests,
+\item
+  to not put away unexploited licenses used by benign agents, ie. to
+  assign g(l) = 0.~
+\end{enumerate}
+
+The goals of the attacker are:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  to find values f(u) of all u in U\_a,~
+\item
+  to mimic standard behaviour of benign agents plausibly so that it
+  keeps its license l undetected.
+\end{enumerate}
+
+Since the interests of the defender and the attacker mutually conflict,
+the setting is considered a game.
+
+The game can be played in two settings:
+
+\begin{itemize}
+\item
+  static
+
+  \begin{itemize}
+  \item
+    f and g are kept fixed
+  \end{itemize}
+\item
+  dynamic
+
+  \begin{itemize}
+  \item
+    f and g may be updated
+  \end{itemize}
+\end{itemize}
+
+If the dynamic game is played, then the following modification are
+considered:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  the attacker aims to extend or reduce U\_a only if necessary,
+\item
+  the attacker may deliberately register licenses it will solely use for
+  benign activity to bewilder the defender by poisoning its future
+  training datasets
+\item
+  the defender may update f based on now-detected exploited licenses,
+\item
+  the defender may update g to reflect request distribution changes
+\end{enumerate}
+
+\section{Datasets}
+
+\section{Conclusions}
+
+cls is not necessarily a better classifier but more importantly a more
+robust player
+
+\section*{References}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\leavevmode\hypertarget{ref-obfuscated_gradients}{}%
+Athalye, Anish, Nicholas Carlini, and David Wagner. 2018. “Obfuscated
+Gradients Give a False Sense of Security: Circumventing Defenses to
+Adversarial Examples.” \emph{arXiv Preprint arXiv:1802.00420}.
+
+\leavevmode\hypertarget{ref-stackelberg_games}{}%
+Brückner, Michael, and Tobias Scheffer. 2011. “Stackelberg Games for
+Adversarial Prediction Problems.” In \emph{Proceedings of the 17th Acm
+Sigkdd International Conference on Knowledge Discovery and Data Mining},
+547–55. ACM.
+
+\leavevmode\hypertarget{ref-adversarial_malware}{}%
+Grosse, Kathrin, Nicolas Papernot, Praveen Manoharan, Michael Backes,
+and Patrick McDaniel. 2017. “Adversarial Examples for Malware
+Detection.” In \emph{European Symposium on Research in Computer
+Security}, 62–79. Springer.
+
+\leavevmode\hypertarget{ref-provable_defenses}{}%
+Kolter, J Zico, and Eric Wong. 2017. “Provable Defenses Against
+Adversarial Examples via the Convex Outer Adversarial Polytope.”
+\emph{arXiv Preprint arXiv:1711.00851} 1 (2):3.
+
+\leavevmode\hypertarget{ref-good_word_attacks}{}%
+Lowd, Daniel, and Christopher Meek. 2005. “Good Word Attacks on
+Statistical Spam Filters.” In \emph{CEAS}.
+
+\leavevmode\hypertarget{ref-towards_deep_learning_models}{}%
+Madry, Aleksander, Aleksandar Makelov, Ludwig Schmidt, Dimitris Tsipras,
+and Adrian Vladu. 2017. “Towards Deep Learning Models Resistant to
+Adversarial Attacks.” \emph{arXiv Preprint arXiv:1706.06083}.
+
+\leavevmode\hypertarget{ref-papernot_distillation}{}%
+Papernot, Nicolas, Patrick McDaniel, Xi Wu, Somesh Jha, and Ananthram
+Swami. 2016. “Distillation as a Defense to Adversarial Perturbations
+Against Deep Neural Networks.” In \emph{2016 Ieee Symposium on Security
+and Privacy (Sp)}, 582–97. IEEE.
+
+\leavevmode\hypertarget{ref-antidote}{}%
+Rubinstein, Benjamin IP, Blaine Nelson, Ling Huang, Anthony D Joseph,
+Shing-hon Lau, Satish Rao, Nina Taft, and J Doug Tygar. 2009. “Antidote:
+Understanding and Defending Against Poisoning of Anomaly Detectors.” In
+\emph{Proceedings of the 9th Acm Sigcomm Conference on Internet
+Measurement}, 1–14. ACM.
+
+
+\end{document}
