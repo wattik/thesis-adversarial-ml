@@ -1,4 +1,4 @@
-#Adversarial Machine Learning in Security
+# Adversarial Machine Learning in Security
 
 This live repo contains sources and text created solely for the purposes of my master thesis. 
 
