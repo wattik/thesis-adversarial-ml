@@ -11,8 +11,10 @@ from utils import reorder
 
 class Dataset:
     def __init__(self, scores_filepath, requests_filepath, critical_urls_filepath, split_ratio=0.8):
+        print("Loading scores.")
         self.specificity = load_scores(scores_filepath)
 
+        print("Loading Query Profiles.")
         self.users_ben, self.qps_ben = load_query_profiles(requests_filepath)
         self.labels_ben = make_labels(self.qps_ben, Label.B)
 
@@ -83,7 +85,9 @@ def load_query_profiles(filepath: str):
         user_entries = defaultdict(QueryProfile)
 
         for time, user, url in csv.reader(file, delimiter=' '):
-            user_entries[user].add(Request(time, url))
+            qp = user_entries[user]
+            qp.add(Request(int(float(time)), url))
+            qp.user = user
 
         return list(user_entries.keys()), list(user_entries.values())
 

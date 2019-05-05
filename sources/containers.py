@@ -6,6 +6,9 @@ class RotDeque(deque):
         self.rotate(1)
         return self[0]
 
+    def __next__(self):
+        return self.next()
+
 
 if __name__ == '__main__':
     q = RotDeque([1, 2, 3])

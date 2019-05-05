@@ -43,6 +43,10 @@ class ModelBase(ABC):
     def predict_one(self, query_profile: QueryProfile) -> Label:
         return self.predict([query_profile])[0]
 
+    @abstractmethod
+    def save(self, path: str):
+        pass
+
 
 class StochasticModelBase(ModelBase):
     @abstractmethod

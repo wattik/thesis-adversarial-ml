@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 
 from models.base import ModelBase, Label
-from models.query_profiles import QueryProfile
+from models.query_profiles import QueryProfile, NoQueriesProfile
 
 AttackInstance = namedtuple("AttackInstance", [
     "n_iters",
@@ -45,8 +45,13 @@ class AttackResult:
         return len(self.results)
 
     @property
-    def no_attack_success_rate(self):
+    def no_obfuscation_success_rate(self):
         n = [res for res in self.results if res.n_iters == 0 and res.final_label == Label.B]
+        return len(n) / len(self.results)
+
+    @property
+    def no_attack_rate(self):
+        n = [res for res in self.results if isinstance(res.qp_adv, NoQueriesProfile)]
         return len(n) / len(self.results)
 
     @property

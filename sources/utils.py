@@ -1,3 +1,6 @@
+import random
+from time import time
+
 import numpy as np
 
 
@@ -19,6 +22,32 @@ def reorder(l, idx):
     return c
 
 
+def shuffle(l):
+    return random.sample(l, len(l))
+
+
+def stop_time(description="Time: "):
+    def dec(f):
+        def inner_f(*args):
+            start_time = time()
+            ret = f(*args)
+            end_time = time()
+            print(description + "%6.2f s" % (end_time - start_time))
+            return ret
+
+        return inner_f
+
+    return dec
+
+
 if __name__ == '__main__':
     a = np.array([0, 1, 0, 1])
     print(from_one_hot(to_one_hot(a)))
+
+
+    @stop_time
+    def a(x):
+        return x
+
+
+    print(a("str"))

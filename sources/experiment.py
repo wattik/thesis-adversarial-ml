@@ -2,24 +2,29 @@ from random import seed
 
 from dataset import Dataset
 from evaluate import accuracy
-from features.creator import FeaturesComposer, SpecificityHistogram
+# from features.features_creator import FeaturesComposer, SpecificityHistogram, EntriesCount
+from features.param_creator_base import ParamFeaturesComposer
+from features.param_creator_units import Histogram, Count, TimeEntropy
 from models.pytorch.langrange_net import MonteCarloNet
-from show import FeatureSpaceShower
-from threat_model.histogram_attacker import HistogramAttacker
+from models.sampling.sampler import TensorSampler, Sampler
+from show import ExperimentHelper
+from threat_model.histogram_attacker import HistogramFGSMAttacker
 
 seed(42)
 
 ###########
+experiment_filepath: str = False
+################
 
-# requests_filepath = "data/http_fee_ctu/user_queries.csv"
-# scores_filepath = "data/http_fee_ctu/url_scores.csv"
-# critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
-# experiment_filepath = "../results/experiments/http_fee_ctu/adv_att_no_att/"
+requests_filepath = "data/http_fee_ctu/user_queries.csv"
+scores_filepath = "data/http_fee_ctu/url_scores.csv"
+critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
+experiment_filepath = "../results/experiments/http_fee_ctu/test/"
 
-requests_filepath = "data/trend_micro_full/user_queries.csv"
-scores_filepath = "data/trend_micro_full/url_scores.csv"
-critical_urls_filepath = "data/trend_micro_full/critical_urls.csv"
-experiment_filepath = "../results/experiments/trend_micro_full/adv_att_no_att/"
+# requests_filepath = "data/trend_micro_full/user_queries.csv"
+# scores_filepath = "data/trend_micro_full/url_scores.csv"
+# critical_urls_filepath = "data/trend_micro_full/critical_urls.csv"
+# experiment_filepath = "../results/experiments/trend_micro_full/fgsm_complex_net/"
 
 # requests_filepath = "data/user_queries.csv"
 # scores_filepath = "data/url_scores.csv"
@@ -30,34 +35,47 @@ experiment_filepath = "../results/experiments/trend_micro_full/adv_att_no_att/"
 dataset = Dataset(scores_filepath, requests_filepath, critical_urls_filepath)
 
 specificity = dataset.specificity
-legitimate_queries = dataset.legitimate_queries
+# legitimate_queries = dataset.legitimate_queries  # This type of an attacker needs all URLS - not only legitimate ones.
 
-featurizer = FeaturesComposer([
-    SpecificityHistogram(specificity, 3),
-    # EntriesCount(),
-    # RandomVector(specificity, 3)
+# Featurizer
+featurizer = ParamFeaturesComposer([
+    Histogram(specificity, 3),
+    Count(),
+    TimeEntropy(24)
 ])
+featurizer.fit_normalizer(dataset.qps_trn_ben)
 
-attacker = HistogramAttacker(
+# Attacker
+attacker = HistogramFGSMAttacker(
     featurizer,
     dataset.urls,
     {
-        "max_attack_cost": 70.0,
-        "private_cost_multiplier": 0.5,
+        "max_attack_cost": 100.0,
+        "private_cost_multiplier": 0.05,
         "uncover_cost": 100.0
     },
-    specificity,
-    max_iterations=10,
-    change_rate=10.0
+    dataset.specificity,
+    max_iterations=400,
+    change_rate=1.0
 )
 
+# Models
 # model = NaiveBayes(specificity)
 # model = DeepNet(specificity)
 # model = AdvDeepNet(specificity)
 # model = SVM(specificity, kernel="lin")
 # model = SVM(specificity, kernel="rbf")
 # model = TorchDeepNet(featurizer) # probably not finished
-model = MonteCarloNet(featurizer, attacker, batch_loops=100, lambda_init=9.0)
+model = MonteCarloNet(
+    featurizer,
+    attacker,
+    batch_loops=10, #150
+    lambda_init=199.0,
+    batch_size=32, #400
+    fp_threshold=0.001,
+    lr=0.1,
+    lambda_lr=10.0
+)
 
 #################
 # Old type training in which the model is fitted on attacks that were successful at the previous iteration
@@ -71,73 +89,119 @@ model = MonteCarloNet(featurizer, attacker, batch_loops=100, lambda_init=9.0)
 #
 # for i in range(0, 200):
 #     model.fit(qps_trn, labels_trn)
-#     results = attacker.attack(model, qps_trn_mal)
+#     att_res = attacker.attack(model, qps_trn_mal)
 #
-#     undected_qps = results.get_undetected_query_profiles()
+#     undected_qps = att_res.get_undetected_query_profiles()
 #
 #     qps_trn = qps_trn_ben + undected_qps
 #     labels_trn = [Label.B] * len(qps_trn_ben) + [Label.M] * len(undected_qps)
 #
-#     print("Iter: %d" % i)
-#     print("Total attacks number: %d" % results.total_attacks_number)
-#     print("No Attack Success: %5.2f%%" % (100 * results.no_attack_success_rate))
-#     print("Attack Success: %5.2f%%" % (100 * results.attack_success_rate))
-#     print("Mean attack iter: %5.2f" % results.mean_attack_step)
+#     log("Iter: %d" % i)
+#     log("Total attacks number: %d" % att_res.total_attacks_number)
+#     log("No Attack Success: %5.2f%%" % (100 * att_res.no_obfuscation_success_rate))
+#     log("Attack Success: %5.2f%%" % (100 * att_res.attack_success_rate))
+#     log("Mean attack iter: %5.2f" % att_res.mean_attack_step)
 #
-#     print("Accuracy on Benign Data: %5.2f %% \n" % (accuracy(model, qps_trn_ben, labels_trn_ben) * 100))
+#     log("Accuracy on Benign Data: %5.2f %% \n" % (accuracy(model, qps_trn_ben, labels_trn_ben) * 100))
 #
 #     explain_model(model, qps_trn, labels_trn, title="Retraining Iteration i=%d" % i)
 
 #####
 
-plotter = FeatureSpaceShower(featurizer, dataset.qps_trn, save_folder=experiment_filepath)
+benign_samples = TensorSampler([featurizer.make_features(qp, use_torch=True) for qp in dataset.qps_trn_ben])
+malicious_samples = Sampler(dataset.qps_trn_mal)
 
-plotter.explain_model(
+helper = ExperimentHelper(
+    featurizer,
+    dataset.qps_trn,
+    save_folder=experiment_filepath
+)
+
+helper.explain_model(
     model,
     dataset.qps_trn,
     dataset.labels_trn,
     title="Initial setting"
 )
 
+lambdas = []
+att_results_trn = []
+att_results_tst = []
+benign_accuracy_trn = []
+benign_accuracy_tst = []
+
 for i in range(0, 100):
-    print("Fitting.")
-    model.fit(dataset.qps_trn, dataset.labels_trn)
+    helper.log("=================================================")
+    helper.log("Epoch: %d" % i)
 
-    print("Attacking.")
-    results = attacker.attack(model, dataset.qps_trn_mal)
+    helper.log("Fitting.")
+    model.fit_samplers(benign_samples, malicious_samples)
 
-    print("Iter: %d" % i)
-    print("Lambda: %5.2f" % float(model.model.lam))
-    print("Total attacks number: %d" % results.total_attacks_number)
-    print("No Attack Success: %5.2f%%" % (100 * results.no_attack_success_rate))
-    print("Attack Success: %5.2f%%" % (100 * results.attack_success_rate))
-    print("Mean attack iter: %5.2f" % results.mean_attack_step)
+    helper.log("TRN Attacking.")
+    att_res_trn = attacker.attack(model, dataset.qps_trn_mal)
+    accuracy_trn = accuracy(model, dataset.qps_trn_ben, dataset.labels_trn_ben)
+    lam = float(model.model.lam)
 
-    print("Accuracy on Benign Data: %5.2f %% \n" % (accuracy(model, dataset.qps_trn_ben, dataset.labels_trn_ben) * 100))
+    helper.log("Accuracy on Benign Data: %5.2f%%" % (accuracy_trn * 100))
+    helper.log("Detection Rate: %5.2f%%" % (100 * (1 - att_res_trn.attack_success_rate)))
 
-    plotter.explain_model(
-        model,
-        dataset.qps_trn_ben + results.get_query_profiles(),
-        dataset.labels_trn_ben + dataset.labels_trn_mal,
-        title="Training epoch i=%d" % i
-    )
-    print("Iter END.")
+    helper.log("Lambda: %5.2f" % lam)
+    helper.log("p(B): %7.4f" % (lam / (1 + lam)))
 
-#######
+    helper.log("Total benign samples number: %d" % len(dataset.qps_trn_ben))
+    helper.log("Total attacks number: %d" % att_res_trn.total_attacks_number)
 
-print()
-print("TST RESULTS")
+    helper.log("No Attack Rate %5.2f%%" % (100 * att_res_trn.no_attack_rate))
+    helper.log("Attack Success: %5.2f%%" % (100 * att_res_trn.attack_success_rate))
+    helper.log("No Obfuscation Success: %5.2f%%" % (100 * att_res_trn.no_obfuscation_success_rate))
+    helper.log("Mean attack iter: %5.2f" % att_res_trn.mean_attack_step)
 
-results = attacker.attack(model, dataset.qps_tst_mal)
+    helper.log()
+    helper.log("TST RESULTS")
 
-print("Benign trn data ratio: %5.2f %%" % (
-        len(dataset.labels_trn_ben) / len(dataset.labels_trn) * 100
-))
+    helper.log("TST Attacking.")
+    att_res_tst = attacker.attack(model, dataset.qps_tst_mal)
 
-acc = accuracy(model, dataset.qps_tst_ben, dataset.labels_tst_ben)
-print("Accuracy on Benign Data: %5.2f %% \n" % (acc * 100))
-print("Total attacks number: %d" % results.total_attacks_number)
-print("No Attack Success: %5.2f%%" % (100 * results.no_attack_success_rate))
-print("Attack Success: %5.2f%%" % (100 * results.attack_success_rate))
-print("Mean success. attack iter: %5.2f" % results.mean_attack_step)
+    accuracy_tst = accuracy(model, dataset.qps_tst_ben, dataset.labels_tst_ben)
+
+    helper.log("Accuracy on Benign Data: %5.2f %%" % (accuracy_tst * 100))
+    helper.log("Detection Rate: %5.2f%%" % (100 * (1 - att_res_tst.attack_success_rate)))
+
+    helper.log("Total benign samples number: %d" % len(dataset.qps_tst_ben))
+    helper.log("Total attacks number: %d" % att_res_tst.total_attacks_number)
+
+    helper.log("No Attack Rate %5.2f%%" % (100 * att_res_tst.no_attack_rate))
+    helper.log("Attack Success: %5.2f%%" % (100 * att_res_tst.attack_success_rate))
+    helper.log("No Obfuscation Success: %5.2f%%" % (100 * att_res_tst.no_obfuscation_success_rate))
+    helper.log("Mean attack iter: %5.2f" % att_res_tst.mean_attack_step)
+
+    helper.log("=================================================")
+
+    lambdas.append(lam)
+    att_results_trn.append(att_res_trn)
+    att_results_tst.append(att_res_tst)
+    benign_accuracy_trn.append(accuracy_trn)
+    benign_accuracy_tst.append(accuracy_tst)
+
+    # Saving and showing pictures occurs every 10 loops
+    if ((i + 1) % 10) == 0:
+        helper.save_model(model, i)
+        helper.save_model(model)  # rewrite final
+        helper.save_data({
+            "lambdas": lambdas,
+            "att_res_trn": att_res_trn,
+            "att_res_tst": att_res_tst,
+            "benign_accuracy_trn": benign_accuracy_trn,
+            "benign_accuracy_tst": benign_accuracy_tst,
+        })
+
+        helper.log("Model and Data saved.")
+
+        helper.explain_model(
+            model,
+            dataset.qps_trn_ben + att_res_trn.get_query_profiles(),
+            dataset.labels_trn_ben + dataset.labels_trn_mal,
+            title="Training Epoch i=%d" % i
+        )
+
 

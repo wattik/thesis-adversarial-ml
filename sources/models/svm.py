@@ -2,7 +2,7 @@ from typing import List
 
 from sklearn.svm import LinearSVC, SVC
 
-from features.creator import SpecificityHistogram, FeaturesComposer, EntriesCount
+from features.features_creator import SpecificityHistogram, FeaturesComposer, EntriesCount
 from models.base import Label, ModelBase
 from models.query_profiles import QueryProfile
 from probability import Probability

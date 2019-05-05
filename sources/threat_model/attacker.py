@@ -5,7 +5,7 @@ from typing import List, Dict
 from torch import Tensor
 from torch.autograd import grad
 
-from features.creator import FeaturesComposer
+from features.features_creator import FeaturesComposer
 from models.base import ModelBase, Label, StochasticModelBase
 from models.query_profiles import QueryProfile, Request, NoQueriesProfile, AdversarialQueryProfile
 from threat_model.base import Attacker, CriterionAttacker, AttackResult

@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as func
 
 from containers import RotDeque
-from features.creator import FeaturesComposer
+from features.features_creator import FeaturesComposer
 from models.base import Label, StochasticModelBase
 from models.pytorch.monte_carlo_probabilistic_trainer import MonteCarloTrainer
 from models.query_profiles import QueryProfile

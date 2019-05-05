@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow import keras
 
 import utils
-from features.creator import SpecificityHistogram, FeaturesComposer, EntriesCount
+from features.features_creator import SpecificityHistogram, FeaturesComposer, EntriesCount
 from models.base import Label, ModelBase
 from models.query_profiles import QueryProfile
 from probability import Probability
@@ -73,6 +73,6 @@ class AdvDeepNet(ModelBase):
 
     def predict(self, query_profiles: List[QueryProfile]):
         X = self.featurizer.make_features(query_profiles)
-        pred_one_hot = self.model.predict(X)
+        pred_one_hot = self.model.transform(X)
         pred = utils.from_one_hot(pred_one_hot)
         return [Label.from_int(i) for i in pred]

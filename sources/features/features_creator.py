@@ -1,25 +1,18 @@
 from functools import reduce
 from operator import add
-from random import random, seed
-from statistics import mean
-from typing import List, Union
+from typing import List, Union, Callable
 
 import numpy as np
 import torch
 
 from models.base import Label
 from models.query_profiles import QueryProfile
-from probability import Probability
 
 
 class SpecificityHistogram:
-    def __init__(self, specificity: Probability, n_bins):
+    def __init__(self, specificity: Callable, n_bins):
         self.bins = np.linspace(0, 1, n_bins + 1)
         self.specificity = specificity
-
-    @property
-    def output_len(self):
-        return len(self.bins) - 1
 
     def __call__(self, query_profile: QueryProfile):
         scores = list(map(lambda x: self.specificity(x), query_profile.queries))
@@ -27,24 +20,6 @@ class SpecificityHistogram:
         if np.sum(hist) != 0:
             hist = (hist / np.sum(hist))
         return list(hist)
-
-
-class RandomVector:
-    def __init__(self, specificity: Probability, n_dims):
-        self.specificity = specificity
-        self.n_dims = n_dims
-
-    @property
-    def output_len(self):
-        return self.n_dims
-
-    def __call__(self, query_profile):
-        seed(hash(tuple(query_profile.queries)))
-
-        if mean(map(lambda x: self.specificity(x), query_profile.queries)) < 0.5:
-            return [random() + 1.5 for _ in range(self.n_dims)]
-        else:
-            return [random() for _ in range(self.n_dims)]
 
 
 class EntriesCount:
@@ -58,11 +33,11 @@ class EntriesCount:
 
 class FeaturesComposer:
     def __init__(self, features_creators):
-        self.features_creators = features_creators
+        self.modules = features_creators
 
     @property
     def n_features(self):
-        return sum([f.output_len for f in self.features_creators])
+        return sum([f.output_len for f in self.modules])
 
     def make_features(
             self,
@@ -80,7 +55,7 @@ class FeaturesComposer:
 
         features = []
         for qp in query_profiles:
-            features_list = (f(qp) for f in self.features_creators)
+            features_list = (f(qp) for f in self.modules)
             features.append(list(reduce(add, features_list)))
 
         if use_torch:
@@ -99,3 +74,7 @@ class FeaturesComposer:
             res = (X, y)
 
         return res
+
+    def qps_to_bases(self, qps: List[QueryProfile], use_torch=False):
+        if not use_torch:
+            raise ValueError("Only torch is supported right now.")

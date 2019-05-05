@@ -4,7 +4,7 @@ import torch
 from torch.autograd import grad
 
 from containers import RotDeque
-from features.creator import FeaturesComposer
+from features.features_creator import FeaturesComposer
 from models.base import Label, StochasticModelBase
 from models.pytorch.autograd import jacobian
 from threat_model.base import CriterionAttacker
@@ -62,7 +62,7 @@ class MonteCarloTrainer:
     def get_delta_phi(self, x: torch.Tensor, y_alt_prob: torch.Tensor, y: torch.Tensor):
         if len(y) > 1:
             raise ValueError("This version only supports single sample delta phi computation."
-                             " Received tensors with more sample.")
+                             " Received samples with more sample.")
 
         # Loss is non-zero and the update depends on the detector gradient
         elif y == Label.B.to_int():

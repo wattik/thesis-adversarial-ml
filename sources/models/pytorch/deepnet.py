@@ -5,7 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as func
 from torch.utils.data import DataLoader, TensorDataset
 
-from features.creator import SpecificityHistogram, FeaturesComposer
+from features.features_creator import SpecificityHistogram, FeaturesComposer
 from models.base import Label, ModelBase
 from models.query_profiles import QueryProfile
 from probability import Probability
