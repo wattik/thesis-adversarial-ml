@@ -1,0 +1,299 @@
+\documentclass[twoside, 11pt]{article}
+
+%Set up
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+
+%Notes
+\usepackage{xcolor}
+\newcommand\todo[1]{\textcolor{red}{#1}}
+
+%margins
+\usepackage[a4paper, headheight=14pt, width=145mm,top=40mm,bottom=40mm,bindingoffset=20mm]{geometry}
+
+% fancy headers
+\usepackage{fancyhdr}
+
+\newenvironment{headerline}
+    {
+    \pagestyle{fancy}
+
+	\fancyhead{}
+	\fancyhead[RO,LE]{\textit{Adversarial Machine Learning in Security}}
+
+	\fancyfoot{}
+	\fancyfoot[LE,RO]{\thepage}
+	}
+    {
+    }
+
+% tables
+\usepackage{booktabs}
+
+%linky
+\usepackage{hyperref}
+\usepackage{url}
+
+%floats
+\usepackage{wrapfig}
+
+% captions
+\usepackage[font={small},labelfont={bf,sf}]{caption}
+
+% line heigth
+\renewcommand{\baselinestretch}{1.1}
+
+%use math
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{amsmath}
+
+%shortcuts MATHS
+\let\vec\relax
+\newcommand\vec[1]{\mathbf{#1}}
+
+%\DeclareRobustCommand{\cr}[1]{ #1^{\mathsf{cr}} }
+%\DeclareRobustCommand{\E}{ \mathop{\mathbb{E}} }
+
+\newcommand\pr[1]{ #1^{\mathsf{pr}} }
+\newcommand\adv[1]{ #1^{\mathsf{adv}} }
+
+\newcommand\E{ \mathop{\mathbb{E}} }
+\newcommand\argmin{\mathop{\text{argmin}}}
+
+\newcommand\ben{\mathsf{B}}
+\newcommand\mal{\mathsf{M}}
+
+\let\H\relax
+\newcommand\H{\mathcal{H}}
+\newcommand\C{\mathcal{C}}
+\newcommand\F{\mathcal{F}}
+\newcommand\X{\mathcal{X}}
+\newcommand\G{\mathcal{G}}
+
+\newcommand\U{\mathbb{U}}
+\newcommand\R{\mathbb{R}}
+
+\newcommand\minus{ {{\text{-}1}} }
+\newcommand\plus{ {{\text{+}1}} }
+
+\newcommand\FNR{\textsf{FNR}}
+\newcommand\FPR{\textsf{FPR}}
+
+\newcommand\BR{\textbf{BR}}
+
+% Theorems
+\usepackage{amsthm}
+
+%\newtheorem{theorem}{Theorem}[section]
+%
+%\newtheorem{lemma}[theorem]{Lemma}
+
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{definition}{Definition}[section]
+
+
+% Optimision redefintion
+\let\mid\relax
+\newcommand\mid{\,|\,}
+
+\let\left\relax
+\newcommand\left{[\,}
+
+\let\right\relax
+\newcommand\right{\,]}
+
+\newcommand\st{\qquad \text{s.t.} \quad}
+
+
+
+
+% Section redefinition
+% -- Needed only when using Texts to generate the pdf. Thus commented.
+% \makeatletter
+%
+% \let\mysection\section
+% \renewcommand{\section}{%
+%   \@ifstar{%
+%     \cleardoublepage
+%     \mysection*%
+%   }{%
+%     \cleardoublepage
+%     \mysection%
+%   }%
+% }
+%
+% \makeatother
+
+
+% References
+\usepackage{cite}
+\usepackage[nottoc]{tocbibind}
+\bibliographystyle{ieeetr} %ieeetr
+
+% Appendices
+\usepackage[page]{appendix}
+
+% PDFfile
+\usepackage[final]{pdfpages}
+
+
+% Blank page
+\usepackage{emptypage}
+
+
+% enable full XeLaTeX power
+%\usepackage{xltxtra}
+
+
+% prevent overfull lines
+\setlength{\emergencystretch}{3em}
+
+% for exact placement of figures
+%\usepackage{float}
+
+% for footnotes in tables
+%\usepackage{longtable}
+
+
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\thispagestyle{empty}
+\pagenumbering{gobble}
+\begin{center}
+	\includegraphics[width=0.15\textwidth]{ctulogo}\par\vspace{0.6cm}
+	{\scshape\LARGE Czech Technical University in Prague \par}
+	{\scshape Faculty of Electrical Engineering \par}
+	{Department of Computer Science \par}
+	\vspace{0.7cm}
+	{\scshape\Large Semestral Project\par}
+
+	\vspace{2.9 cm}
+	{\Huge\bfseries Adversarial Machine Learning for Detecting Malicious Behavior in Network Security \par}
+	\vspace{1.5cm}
+	{\Large\itshape Bc. Michal Najman\par}
+
+	\vspace{5cm}
+	Supervised by\par
+	\vspace{1mm}
+	Mgr. Viliam \textsc{Lisý}, MSc., Ph.D.
+
+	\vfill
+
+% Bottom of the page
+	{Submitted in May, 2019\par}
+\end{center}
+
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\thispagestyle{plain}
+\pagenumbering{roman}
+
+%\includepdf[pages=-]{Bachelor-project-assignment.pdf}
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%= ABSTRACT
+
+\begin{center}
+    \textbf{\begin{Large}
+    Abstract
+    \end{Large}}
+\end{center}
+In this thesis, we elaborate on image captioning concerning especially dense image captioning. We present technical fundamentals of a model striving to solve such a task. Concretely, a detailed structure of DenseCap and Neural Image Caption is discussed. Experimentally, we examine results of DenseCap and analyse the model's weaknesses. We show that $92 \%$ of the generated captions are identical to a caption in the training set while the quality of those and the novel ones remains the same. We propose a criterion that significantly reduces a set of captions addressing an image whilst SPICE score of the set is maintained.
+\\\\
+\textbf{Keywords:} image captioning, dense captioning, convolutional neural networks, long short-term memory
+
+\vspace{1cm}
+
+\begin{center}
+    \textbf{\begin{Large}
+    Abstrakt
+    \end{Large}}
+\end{center}
+Tato bakalářská práce se zaměřuje na automatickou tvorbu popisu obrázků (angl. image captioning), konkrétně na tzv. dense captioning. Problematika je ukázána ve světle současných modelů se zaměřením na stavbu DenseCap a Neural Image Caption. DenseCap zejména je prodoben experimentům, díky nimž jsou identifikovány nedostatky modelu. Pokusy ukazují, že $92 \: \%$ generovaných popisků je identických vzorkům v trénovací množině. Je zjištěno, že jejich kvalita v porovnání s těmi, které v trénovací množině nejsou, je stejná. V neposlední řadě je navrženo kritérium, pomocí něhož lze významně zmenšit množinu popisků vztahujících se ke konkrétnímu obrázku, kdy SPICE skóre této menší množiny zůstává stejné.
+\\\\
+\textbf{Klíčová slova:} automatická tvorba popisu obrázků, dense captioning, konvoluční neuronové sítě, long short-term memory
+\\\\
+\textbf{Český název:} Automatická tvorba popisu obrázku pomocí konvolučních neuronových sítí
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% AUTHOR STATEMENT
+
+\vspace*{\fill}
+
+\section*{Author statement for undergraduate thesis:}
+
+I declare that the presented work was developed independently and that I have listed all sources of information used within it in accordance with the methodical instructions for observing the ethical principles in the preparation of university theses.
+\\\\
+Prague, \today
+\begin{flushright}
+\line(1,0){150}
+\\
+Michal Najman $\quad \qquad$
+\end{flushright}
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ACKNOLEDGMENT
+
+\vspace*{\fill}
+\section*{Acknowledgements}
+I gratefully thank my supervisor Dr. Juho Kannala for his wise and critical comments as well as for his enriching attitude. Kiitos! Also, my appreciation goes to prof. Ing. Jiří Matas, Ph.D. who joined the thesis meetings and contributed immensely with novel ideas.
+
+Last but not least, I thank my family for their support and my girlfriend Barbora for selecting the most pleasant shade of orange advisedly and for reviewing this text thoroughly.
+
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% TOC
+
+\tableofcontents
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ACTUAL CONTENT
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\begin{headerline}
+	%%\addcontentsline{toc}{section}{Introduction}
+	\include{./sections/introduction}
+	\cleardoublepage
+	\include{./sections/background}
+	\cleardoublepage
+	\include{./sections/related-work}
+	\cleardoublepage
+	\include{./sections/problem-analysis}
+    \cleardoublepage
+	\include{./sections/game-definition}
+	\cleardoublepage
+	\include{./sections/experiments}
+	%%\addcontentsline{toc}{section}{Conclusions}
+	\cleardoublepage
+	\include{./sections/conclusions}
+\end{headerline}
+
+
+	\cleardoublepage
+	\bibliography{master_thesis_references}{}
+
+	\cleardoublepage
+	\listoffigures
+
+	\cleardoublepage
+	\listoftables
+
+
+
+%%%%%%%%%%%%%%%%%%%% Appendices
+
+
+
+
+\end{document}

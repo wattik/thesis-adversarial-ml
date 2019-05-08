@@ -1,0 +1,88 @@
+\begin{thebibliography}{10}
+
+\bibitem{image_net}
+O.~Russakovsky, J.~Deng, H.~Su, J.~Krause, S.~Satheesh, S.~Ma, Z.~Huang,
+  A.~Karpathy, A.~Khosla, M.~S. Bernstein, A.~C. Berg, and F.~Li, ``Imagenet
+  large scale visual recognition challenge,'' {\em CoRR}, vol.~abs/1409.0575,
+  2014.
+
+\bibitem{adversarial_examples}
+I.~J. Goodfellow, J.~Shlens, and C.~Szegedy, ``Explaining and harnessing
+  adversarial examples. corr (2015),'' 2015.
+
+\bibitem{adversarial_examples_2}
+A.~M. Nguyen, J.~Yosinski, and J.~Clune, ``Deep neural networks are easily
+  fooled: High confidence predictions for unrecognizable images,'' {\em CoRR},
+  vol.~abs/1412.1897, 2014.
+
+\bibitem{adversarial_malware}
+K.~Grosse, N.~Papernot, P.~Manoharan, M.~Backes, and P.~McDaniel, ``Adversarial
+  examples for malware detection,'' in {\em European Symposium on Research in
+  Computer Security}, pp.~62--79, Springer, 2017.
+
+\bibitem{adversarial_malware_pe}
+H.~S. Anderson, A.~Kharkar, B.~Filar, D.~Evans, and P.~Roth, ``Learning to
+  evade static {PE} machine learning malware models via reinforcement
+  learning,'' {\em CoRR}, vol.~abs/1801.08917, 2018.
+
+\bibitem{good_word_attacks}
+D.~Lowd and C.~Meek, ``Good word attacks on statistical spam filters,'' in {\em
+  CEAS}, 2005.
+
+\bibitem{vapnik}
+V.~N. Vapnik, {\em Statistical Learning Theory}.
+\newblock Wiley-Interscience, 1998.
+
+\bibitem{provable_defenses}
+J.~Z. Kolter and E.~Wong, ``Provable defenses against adversarial examples via
+  the convex outer adversarial polytope,'' {\em arXiv preprint
+  arXiv:1711.00851}, vol.~1, no.~2, p.~3, 2017.
+
+\bibitem{stackelberg_games}
+M.~Br{\"u}ckner and T.~Scheffer, ``Stackelberg games for adversarial prediction
+  problems,'' in {\em Proceedings of the 17th ACM SIGKDD international
+  conference on Knowledge discovery and data mining}, pp.~547--555, ACM, 2011.
+
+\bibitem{antidote}
+B.~I. Rubinstein, B.~Nelson, L.~Huang, A.~D. Joseph, S.-h. Lau, S.~Rao,
+  N.~Taft, and J.~D. Tygar, ``Antidote: understanding and defending against
+  poisoning of anomaly detectors,'' in {\em Proceedings of the 9th ACM SIGCOMM
+  conference on Internet measurement}, pp.~1--14, ACM, 2009.
+
+\bibitem{transformer}
+A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N. Gomez,
+  L.~Kaiser, and I.~Polosukhin, ``Attention is all you need,'' {\em CoRR},
+  vol.~abs/1706.03762, 2017.
+
+\bibitem{towards_deep_learning_models}
+A.~Madry, A.~Makelov, L.~Schmidt, D.~Tsipras, and A.~Vladu, ``Towards deep
+  learning models resistant to adversarial attacks,'' {\em arXiv preprint
+  arXiv:1706.06083}, 2017.
+
+\bibitem{adversarial_examples_glasses}
+I.~Evtimov, K.~Eykholt, E.~Fernandes, T.~Kohno, B.~Li, A.~Prakash, A.~Rahmati,
+  and D.~Song, ``Robust physical-world attacks on machine learning models,''
+  {\em CoRR}, vol.~abs/1707.08945, 2017.
+
+\bibitem{pgd}
+A.~Kurakin, I.~J. Goodfellow, and S.~Bengio, ``Adversarial machine learning at
+  scale,'' {\em CoRR}, vol.~abs/1611.01236, 2016.
+
+\bibitem{obfuscated_gradients}
+A.~Athalye, N.~Carlini, and D.~Wagner, ``Obfuscated gradients give a false
+  sense of security: Circumventing defenses to adversarial examples,'' {\em
+  arXiv preprint arXiv:1802.00420}, 2018.
+
+\bibitem{relu}
+X.~Glorot, A.~Bordes, and Y.~Bengio, ``Deep sparse rectifier neural networks,''
+  in {\em Proceedings of the Fourteenth International Conference on Artificial
+  Intelligence and Statistics} (G.~Gordon, D.~Dunson, and M.~Dud{\'\i}k, eds.),
+  vol.~15 of {\em Proceedings of Machine Learning Research}, (Fort Lauderdale,
+  FL, USA), pp.~315--323, PMLR, 11--13 Apr 2011.
+
+\bibitem{adversarial_malware_binary}
+A.~Huang, A.~Al{-}Dujaili, E.~Hemberg, and U.~O'Reilly, ``Adversarial deep
+  learning for robust detection of binary encoded malware,'' {\em CoRR},
+  vol.~abs/1801.02950, 2018.
+
+\end{thebibliography}

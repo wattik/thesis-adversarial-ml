@@ -1,0 +1,188 @@
+\section{Game Definition}
+The activity classification problem is modelled as a game
+of two players: a detector and an adversary. The goal of the detector is
+to identify the best user activity classifier, while the adversary seeks
+to optimally modify query historys of malicious users in such a way they
+get misclassified by the classifier.
+
+\todo{More introductory words.}
+
+\subsection{Use Case}
+
+\todo{write: See, this is a running example.}
+
+In this work, we consider a network security company that runs a reputation
+service which returns rating of a queried URL. For example, if we query the service's API with \textsf{www.google.com}, the url is rated with high score whereas the malicious URL \textsf{www.malicious-url.com} is rated poorly. This type of a service is usually deployed by network security companies to provide their security software with access to most up-to-date database of URL ratings.
+
+The typical usage scenario is coined as follows. A client running on an
+end-user’s device encounters the user is about to enter a website. To
+evaluate the danger level of the website, the client queries the API of the reputation service with the website URL. Accordingly, the client may show a warning message notifying the user of expected danger or carry out an
+appropriate action.
+
+Usually, URL rating systems aim to identify various danger types of a
+URL. As a running example in this work, we focus one particular type of malicious misuse of the URL reputation system: malware producers that asses a set of URLs which are used as communication entry-points for deployed malware
+units. With one of these URLs, a unit of deployed malware is able to
+receive commands and adjust its actions. However, to maintain
+consistency and availability of its malware units, the malware producer
+must regularly check whether any of its URLs has been exposed – by
+querying the publicly available URL rating system.
+
+To conclude, the task is as follows: the computer security company desires to
+distinguish malicious users of the URL rating service from benign ones based on the URLs each user queried the service with.
+
+\subsubsection{Formal Definition}
+In the this section, we formally define the running example of an attack to a reputation system.
+
+The service is queried with a URL $u \in \U$. The query consists of a typical HTTP requests properties and the url as the subject of the query. The service securely assigns each query to a user based on a license the user used. Thus, we define an activity history $h \in \H$ as a collection of queries of the user. For example, if a user sends a sequence of queries for which we record a queried URL, an arrival timestamp, a source IP or possibly other information, this is recorded and integrally stored in a corresponding user’s query history $h$.
+
+\begin{equation}
+(u_1, t_1, \mathsf{IP}_1, \dots), \, (u_2, t_2, \mathsf{IP}_2, \dots), \, \dots, \, (u_k, t_k, \mathsf{IP}_k, \dots) \longrightarrow h
+\end{equation}
+
+Note that a user's query history $h$ represents the ground objects based on which the detector classifies users. Note that the inner structure of $h$ is discrete and also $\H$ is generally discrete. This is problematic for attackers as there is no direct way of computing gradients with respect to elements of $h$.
+
+In the previous section, we defined a malicious user posses a primary goal that thoroughly defines its individual instance. In this example a single malicious user posses a private set of primary URLs $\pr{U} \subset \U$. The primary url set contains urls which the malicious user necessarily employs to achieve its primary goal. That is to obtain the current reputation rating for each URL in $\pr{U}$. In consequence the primary goal $g \in \G$ is composed solely of the primary URLs.
+
+\begin{equation}
+    g = \pr{U}
+\end{equation}
+
+Given its primary URLs, a malicious user queries the service with URLs $U$ that may next to its primary URLs also contain legitimate queries which it uses to
+obfuscate its activity.
+
+\begin{equation}
+\pr{U} \subseteq U
+\end{equation}
+
+Recall we assume the malicious user is a rational player thus the particular content of $U$ changes depending on the classifier. If there was no classifier and, therefore, malicious users were not motivated to
+adjust their behaviour, they would presumably query the service with $U$
+resembling primary URLs and perhaps containing just a little
+overhead, ie. $U \cong \pr{U}$. No detector also means there is no need to strategies with the values of other properties request properties. This activity would be recorder in a corresponding activity history $h$.
+
+Nonetheless, once there actually is a classifier deployed, implying a
+cost for disclosure, the malicious users rationally query the service with additional legitimate URLs to obfuscate its primary goal. There are essentially to types of primary URLs $\pr{U}$ obfuscation: adding legitimate queries and adjusting properties of each query. Each primary URLs set $\pr{U}$ induces a bounded set of histories $S(\pr{U})$ that contains histories derivable from
+$\pr{U}$ by obfuscation.
+
+\begin{equation}
+S(\pr{U}) = \{ h \in \H \mid \pr{U} \subseteq \textsf{urls in }h \}
+\end{equation}
+
+We capture this with the obfuscation function $\psi: \G \mapsto \H $ which a malicious user employs to transform its original primary goal $g$ to an
+obfuscated activity history. Since a primary goal $g$ is solely defined by a primary URLs set $\pr{U}$, we can redefine the obfuscation function for this use case to: $\psi: 2^\U \mapsto \H$. The obfuscation is naturally bounded by the aforementioned types, thus:
+
+\begin{equation}
+    \psi(g) = \psi(\pr{U}) \in S( \pr{U} )
+\end{equation}
+
+The presence of a classifier changes the probability distribution of activity histories generated by malicious users. Concretely, the distribution of malicious activity histories is now governed by the distribution of obfuscated primary goals.
+
+\begin{equation}
+\dot{p}(h | M) = \sum_{\pr{U} : \psi(\pr{U}) = h} p(\pr{U})
+\end{equation}
+
+This illustrates how the general adversarial machine notions map to a problem instance. In the previous section we used $h$ as a general variable that represents the ground discrete objects that are classified by the detector. However, as shown above, the inner structure of $h$ can be ...
+\todo{blabla}.
+
+\todo{note that primary goal g comprises only partially h, thus there is room for obfuscation.}
+
+
+
+
+\subsection{Detector}
+
+\todo{Reflect D(d, x) in the following definition}
+
+Mathematically, the task of the detector is to find a mapping
+$h \in \mathcal{H}$ which classifies a query history’s feature vector
+$x \in \mathcal{X}$ to a class
+$\mathbb{C} = \{ \mathsf{B}, \mathsf{M} \}$, ie.
+$h: \mathcal{X} \mapsto \mathbb{C}$. Note that $\mathsf{B}$ stands
+for benign users, while $\mathsf{M}$ denotes malicious users.
+
+A feature vector representing a query history is given by a feature map
+$\Phi : h \mapsto \mathcal{X}$ which takes a query history $h$
+as an argument and maps it to a real vector
+$x \in \mathcal{X} \subseteq \mathbb{R}^d$. Naturally, $\Phi$ is
+surjective and is given a priori to task solving.
+
+Following the ERM framework, the optimal classifier $h^*$ is given by
+minimising its expected risk:
+
+\begin{equation}
+R_{-1}(h) = \E_{(h,c) \sim \dot{p}} \left \ell_{-1}(h \circ \Phi(h), \, c) \right
+\end{equation}
+
+where $\dot{p}(h,c)$ represents the joint probability of a query
+history $h \in h$ and a class $c \in \mathbb{C}$, partly
+modified by the adversary as explained above. $\ell_{-1}$ stands for a
+classification loss function.
+
+Generally, we prefer some classifier instances to others, therefore, we
+employ a regularisation term $\Omega_{-1}(h)$. In conclusion, the
+optimal classifier $h^*$ is given by the following equation.
+
+\begin{equation}
+h^* = \min_{h \in \mathcal{H}} R_{-1}(h) + \Omega_{-1}(h)
+\end{equation}
+
+Taking into account the Neyman-Pearson Task:
+
+
+
+\subsection{Attacker}\label{sec:attacker}
+
+Since the objectives of all malicious users are equivalent, ie. they aim
+to obfuscate their private set of primary queries $\pr{Q}$, the final
+query history of each of them is strictly a function of $\pr{Q}$. Due
+to the shared goal, we represent the malicious users as a single-body
+aggregate player, the adversary.
+
+The adversary aims to identify an obfuscation function
+$g: \pr{h} \mapsto h$. This is done for a fixed $h$ and $\Phi$
+by minimising the risk of the adversary $R_{+1}(g)$. However,
+following the threat model we restrict the adversary to produce only
+malicious samples (in contrast to the general form of the Stackelberg
+Prediction Game in \cite{stackelberg_games}) and these are inherently given by
+the distribution of strictly primary query historys $p(\pr{h})$.
+This simplifies the adversary’s risk $R_{+1}(g)$ to a new form:
+
+\begin{equation}
+R_{+1}(g) = \E_{ \pr{h} \sim p_{\pr{h}} } \left \ell_{+1}(h \circ \Phi \circ g (\pr{h}), \, \mathsf{M} ) \right
+\end{equation}
+
+where $p_{\pr{h}}$ gives the probability distribution from which
+$\pr{h}$ are drawn.
+$\left \ell_{+1}: \mathbb{C} \times \mathbb{C} \mapsto \mathbb{R}$ is
+the adversary’s cost function.
+
+Similarly to $h$-regularisation, we prefer some obfuscation functions
+to others which is articulated by a regulariser $\Omega_{+1}(g)$. In
+conclusion, the optimal obfuscation function $g^*$ is given by the
+following equation:
+
+\begin{equation}
+g^* = \min_{g \in \mathcal{G}} R_{+1}(g) + \Omega_{+1}(g)
+\end{equation}
+
+\subsubsection{Attacker's optimisation problem}
+In practical terms, if the detector's decision is differentiable, then the attacker may use gradient descent to optimise its actions. And if the cost of the optimal action is larger then the cost of its detection, it chooses not to attack at all.
+
+Three layers: X,H,G non differentiable transitions.
+
+Link to Gradient Obfuscation.
+
+Let $\Phi: \H \mapsto \X$ be a feature map that creates feature vectors $\Phi(h) \in \X \subset \R^N$. Assume $\Phi$ constructs features of $h$ based on various numerical properties and attributes $p \in \mathbb{P}$.
+
+\begin{definition}
+    Let $V_\Phi = \{v_1, \dots, v_K \}$ be a set of vectors that compose a basis of $\mathbb{P}$. We call $V_\Phi$ a basal mixtures of $\Phi$. Let $\phi_V: \G \times \R^L \mapsto \H$ be a mapping $\phi_V(g, t)$ which is differentiable in $t$ and composes activity histories $h$ mixing the primary goal and vectors from $V_\Phi$ based on $t$.
+\end{definition}
+
+Note that vectors from $V_\Phi$ must extis. Sometimes full vdoes nt aexist.
+
+IN this way we can bypass S(g) by simply chossing a proper t.
+
+For example histogram.
+
+\begin{proposition}
+
+\end{proposition}

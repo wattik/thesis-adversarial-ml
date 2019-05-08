@@ -1,0 +1,53 @@
+This is BibTeX, Version 0.99d (TeX Live 2015)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: master_thesis.aux
+The style file: ieeetr.bst
+A level-1 auxiliary file: ./sections/introduction.aux
+A level-1 auxiliary file: ./sections/background.aux
+A level-1 auxiliary file: ./sections/related-work.aux
+A level-1 auxiliary file: ./sections/problem-analysis.aux
+A level-1 auxiliary file: ./sections/game-definition.aux
+A level-1 auxiliary file: ./sections/experiments.aux
+A level-1 auxiliary file: ./sections/conclusions.aux
+Database file #1: master_thesis_references.bib
+You've used 17 entries,
+            1876 wiz_defined-function locations,
+            573 strings with 7095 characters,
+and the built_in function-call counts, 3993 in all, are:
+= -- 307
+> -- 275
+< -- 0
++ -- 97
+- -- 80
+* -- 333
+:= -- 649
+add.period$ -- 18
+call.type$ -- 17
+change.case$ -- 16
+chr.to.int$ -- 0
+cite$ -- 17
+duplicate$ -- 196
+empty$ -- 377
+format.name$ -- 80
+if$ -- 914
+int.to.chr$ -- 0
+int.to.str$ -- 17
+missing$ -- 17
+newline$ -- 55
+num.names$ -- 19
+pop$ -- 74
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 0
+skip$ -- 72
+stack$ -- 0
+substring$ -- 109
+swap$ -- 45
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 0
+warning$ -- 0
+while$ -- 31
+width$ -- 19
+write$ -- 158

@@ -1,0 +1,32 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Background}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Risk Minimisation}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Regularisation}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Neyman-Pearson Task}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Related Work}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Adversarial setting}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Provable robustness}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.3}{Optimising malware}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.4}{Stackelberg Prediction Game}{section.3}% 10
+\BOOKMARK [2][-]{subsection.3.5}{Dataset poisoning}{section.3}% 11
+\BOOKMARK [1][-]{section.4}{Problem Analysis}{}% 12
+\BOOKMARK [2][-]{subsection.4.1}{Specifics of Adversarial Machine Learning}{section.4}% 13
+\BOOKMARK [2][-]{subsection.4.2}{Property 1: Unknown Class Probabilities}{section.4}% 14
+\BOOKMARK [2][-]{subsection.4.3}{Property 2: Adversarial Setting}{section.4}% 15
+\BOOKMARK [3][-]{subsubsection.4.3.1}{Stackelberg Game}{subsection.4.3}% 16
+\BOOKMARK [3][-]{subsubsection.4.3.2}{Information Available to Attacker}{subsection.4.3}% 17
+\BOOKMARK [3][-]{subsubsection.4.3.3}{Attacker}{subsection.4.3}% 18
+\BOOKMARK [3][-]{subsubsection.4.3.4}{Stochastic Detector}{subsection.4.3}% 19
+\BOOKMARK [2][-]{subsection.4.4}{Assumption on Losses}{section.4}% 20
+\BOOKMARK [2][-]{subsection.4.5}{Anomaly Detection}{section.4}% 21
+\BOOKMARK [1][-]{section.5}{Game Definition}{}% 22
+\BOOKMARK [2][-]{subsection.5.1}{Use Case}{section.5}% 23
+\BOOKMARK [3][-]{subsubsection.5.1.1}{Formal Definition}{subsection.5.1}% 24
+\BOOKMARK [2][-]{subsection.5.2}{Detector}{section.5}% 25
+\BOOKMARK [2][-]{subsection.5.3}{Attacker}{section.5}% 26
+\BOOKMARK [3][-]{subsubsection.5.3.1}{Attacker's optimisation problem}{subsection.5.3}% 27
+\BOOKMARK [1][-]{section.6}{Experiments}{}% 28
+\BOOKMARK [1][-]{section.7}{Conclusions}{}% 29
+\BOOKMARK [1][-]{section*.5}{References}{}% 30
+\BOOKMARK [1][-]{section*.6}{List of Figures}{}% 31
+\BOOKMARK [1][-]{section*.7}{List of Tables}{}% 32
