@@ -2,13 +2,13 @@ from random import seed
 
 from dataset import Dataset
 from evaluate import accuracy
-# from features.features_creator import FeaturesComposer, SpecificityHistogram, EntriesCount
 from features.param_creator_base import ParamFeaturesComposer
 from features.param_creator_units import Histogram, Count, TimeEntropy
 from models.pytorch.langrange_net import MonteCarloNet
 from models.sampling.sampler import TensorSampler, Sampler
 from show import ExperimentHelper
-from threat_model.histogram_attacker import HistogramFGSMAttacker
+from threat_model.good_queries_attacker import GoodQueriesAttacker
+from threat_model.histogram_attacker import FGSMAttacker
 
 seed(42)
 
@@ -16,15 +16,15 @@ seed(42)
 experiment_filepath: str = False
 ################
 
-requests_filepath = "data/http_fee_ctu/user_queries.csv"
-scores_filepath = "data/http_fee_ctu/url_scores.csv"
-critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
-experiment_filepath = "../results/experiments/http_fee_ctu/test/"
+# requests_filepath = "data/http_fee_ctu/user_queries.csv"
+# scores_filepath = "data/http_fee_ctu/url_scores.csv"
+# critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
+# experiment_filepath = "../results/experiments/http_fee_ctu/test/"
 
-# requests_filepath = "data/trend_micro_full/user_queries.csv"
-# scores_filepath = "data/trend_micro_full/url_scores.csv"
-# critical_urls_filepath = "data/trend_micro_full/critical_urls.csv"
-# experiment_filepath = "../results/experiments/trend_micro_full/fgsm_complex_net/"
+requests_filepath = "data/trend_micro_full/user_queries.csv"
+scores_filepath = "data/trend_micro_full/url_scores.csv"
+critical_urls_filepath = "data/trend_micro_full/critical_urls.csv"
+experiment_filepath = "../results/experiments/trend_micro_full/langrange_net_fgsm_FPR_0.1/"
 
 # requests_filepath = "data/user_queries.csv"
 # scores_filepath = "data/url_scores.csv"
@@ -46,18 +46,29 @@ featurizer = ParamFeaturesComposer([
 featurizer.fit_normalizer(dataset.qps_trn_ben)
 
 # Attacker
-attacker = HistogramFGSMAttacker(
+attacker = FGSMAttacker(
     featurizer,
     dataset.urls,
     {
-        "max_attack_cost": 100.0,
-        "private_cost_multiplier": 0.05,
-        "uncover_cost": 100.0
+        "max_attack_cost": 99.0,
+        "private_cost_multiplier": 0.5,
+        "uncover_cost": 100.0,
     },
     dataset.specificity,
     max_iterations=400,
     change_rate=1.0
 )
+
+# attacker = GoodQueriesAttacker(
+#     featurizer,
+#     dataset.legitimate_queries,
+#     {
+#         "max_attack_cost": 99.0,
+#         "private_cost_multiplier": 0.5,
+#         "uncover_cost": 100.0
+#     },
+#     100
+# )
 
 # Models
 # model = NaiveBayes(specificity)
@@ -69,12 +80,12 @@ attacker = HistogramFGSMAttacker(
 model = MonteCarloNet(
     featurizer,
     attacker,
-    batch_loops=10, #150
-    lambda_init=199.0,
-    batch_size=32, #400
+    batch_loops=1500,
+    lambda_init=150.0,
+    batch_size=32,
     fp_threshold=0.001,
-    lr=0.1,
-    lambda_lr=10.0
+    lr=0.01,
+    lambda_lr=5.0
 )
 
 #################
@@ -175,27 +186,24 @@ for i in range(0, 100):
     helper.log("No Obfuscation Success: %5.2f%%" % (100 * att_res_tst.no_obfuscation_success_rate))
     helper.log("Mean attack iter: %5.2f" % att_res_tst.mean_attack_step)
 
-    helper.log("=================================================")
-
     lambdas.append(lam)
     att_results_trn.append(att_res_trn)
     att_results_tst.append(att_res_tst)
     benign_accuracy_trn.append(accuracy_trn)
     benign_accuracy_tst.append(accuracy_tst)
 
-    # Saving and showing pictures occurs every 10 loops
-    if ((i + 1) % 10) == 0:
+    helper.save_data({
+        "lambdas": lambdas,
+        "att_res_trn": att_results_trn,
+        "att_res_tst": att_results_tst,
+        "benign_accuracy_trn": benign_accuracy_trn,
+        "benign_accuracy_tst": benign_accuracy_tst,
+    })
+
+    # Saving and showing pictures occurs every N loops
+    if ((i + 1) % 5) == 0:
         helper.save_model(model, i)
         helper.save_model(model)  # rewrite final
-        helper.save_data({
-            "lambdas": lambdas,
-            "att_res_trn": att_res_trn,
-            "att_res_tst": att_res_tst,
-            "benign_accuracy_trn": benign_accuracy_trn,
-            "benign_accuracy_tst": benign_accuracy_tst,
-        })
-
-        helper.log("Model and Data saved.")
 
         helper.explain_model(
             model,
@@ -204,4 +212,4 @@ for i in range(0, 100):
             title="Training Epoch i=%d" % i
         )
 
-
+    helper.log("=================================================")
