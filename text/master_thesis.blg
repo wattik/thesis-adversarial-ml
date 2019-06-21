@@ -9,45 +9,46 @@ A level-1 auxiliary file: ./sections/problem-analysis.aux
 A level-1 auxiliary file: ./sections/game-definition.aux
 A level-1 auxiliary file: ./sections/experiments.aux
 A level-1 auxiliary file: ./sections/conclusions.aux
+A level-1 auxiliary file: ./sections/appendix_a.aux
 Database file #1: master_thesis_references.bib
-You've used 17 entries,
+You've used 35 entries,
             1876 wiz_defined-function locations,
-            573 strings with 7095 characters,
-and the built_in function-call counts, 3993 in all, are:
-= -- 307
-> -- 275
+            681 strings with 10817 characters,
+and the built_in function-call counts, 8852 in all, are:
+= -- 756
+> -- 513
 < -- 0
-+ -- 97
-- -- 80
-* -- 333
-:= -- 649
-add.period$ -- 18
-call.type$ -- 17
-change.case$ -- 16
++ -- 183
+- -- 148
+* -- 715
+:= -- 1358
+add.period$ -- 36
+call.type$ -- 35
+change.case$ -- 34
 chr.to.int$ -- 0
-cite$ -- 17
-duplicate$ -- 196
-empty$ -- 377
-format.name$ -- 80
-if$ -- 914
+cite$ -- 35
+duplicate$ -- 444
+empty$ -- 835
+format.name$ -- 148
+if$ -- 2073
 int.to.chr$ -- 0
-int.to.str$ -- 17
-missing$ -- 17
-newline$ -- 55
-num.names$ -- 19
-pop$ -- 74
+int.to.str$ -- 35
+missing$ -- 34
+newline$ -- 109
+num.names$ -- 37
+pop$ -- 128
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 72
+skip$ -- 226
 stack$ -- 0
-substring$ -- 109
-swap$ -- 45
+substring$ -- 388
+swap$ -- 132
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
 type$ -- 0
 warning$ -- 0
-while$ -- 31
-width$ -- 19
-write$ -- 158
+while$ -- 75
+width$ -- 37
+write$ -- 337

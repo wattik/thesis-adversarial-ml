@@ -93,5 +93,10 @@ class NoQueriesProfile(QueryProfile):
     def queries(self):
         return self.base_qp.base_qp.queries
 
+    def copy(self):
+        qp = type(self)(self.base_qp)
+        qp.stream = self.stream[:]
+        return qp
+
     def __str__(self):
         return "No Attack."

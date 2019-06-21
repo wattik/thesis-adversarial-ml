@@ -25,7 +25,6 @@ class Net(nn.Module):
         #
         self.dense_final = nn.Linear(n_features * 2, 1)
 
-        # self.lam = torch.tensor(lambda_init, requires_grad=True, dtype=torch.float)
         self.lam = lambda_init
 
     def forward(self, x):
@@ -109,9 +108,3 @@ class MonteCarloNet(StochasticModelBase):
             return self.model(x).flatten()
         else:
             return 1 - self.model(x).flatten()
-
-    def save(self, path: str):
-        torch.save(self.model, path)
-
-    def load(self, path: str):
-        self.model = torch.load(path)

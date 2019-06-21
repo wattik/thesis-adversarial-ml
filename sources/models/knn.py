@@ -20,6 +20,7 @@ class KNN(StochasticModelBase):
             alpha_init=1.0,
             max_iter=100,
     ):
+        self.ftol = fp_thresh / 10
         self.featurizer = featurizer
 
         self.ground_set = None
@@ -57,11 +58,11 @@ class KNN(StochasticModelBase):
             print(self.alpha)
             print()
 
-            if error < 1e-3:
+            if error < (self.ftol**2):
                 break
 
             d_alpha = grad(error, self.alpha)[0]
-            self.alpha.data.sub_(self.lr * d_alpha)
+            self.alpha.data.sub_(self.lr * d_alpha.sign())
 
     def mean_distances(self, x):
         mean_distances = []
@@ -74,7 +75,7 @@ class KNN(StochasticModelBase):
 
     def predict_prob(self, x, label: Label):
         dist = self.mean_distances(x)
-        prob_ben = torch.exp(- (dist ** 2) / self.alpha)
+        prob_ben = torch.exp(- ((dist / self.alpha) ** 2))
 
         if label == Label.B:
             return prob_ben

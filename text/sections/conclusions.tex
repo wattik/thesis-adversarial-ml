@@ -1,32 +1,22 @@
-\section{Conclusions}
+\section*{Conclusions}
+This work examined adversarial machine learning in network security. We focused on a problem of detecting malicious activity while, ideally, not affecting benign users. We started with the assumptions that a detection false positive rate is constrained by a threshold; and that malicious activity cannot be recorded faithfully and, in addition, changes in response to the parameters of a detector. (Sec. \ref{sec:specifics_of_aml})
 
-This work is a draft of a diploma thesis. It is an evaluated outcome of
-a semestral project that precedes the thesis. In the draft, a motivation
-to the problem and its definition is proposed. Concretely, we deal with
-a user behaviour classification problem that incorporates adversarial
-nature of some of the actors. The proposed threat model introduces a set
-of critical objects (here URLs) that a malicious user necessarily
-employs in communication with a service. This is a fundamental building
-block which imposes necessary modifications of the existing threat
-models met commonly in literature.
+To model the setting, we modified the empirical risk minimisation framework to correspond to the Neyman-Pearson task (Sec. \ref{sec:property_one}). Using the notion of statistical learning, we defined a game in which a detector identifies the best parameters of its stochastic detection classifier and an attacker searches for the optimal obfuscation method of its primary goals (Sec. \ref{sec:stackelberg_game}). Such a model of an attacker builds on the assumption that malicious actors aim to act rationally by minimising their risk (Sec. \ref{sec:attacker-def}).
+In terms of the detector, we argued that it necessarily must be a stochastic detector which means that instead of finding a classifier we solve a task of modelling the posterior class probability and draw the final label from it. (Sec. \ref{sec:stochasticity_importance})
 
-The draft explores related work and gives a formal definition of the
-problem, specifying a threat model that is inspired by the Stackelberg
-Prediction Game in \cite{stackelberg_games}. However, some modifications to SPG
-are proposed. Last but not least, the game definition is augmented by
-each players’ actions analysis, arriving at the conclusion the ERM
-framework is an excellent starting point for solving adversarial machine
-learning problems and gives, when combined with game theory,
-mathematical programs that are related to robust optimisation.
+Then, assuming the players play a strong Stackelberg equilibrium, we arrived at a bilevel optimisation problem whose solution is a robust detector that minimises exploitability by an attacker and keeps its false positive rate below a given threshold (Sec. \ref{sec:stochastic_detector}). We then proposed a detector's learning algorithm that approximates the solution of the optimisation problem and outputs a detector which despite being trained solely on legitimate benign data is able to detect unseen malicious activity. The detector's learning algorithm follows a scheme of adjusting parameters according to the attacker's best responses (Sec. \ref{sec:detector_learning_algorithm}).
 
-During thesis preparation, the draft will be enriched with the remaining
-parts of players’ actions analysis. This will, \emph{hopefully}, give a
-mathematical program for which an algorithm will be proposed. It goes
-without saying that the algorithm will then be compared to baseline
-approaches on real-world data and the experiment results will be
-evaluated. For now, it seems the HTTP data from the university's DNS
-logs will be used. Yet, this is a subject to change.
+In Sec. \ref{sec:anomaly_detection}, we proposed that the task of detecting malicious activity can be also solved with an anomaly detector. This approach comes with a critical disadvantage – a model of an attacker is omitted entirely and the anomaly detector can be trained only on benign data.
 
-Finally, let us naïvely believe the proposed models and experimental
-findings will serve the common good, rather then the truly malicious
-actors.
+As a running example, we used attacks to a URL reputation system and proposed a formal model of those attacks (Sec. \ref{sec:formal_definition}). We proposed a good query attack (Sec. \ref{sec:good_queries_attack}) and a gradient attack (Sec. \ref{sec:gradient_attack}). The gradient attack, given a primary goal (a set of target URLs), identifies a local-optimum activity that obfuscates this primary goal. The attack is novel in that it is able to create obfuscating activity even in domain that is highly discrete.
+This is achieved because we conveniently parametrised attacks and used projected gradient descent and a fast gradient sign method to find the local-optimum set of requests (Sec. \ref{sec:attack_parametrisation}).
+
+Then we adjusted the proposed detector's learning algorithm to the domain of reputation score requests. We proposed a neural network architecture with five layers that models a posterior class probability (Sec. \ref{sec:neural_detector}).
+
+Using real-word data provided by Trend Micro Ltd., we show that an adversarial detector outperforms an anomaly detector in all false positive ratio scenarios (1\%, 0.1\% and 0.01\%). In terms of meeting the false positive rate constraint, an adversarial detector meets it in all three scenarios, whereas the anomaly detector meets the constraint only on training data. In terms of exploitability (which we measure in successful attack rates), an adversarial detector detects more attacks than an anomaly detector. (Sec. \ref{sec:optimal_detector})
+
+Concerning real-time benign data, we found that it contains outliers which our detector confidently labels malicious. On closer manual inspection, those outliers seem to carry out suspicious activity and are, thus, correctly labeled malicious (Sec. \ref{sec:attack_analysis}).
+
+In future work, a detector's learning algorithm convergence proof may be delivered. Also, our feature map omits sequential nature of activity histories based on sent request-a more complex feature map that takes raw request sequences may be researched.
+
+In conclusion, this work proposed a theoretical background and a practical algorithm to a problem of detecting malicious activity in network security. We like to think of it as a proof-of-concept for real-world adversarial detection problems.

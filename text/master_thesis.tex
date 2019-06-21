@@ -3,6 +3,7 @@
 %Set up
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \graphicspath{ {images/} }
 
 %Notes
@@ -20,7 +21,7 @@
     \pagestyle{fancy}
 
 	\fancyhead{}
-	\fancyhead[RO,LE]{\textit{Adversarial Machine Learning in Security}}
+	\fancyhead[RO,LE]{\textit{Adversarial Machine Learning in Network  Security}}
 
 	\fancyfoot{}
 	\fancyfoot[LE,RO]{\thepage}
@@ -49,6 +50,9 @@
 \usepackage{mathtools}
 \usepackage{amsmath}
 
+%use algorithms
+\usepackage[linesnumbered, algoruled]{algorithm2e}
+
 %shortcuts MATHS
 \let\vec\relax
 \newcommand\vec[1]{\mathbf{#1}}
@@ -57,10 +61,11 @@
 %\DeclareRobustCommand{\E}{ \mathop{\mathbb{E}} }
 
 \newcommand\pr[1]{ #1^{\mathsf{pr}} }
-\newcommand\adv[1]{ #1^{\mathsf{adv}} }
+\newcommand\adv[1]{ #1^{\mathsf{obf}} }
 
 \newcommand\E{ \mathop{\mathbb{E}} }
 \newcommand\argmin{\mathop{\text{argmin}}}
+\newcommand\argmax{\mathop{\text{argmax}}}
 
 \newcommand\ben{\mathsf{B}}
 \newcommand\mal{\mathsf{M}}
@@ -71,9 +76,12 @@
 \newcommand\F{\mathcal{F}}
 \newcommand\X{\mathcal{X}}
 \newcommand\G{\mathcal{G}}
+\newcommand\A{\mathcal{A}}
 
 \newcommand\U{\mathbb{U}}
 \newcommand\R{\mathbb{R}}
+\newcommand\N{\mathbb{N}}
+
 
 \newcommand\minus{ {{\text{-}1}} }
 \newcommand\plus{ {{\text{+}1}} }
@@ -83,48 +91,27 @@
 
 \newcommand\BR{\textbf{BR}}
 
+\newcommand\NA{\textsf{No-Activity} }
+
+\newcommand\sign{\text{sign}}
+
 % Theorems
 \usepackage{amsthm}
 
 %\newtheorem{theorem}{Theorem}[section]
-%
-%\newtheorem{lemma}[theorem]{Lemma}
-
 \newtheorem{proposition}{Proposition}[section]
+\newtheorem{lemma}[proposition]{Lemma}
 \newtheorem{definition}{Definition}[section]
 
 
 % Optimision redefintion
 \let\mid\relax
-\newcommand\mid{\,|\,}
+\newcommand\mid{\,\big|\,}
 
-\let\left\relax
-\newcommand\left{[\,}
-
-\let\right\relax
-\newcommand\right{\,]}
+\newcommand\leftb{\Big[\,}
+\newcommand\rightb{\,\Big]}
 
 \newcommand\st{\qquad \text{s.t.} \quad}
-
-
-
-
-% Section redefinition
-% -- Needed only when using Texts to generate the pdf. Thus commented.
-% \makeatletter
-%
-% \let\mysection\section
-% \renewcommand{\section}{%
-%   \@ifstar{%
-%     \cleardoublepage
-%     \mysection*%
-%   }{%
-%     \cleardoublepage
-%     \mysection%
-%   }%
-% }
-%
-% \makeatother
 
 
 % References
@@ -169,14 +156,14 @@
 	{\scshape Faculty of Electrical Engineering \par}
 	{Department of Computer Science \par}
 	\vspace{0.7cm}
-	{\scshape\Large Semestral Project\par}
+	{\scshape\Large Master Thesis\par}
 
-	\vspace{2.9 cm}
+	\vspace{2 cm}
 	{\Huge\bfseries Adversarial Machine Learning for Detecting Malicious Behavior in Network Security \par}
 	\vspace{1.5cm}
 	{\Large\itshape Bc. Michal Najman\par}
 
-	\vspace{5cm}
+	\vspace{4cm}
 	Supervised by\par
 	\vspace{1mm}
 	Mgr. Viliam \textsc{Lisý}, MSc., Ph.D.
@@ -195,33 +182,34 @@
 \thispagestyle{plain}
 \pagenumbering{roman}
 
-%\includepdf[pages=-]{Bachelor-project-assignment.pdf}
+\includepdf[pages=-]{zadani.pdf}
 
 \cleardoublepage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%= ABSTRACT
-
+\vspace*{\fill}
 \begin{center}
     \textbf{\begin{Large}
     Abstract
     \end{Large}}
 \end{center}
-In this thesis, we elaborate on image captioning concerning especially dense image captioning. We present technical fundamentals of a model striving to solve such a task. Concretely, a detailed structure of DenseCap and Neural Image Caption is discussed. Experimentally, we examine results of DenseCap and analyse the model's weaknesses. We show that $92 \%$ of the generated captions are identical to a caption in the training set while the quality of those and the novel ones remains the same. We propose a criterion that significantly reduces a set of captions addressing an image whilst SPICE score of the set is maintained.
+Adversarial machine learning has two principal objectives: to design an attacker which is able to circumvent a detector; and to design a detector that is able to detect those attackers. We model the adversarial setting with game theory and propose that the solution of the game is in a Stackelberg equilibrium. To find the equilibrium, we start with the expected risk minimisation framework (ERM) and the game model from which we derive a bilevel optimisation task yielding an optimal detector. We then propose a learning algorithm that approximates a solution of this task. To support our theoretical findings, we solve a practical real-world problem of detecting attacks to a URL reputation service. A key part of our learning algorithm is the model of an attacker. We propose an attack algorithm to a URL reputation service that obfuscates the attacker's primary goal by generating covering activity with projected gradient descent and a fast gradient sign method. Using genuine data provided by Trend Micro Ltd., we show that an adversarial detector outperforms an anomaly detector at all false positive rates ($1\%$, $0.1\%$ a $0.01\%$) and successfully learns to detect unseen attacks carried out by our attacking algorithm.
 \\\\
-\textbf{Keywords:} image captioning, dense captioning, convolutional neural networks, long short-term memory
+\textbf{Keywords:} adversarial machine learning, game theory, machine learning, statistical learning, neural networks, network security
 
-\vspace{1cm}
+%\vspace{1cm}
+\cleardoublepage
+\vspace*{\fill}
 
 \begin{center}
     \textbf{\begin{Large}
     Abstrakt
     \end{Large}}
 \end{center}
-Tato bakalářská práce se zaměřuje na automatickou tvorbu popisu obrázků (angl. image captioning), konkrétně na tzv. dense captioning. Problematika je ukázána ve světle současných modelů se zaměřením na stavbu DenseCap a Neural Image Caption. DenseCap zejména je prodoben experimentům, díky nimž jsou identifikovány nedostatky modelu. Pokusy ukazují, že $92 \: \%$ generovaných popisků je identických vzorkům v trénovací množině. Je zjištěno, že jejich kvalita v porovnání s těmi, které v trénovací množině nejsou, je stejná. V neposlední řadě je navrženo kritérium, pomocí něhož lze významně zmenšit množinu popisků vztahujících se ke konkrétnímu obrázku, kdy SPICE skóre této menší množiny zůstává stejné.
+Adversarialní strojové učení má v principu dva cíle: navrhnout útočníka, který je schopen obejít detektor; a detektor, který úspěšně detekuje dané útočníky. Tyto protichůdné motivy jsou v této práci modelovány pomocí teorie her a je předpokládáno, že řešení hry leží ve Stackelbergově rovnováze. Abychom tuto rovnováhu nalezli, ukážeme, že z minimalizace očekávaného rizika (ERM) a herního modelu lze odvodit dvouúrovňovou optimalizační úlohu, jejímž řešením je optimální detektor. Dále navrhneme účící algoritmus, který řeší tuto úlohu a jehož výstupem je aproximace (lokálně) optimálního detektoru. Prezentovanou teorii aplikujeme na realný problém útoků na reputační systém URL adres. Klíčovým prvkem námi navrhženého učícího algoritmu je model útočníka, proto navrhneme algoritmus útoků na reputační systému URL adres, který je schopen zamaskovat primární cíl útočníka generováním krycí aktivity. Útočící algoritmus je založen na projektovaném gradientním sestupu (PGD) a metodě znaménka gradientu (FGSM). Za použití legitimních dat od společnosti Trend Micro Ltd. ukazujeme, že námi navržený adversariální detektor překoná detektor anomálií na všech zkoumaných úrovních false positives ($1\%$, $0.1\%$ a $0.01\%$) a je úspěšně schopen detekovat nové útoky našeho útočícího algoritmu.
 \\\\
-\textbf{Klíčová slova:} automatická tvorba popisu obrázků, dense captioning, konvoluční neuronové sítě, long short-term memory
-\\\\
-\textbf{Český název:} Automatická tvorba popisu obrázku pomocí konvolučních neuronových sítí
+\textbf{Klíčová slova:} adversarialní strojové učení, teorie her, strojové učení, statistické učení, neuronové sítě, síťová bezpečnost
+
 
 \cleardoublepage
 
@@ -229,8 +217,7 @@ Tato bakalářská práce se zaměřuje na automatickou tvorbu popisu obrázků 
 
 \vspace*{\fill}
 
-\section*{Author statement for undergraduate thesis:}
-
+\section*{Declaration:}
 I declare that the presented work was developed independently and that I have listed all sources of information used within it in accordance with the methodical instructions for observing the ethical principles in the preparation of university theses.
 \\\\
 Prague, \today
@@ -246,9 +233,7 @@ Michal Najman $\quad \qquad$
 
 \vspace*{\fill}
 \section*{Acknowledgements}
-I gratefully thank my supervisor Dr. Juho Kannala for his wise and critical comments as well as for his enriching attitude. Kiitos! Also, my appreciation goes to prof. Ing. Jiří Matas, Ph.D. who joined the thesis meetings and contributed immensely with novel ideas.
-
-Last but not least, I thank my family for their support and my girlfriend Barbora for selecting the most pleasant shade of orange advisedly and for reviewing this text thoroughly.
+I gratefully thank my supervisor Mgr. Viliam Lisý, MSc., Ph.D. for priceless advice and comments that dramatically improved this work.  Also, I am thankful to him for helping me gain far deeper knowledge and understanding of game theory and algorithms associated with it. In addition, I thank my family for their endless support. Last but not least, I thank my beloved Bára who supported me both mentally and practically by reviewing this thesis.
 
 \cleardoublepage
 
@@ -262,7 +247,7 @@ Last but not least, I thank my family for their support and my girlfriend Barbor
 \setcounter{page}{1}
 
 \begin{headerline}
-	%%\addcontentsline{toc}{section}{Introduction}
+	\addcontentsline{toc}{section}{Introduction}
 	\include{./sections/introduction}
 	\cleardoublepage
 	\include{./sections/background}
@@ -274,11 +259,13 @@ Last but not least, I thank my family for their support and my girlfriend Barbor
 	\include{./sections/game-definition}
 	\cleardoublepage
 	\include{./sections/experiments}
-	%%\addcontentsline{toc}{section}{Conclusions}
 	\cleardoublepage
+    \addcontentsline{toc}{section}{Conclusions}
 	\include{./sections/conclusions}
 \end{headerline}
 
+    \addcontentsline{toc}{section}{Appendix A}
+    \include{./sections/appendix_a}
 
 	\cleardoublepage
 	\bibliography{master_thesis_references}{}

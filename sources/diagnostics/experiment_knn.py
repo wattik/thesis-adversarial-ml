@@ -4,7 +4,7 @@ from dataset import Dataset
 from evaluate import accuracy
 # from features.features_creator import FeaturesComposer, SpecificityHistogram, EntriesCount
 from features.param_creator_base import ParamFeaturesComposer
-from features.param_creator_units import Histogram, Count, TimeEntropy
+from features.param_creator_units import Histogram, Count, TimeEntropy, BinCounter
 from models.knn import KNN
 from models.sampling.sampler import TensorSampler, Sampler
 from show import ExperimentHelper
@@ -22,10 +22,10 @@ experiment_filepath: str = False
 # critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
 # experiment_filepath = "../results/experiments/http_fee_ctu/knn_test/"
 
-scores_filepath = "data/trend_micro_full/url_scores.csv"
-requests_filepath = "data/trend_micro_full/user_queries.csv"
-critical_urls_filepath = "data/trend_micro_full/critical_urls.csv"
-experiment_filepath = "../results/experiments/trend_micro_full/knn_fgsm_FPR_0.1/"
+scores_filepath = "../data/trend_micro_full/url_scores.csv"
+requests_filepath = "../data/trend_micro_full/user_queries.csv"
+critical_urls_filepath = "../data/trend_micro_full/critical_urls.csv"
+experiment_filepath = "../../results/experiments/trend_micro_full/knn_fgsm_FPR_0.01/"
 
 # requests_filepath = "data/user_queries.csv"
 # scores_filepath = "data/url_scores.csv"
@@ -38,6 +38,7 @@ dataset = Dataset(scores_filepath, requests_filepath, critical_urls_filepath)
 # Featurizer
 featurizer = ParamFeaturesComposer([
     Histogram(dataset.specificity, 3),
+    BinCounter(dataset.specificity, 3),
     Count(),
     TimeEntropy(24)
 ])
@@ -72,10 +73,10 @@ attacker_GQAT = GoodQueriesAttacker(
 model = KNN(
     featurizer,
     k=10,
-    fp_thresh=0.001,
-    lr=1e8,
+    fp_thresh=0.01/100,
+    lr=1.0,
     validation_ratio=0.2,
-    alpha_init=600,
+    alpha_init=180.0,
     max_iter=100
 )
 
@@ -89,6 +90,7 @@ helper = ExperimentHelper(
 )
 
 helper.log("Fitting.")
+helper.log(experiment_filepath)
 model.fit_samplers(benign_samples, malicious_samples)
 helper.save_model(model)
 
@@ -181,5 +183,5 @@ helper.explain_model(
     model,
     dataset.qps_trn_ben + att_res_trn.get_query_profiles(),
     dataset.labels_trn_ben + dataset.labels_trn_mal,
-    title="Training Results vs. GRAD Attacker."
+    title="Training Results vs. GQAT Attacker."
 )

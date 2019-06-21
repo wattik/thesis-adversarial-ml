@@ -7,14 +7,14 @@ from features.features_creator import FeaturesComposer
 from models.base import Label, StochasticModelBase
 from models.pytorch.autograd import jacobian
 from models.sampling.sampler import Sampler
-from threat_model.histogram_attacker import HistogramFGSMAttacker
+from threat_model.histogram_attacker import FGSMAttacker
 
 
 class MonteCarloTrainer:
     def __init__(
             self,
             phi_groups: List[torch.Tensor],
-            attacker: HistogramFGSMAttacker,
+            attacker: FGSMAttacker,
             featurizer: FeaturesComposer,
             model: StochasticModelBase,
 
@@ -38,18 +38,24 @@ class MonteCarloTrainer:
             benign_samples: Sampler,
             malicious_samples: Sampler,
     ):
-        lam = self.model.model.lam
+        lam = float(self.model.model.lam)
 
         error_ben, updates_ben = self.get_class_update_simple(benign_samples, Label.B)
         error_mal, updates_mal = self.get_class_update_simple(malicious_samples, Label.M)
 
         # LAMBDA update
-        self.model.model.lam += self.lambda_learning_rate * (error_ben - self.fp_thresh)
+        self.model.model.lam = min([
+            max([
+                0.001,
+                lam + self.lambda_learning_rate * (float(error_ben) - self.fp_thresh)
+            ]),
+            2000.0
+        ])
 
         # WEIGHTS update
         p_b = lam / (1 + lam)
         for phi, delta_phi_mal, delta_phi_ben in zip(self.phi_groups, updates_mal, updates_ben):
-            phi.data.add_(self.learning_rate * ((1 - p_b) * delta_phi_mal + p_b * delta_phi_ben))
+            phi.data.add_(self.learning_rate * (delta_phi_mal + lam * delta_phi_ben))
 
     def get_class_update_simple(self, samples: Sampler, label: Label):
         if label == Label.B:
@@ -63,18 +69,20 @@ class MonteCarloTrainer:
                 return 0, [torch.zeros_like(phi) for phi in self.phi_groups]
 
             x = x[attacks.flatten(), :]
-            # x.requires_grad = True
+
+        n = float(len(x))
 
         y_prob = self.model.predict_prob(x, label)
-        error = torch.sum(1 - y_prob) / self.batch_size
+        error = torch.sum(1 - y_prob) / n
         criterion = torch.sum(torch.log(y_prob))
 
         updates = [
-            delta_phi / self.batch_size
+            delta_phi / n
             for delta_phi in self.get_delta_phi_simple(x, criterion)
         ]
 
-        return error, updates
+        updates = map(lambda d: torch.where(torch.isnan(d), torch.zeros_like(d), d), updates)
+        return error, list(updates)
 
     def get_delta_phi_simple(self, x: torch.Tensor, y_alt_prob: torch.Tensor):
         return [g for g in grad(y_alt_prob, self.phi_groups)]

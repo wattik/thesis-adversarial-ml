@@ -1,32 +1,82 @@
-\contentsline {section}{\numberline {1}Introduction}{1}{section.1}
-\contentsline {section}{\numberline {2}Background}{3}{section.2}
-\contentsline {subsection}{\numberline {2.1}Risk Minimisation}{3}{subsection.2.1}
-\contentsline {subsection}{\numberline {2.2}Regularisation}{4}{subsection.2.2}
-\contentsline {subsection}{\numberline {2.3}Neyman-Pearson Task}{4}{subsection.2.3}
-\contentsline {section}{\numberline {3}Related Work}{5}{section.3}
-\contentsline {subsection}{\numberline {3.1}Adversarial setting}{5}{subsection.3.1}
-\contentsline {subsection}{\numberline {3.2}Provable robustness}{7}{subsection.3.2}
-\contentsline {subsection}{\numberline {3.3}Optimising malware}{7}{subsection.3.3}
-\contentsline {subsection}{\numberline {3.4}Stackelberg Prediction Game}{8}{subsection.3.4}
-\contentsline {subsection}{\numberline {3.5}Dataset poisoning}{8}{subsection.3.5}
-\contentsline {section}{\numberline {4}Problem Analysis}{11}{section.4}
-\contentsline {subsection}{\numberline {4.1}Specifics of Adversarial Machine Learning}{12}{subsection.4.1}
-\contentsline {subsection}{\numberline {4.2}Property 1: Unknown Class Probabilities}{12}{subsection.4.2}
-\contentsline {subsection}{\numberline {4.3}Property 2: Adversarial Setting}{13}{subsection.4.3}
-\contentsline {subsubsection}{\numberline {4.3.1}Stackelberg Game}{13}{subsubsection.4.3.1}
-\contentsline {subsubsection}{\numberline {4.3.2}Information Available to Attacker}{14}{subsubsection.4.3.2}
-\contentsline {subsubsection}{\numberline {4.3.3}Attacker}{14}{subsubsection.4.3.3}
-\contentsline {subsubsection}{\numberline {4.3.4}Stochastic Detector}{15}{subsubsection.4.3.4}
-\contentsline {subsection}{\numberline {4.4}Assumption on Losses}{18}{subsection.4.4}
-\contentsline {subsection}{\numberline {4.5}Anomaly Detection}{21}{subsection.4.5}
-\contentsline {section}{\numberline {5}Game Definition}{23}{section.5}
-\contentsline {subsection}{\numberline {5.1}Use Case}{23}{subsection.5.1}
-\contentsline {subsubsection}{\numberline {5.1.1}Formal Definition}{23}{subsubsection.5.1.1}
-\contentsline {subsection}{\numberline {5.2}Detector}{25}{subsection.5.2}
-\contentsline {subsection}{\numberline {5.3}Attacker}{26}{subsection.5.3}
-\contentsline {subsubsection}{\numberline {5.3.1}Attacker's optimisation problem}{26}{subsubsection.5.3.1}
-\contentsline {section}{\numberline {6}Experiments}{27}{section.6}
-\contentsline {section}{\numberline {7}Conclusions}{29}{section.7}
-\contentsline {section}{References}{31}{section*.5}
-\contentsline {section}{List of Figures}{33}{section*.6}
-\contentsline {section}{List of Tables}{35}{section*.7}
+\contentsline {paragraph}{Structure of Thesis:}{2}{section*.5}
+\contentsline {section}{Introduction}{1}{section*.3}
+\contentsline {section}{\numberline {1}Background}{5}{section.1}
+\contentsline {subsection}{\numberline {1.1}Risk Minimisation}{5}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Regularisation}{6}{subsection.1.2}
+\contentsline {subsection}{\numberline {1.3}Neyman-Pearson Task}{6}{subsection.1.3}
+\contentsline {subsection}{\numberline {1.4}Game Theory}{6}{subsection.1.4}
+\contentsline {subsection}{\numberline {1.5}Neural Networks}{7}{subsection.1.5}
+\contentsline {section}{\numberline {2}Related Work}{9}{section.2}
+\contentsline {subsection}{\numberline {2.1}Adversarial Machine Learning}{9}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}Provable robustness}{11}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}Optimising malware}{12}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}Game-Theoretical Approach}{13}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.5}Dataset poisoning}{14}{subsection.2.5}
+\contentsline {section}{\numberline {3}Problem Analysis}{15}{section.3}
+\contentsline {paragraph}{Expected Risk Minimisation}{15}{section*.6}
+\contentsline {subsection}{\numberline {3.1}Specifics of Adversarial Machine Learning}{16}{subsection.3.1}
+\contentsline {subsubsection}{\numberline {3.1.1}Property 1: Unknown Class Probabilities}{16}{subsubsection.3.1.1}
+\contentsline {subsubsection}{\numberline {3.1.2}Property 2: Adversarial Setting}{17}{subsubsection.3.1.2}
+\contentsline {subsubsection}{\numberline {3.1.3}Stackelberg Game}{17}{subsubsection.3.1.3}
+\contentsline {subsubsection}{\numberline {3.1.4}Attacker}{18}{subsubsection.3.1.4}
+\contentsline {subsubsection}{\numberline {3.1.5}Stochastic Detector}{19}{subsubsection.3.1.5}
+\contentsline {subsubsection}{\numberline {3.1.6}On Stochasticity Importance}{22}{subsubsection.3.1.6}
+\contentsline {subsection}{\numberline {3.2}Assumption on Losses}{22}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Approximate Best Response}{26}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Detector's Learning Algorithm}{27}{subsection.3.4}
+\contentsline {subsubsection}{\numberline {3.4.1}Monte-Carlo Estimates of Gradient}{28}{subsubsection.3.4.1}
+\contentsline {subsubsection}{\numberline {3.4.2}Learning Algorithm}{29}{subsubsection.3.4.2}
+\contentsline {subsubsection}{\numberline {3.4.3}Information Available to Opponents}{31}{subsubsection.3.4.3}
+\contentsline {subsection}{\numberline {3.5}Anomaly Detection}{31}{subsection.3.5}
+\contentsline {section}{\numberline {4}Game Definition}{33}{section.4}
+\contentsline {subsection}{\numberline {4.1}Formal Definition}{33}{subsection.4.1}
+\contentsline {subsection}{\numberline {4.2}Features}{35}{subsection.4.2}
+\contentsline {subsection}{\numberline {4.3}Attacker}{36}{subsection.4.3}
+\contentsline {subsubsection}{\numberline {4.3.1}Attacker's Private Loss}{36}{subsubsection.4.3.1}
+\contentsline {subsection}{\numberline {4.4}Good Queries Attack}{37}{subsection.4.4}
+\contentsline {subsection}{\numberline {4.5}Gradient Attack}{37}{subsection.4.5}
+\contentsline {subsubsection}{\numberline {4.5.1}Attack Parametrisation}{38}{subsubsection.4.5.1}
+\contentsline {paragraph}{Elements of $V$}{38}{section*.10}
+\contentsline {subsubsection}{\numberline {4.5.2}Gradient Attack Algorithm}{39}{subsubsection.4.5.2}
+\contentsline {paragraph}{Routine \texttt {InitK()}}{39}{section*.11}
+\contentsline {paragraph}{Routine \texttt {Proj}$^A (z)$}{39}{section*.12}
+\contentsline {paragraph}{Routine \texttt {Proj}$^B(z, k^A)$}{39}{section*.13}
+\contentsline {paragraph}{Routine \texttt {MakeActivityHistory(k)}}{40}{section*.14}
+\contentsline {subsubsection}{\numberline {4.5.3}Imperfection of Gradient Attack}{40}{subsubsection.4.5.3}
+\contentsline {subsection}{\numberline {4.6}Detector}{40}{subsection.4.6}
+\contentsline {subsubsection}{\numberline {4.6.1}Anomaly Detector}{41}{subsubsection.4.6.1}
+\contentsline {subsubsection}{\numberline {4.6.2}Adversarial Detector}{42}{subsubsection.4.6.2}
+\contentsline {paragraph}{SeLU Activations and Regularisation}{42}{section*.15}
+\contentsline {paragraph}{Training Sets $T^\mathsf {B}$ and $T^\mathsf {M}$}{43}{section*.16}
+\contentsline {paragraph}{Implementation of Stochastic Detector}{43}{section*.17}
+\contentsline {paragraph}{Handling \textsf {No-Activity} in Detector}{43}{section*.18}
+\contentsline {paragraph}{Similarity to Cross Entropy}{44}{section*.19}
+\contentsline {paragraph}{On Complexity of Stochastic Detector}{44}{section*.20}
+\contentsline {section}{\numberline {5}Experiments}{45}{section.5}
+\contentsline {subsection}{\numberline {5.1}Dataset}{45}{subsection.5.1}
+\contentsline {subsection}{\numberline {5.2}Setting}{46}{subsection.5.2}
+\contentsline {paragraph}{False Positive Rate}{46}{section*.22}
+\contentsline {paragraph}{Attacker's Loss}{46}{section*.23}
+\contentsline {paragraph}{Feature Map}{47}{section*.24}
+\contentsline {paragraph}{Performance Measures}{48}{section*.25}
+\contentsline {subsection}{\numberline {5.3}Detector Learning Procedure}{48}{subsection.5.3}
+\contentsline {paragraph}{Lambda}{48}{section*.26}
+\contentsline {paragraph}{Learning Rate}{48}{section*.27}
+\contentsline {paragraph}{Batch Size}{49}{section*.28}
+\contentsline {paragraph}{Attacker's Optimisation}{49}{section*.29}
+\contentsline {subsection}{\numberline {5.4}Results}{49}{subsection.5.4}
+\contentsline {subsubsection}{\numberline {5.4.1}Optimal Detector}{49}{subsubsection.5.4.1}
+\contentsline {paragraph}{False Positive Rate Threshold}{50}{section*.30}
+\contentsline {paragraph}{Exploitability by Gradient Attack}{51}{section*.34}
+\contentsline {paragraph}{Exploitability by Good Queries Attack}{51}{section*.36}
+\contentsline {paragraph}{Suspicious Outliers in Dataset}{52}{section*.37}
+\contentsline {subsubsection}{\numberline {5.4.2}Attack Analysis}{52}{subsubsection.5.4.2}
+\contentsline {paragraph}{Primary Goal - No-Attack Dependency}{52}{figure.caption.40}
+\contentsline {paragraph}{\textsf {No-Activity} Rates}{55}{section*.41}
+\contentsline {paragraph}{Attack Cost Analysis}{55}{table.caption.43}
+\contentsline {paragraph}{Anomaly Detector - Adversarial Detector Comparison}{57}{section*.44}
+\contentsline {section}{Conclusions}{59}{figure.caption.45}
+\contentsline {section}{Appendix A}{61}{section*.46}
+\contentsline {section}{References}{63}{section*.48}
+\contentsline {section}{List of Figures}{67}{section*.49}
+\contentsline {section}{List of Tables}{69}{section*.50}

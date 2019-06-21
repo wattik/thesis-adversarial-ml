@@ -1,16 +1,54 @@
+from pprint import pprint
 from random import seed
 
 from dataset import Dataset
-from evaluate import accuracy
 # from features.features_creator import FeaturesComposer, SpecificityHistogram, EntriesCount
+from features.param_creator_units import Histogram, BinCounter
+from models.base import Label
 from show import ExperimentHelper
-from threat_model.good_queries_attacker import GoodQueriesAttacker
-from threat_model.histogram_attacker import FGSMAttacker
 
 seed(42)
 
+
 ###########
-experiment_filepath: str = False
+def print_outliers(threshold):
+    x = featurizer.make_features(dataset.qps_tst_ben, use_torch=True)
+    pred = model.predict_prob(x, Label.M)
+
+    for user, qp, prob_m in zip(dataset.users_tst_ben, dataset.qps_tst_ben, pred):
+        if float(prob_m * 100) < threshold:
+            continue
+
+        print("=" * 50)
+        print("User: %s" % user)
+        print("Probability: %5.2f%%" % float(prob_m * 100))
+        print("Scores Histogram:")
+        print(histogram.make_features([qp], use_torch=True))
+        print("Scores Counts:")
+        print(counts.make_features([qp], use_torch=True))
+
+        print("Malicious URLS:")
+        pprint([url for url in set(qp.queries) if dataset.specificity(url) < 0.3])
+
+    x = featurizer.make_features(dataset.qps_trn_ben, use_torch=True)
+    pred = model.predict_prob(x, Label.M)
+
+    for user, qp, prob_m in zip(dataset.users_trn_ben, dataset.qps_trn_ben, pred):
+        if float(prob_m * 100) < threshold:
+            continue
+
+        print("=" * 50)
+        print("User: %s" % user)
+        print("Probability: %5.2f%%" % float(prob_m * 100))
+        print("Scores Histogram:")
+        print(histogram.make_features([qp], use_torch=True))
+        print("Scores Counts:")
+        print(counts.make_features([qp], use_torch=True))
+
+        print("Malicious URLS:")
+        pprint([url for url in set(qp.queries) if dataset.specificity(url) < 0.3])
+
+
 ################
 #
 # requests_filepath = "data/http_fee_ctu/user_queries.csv"
@@ -18,10 +56,12 @@ experiment_filepath: str = False
 # critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
 # experiment_filepath = "../results/experiments/http_fee_ctu/fgsm_more_features/"
 
+experiment_filepath: str = False
 requests_filepath = "../data/trend_micro_full/user_queries.csv"
 scores_filepath = "../data/trend_micro_full/url_scores.csv"
+
 critical_urls_filepath = "../data/trend_micro_full/critical_urls.csv"
-experiment_filepath = "../../results/experiments/trend_micro_full/langrange_net_fgsm_FPR_0.1_adjusted_grad_new_features_l_u_0.05/"
+# experiment_filepath = "../../results/experiments/trend_micro_full/langrange_net_fgsm_FPR_0.1_adjusted_grad_new_features_l_u_0.05_lr_alpha_0.1_wtf/"
 
 # requests_filepath = "data/user_queries.csv"
 # scores_filepath = "data/url_scores.csv"
@@ -29,75 +69,14 @@ experiment_filepath = "../../results/experiments/trend_micro_full/langrange_net_
 
 ##########
 
+experiment_filepath = "../../results/experiments/trend_micro_full/knn_fgsm_FPR_0.1"
+
 dataset = Dataset(scores_filepath, requests_filepath, critical_urls_filepath)
-
+histogram = Histogram(dataset.specificity, 3)
+counts = BinCounter(dataset.specificity, 3)
 #################
-model, featurizer, attacker = ExperimentHelper.load(experiment_filepath, version="2")
-
-attacker_GRAD = FGSMAttacker(
-    featurizer,
-    dataset.urls,
-    {
-        "max_attack_cost": 100.0,
-        "private_cost_multiplier": 0.05,
-        "uncover_cost": 100.0
-    },
-    dataset.specificity,
-    max_iterations=400,
-    change_rate=1.0
-)
-
-attacker_GQAT = GoodQueriesAttacker(
-    featurizer,
-    dataset.legitimate_queries,
-    {
-        "max_attack_cost": 99.0,
-        "private_cost_multiplier": 0.05,
-        "uncover_cost": 100.0
-    },
-    100
-)
 
 
-helper = ExperimentHelper(
-    featurizer,
-    dataset.qps_trn
-)
-
-lam = float(model.model.lam)
-
-helper.log("Lambda: %5.2f" % lam)
-helper.log("p(B): %7.4f" % (lam / (1 + lam)))
-
-
-#######
-
-helper.log()
-helper.log("TST RESULTS")
-
-att_res_tst = attacker_GRAD.attack(model, dataset.qps_tst_mal)
-accuracy_tst = accuracy(model, dataset.qps_tst_ben, dataset.labels_tst_ben)
-
-helper.log("Accuracy on Benign Data: %5.2f %%" % (accuracy_tst * 100))
-helper.log("Detection Rate: %5.2f%%" % (100 * (1 - att_res_tst.attack_success_rate)))
-
-helper.log("Total benign samples number: %d" % len(dataset.qps_tst_ben))
-helper.log("Total attacks number: %d" % att_res_tst.total_attacks_number)
-
-helper.log("No Attack Rate %5.2f%%" % (100 * att_res_tst.no_attack_rate))
-helper.log("Attack Success: %5.2f%%" % (100 * att_res_tst.attack_success_rate))
-helper.log("No Obfuscation Success: %5.2f%%" % (100 * att_res_tst.no_obfuscation_success_rate))
-helper.log("Mean attack iter: %5.2f" % att_res_tst.mean_attack_step)
-
-helper.explain_model(
-    model,
-    dataset.qps_tst_ben + att_res_tst.get_query_profiles(),
-    dataset.labels_tst_ben + dataset.labels_tst_mal,
-    title="Attack Results (Test Set)"
-)
-
-helper.save_attacks(
-    att_res_tst,
-    "../../results/attacks/trend_micro_full/langrange_net_fgsm_FPR_0.1_adjusted_grad_new_features_l_u_0.05/",
-    "GRAD"
-)
+model, featurizer, training_attacker = ExperimentHelper.load(experiment_filepath)
+print_outliers(10)
+print("*"*100)

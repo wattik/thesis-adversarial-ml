@@ -28,6 +28,9 @@ class Sampler:
         else:
             return samples
 
+    def __len__(self):
+        return self.length
+
 
 class TensorSampler(Sampler):
     def __init__(self, tensors: List[torch.Tensor]):

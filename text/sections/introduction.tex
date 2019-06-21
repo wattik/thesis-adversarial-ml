@@ -1,8 +1,8 @@
-\section{Introduction}
+\section*{Introduction}
 
 In recent years, computer science has seen an advent of powerful
-algorithms that are able to learn from examples. Despite the notion of
-learnable algorithms was recognised and studied in pioneering times of
+algorithms that are able to learn from examples. Even though the notion of
+learnable algorithms was recognised and studied in pioneering ages of
 the field already, its wide-range real-world applications were to be
 implemented only with the presence of big available data collections and
 vast memory and computational resources. Therefore, nowadays one meets
@@ -11,50 +11,53 @@ problems. The field spans from theoretical research to practical
 applications in areas such as medical diagnosis, financial predictions
 and, most importantly in case of this work, computer security.
 
-Most of the applications coin a similar scenario: a problem is
+Most of the applications follow a similar scenario: a problem is
 formalised following a standard machine learning paradigm; a vast data
 set is collected and a proper algorithm giving the best results is found
-forming a model of the problem. However, in some applications once such
+forming a model of the problem. However, in some applications, once such
 a model is deployed to a complex real-world environment, one soon
-identifies the model performance deteriorates due to the key aspects of
+identifies the model performance's deteriorates due to the key aspects of
 the reality that have been omitted in the standard machine learning
 point of view.
 
-An example of such an observation is seen in computer vision. It was
+An example is seen in computer vision. It was
 found that deep neural networks that reign competitions in image
 classification \cite{image_net} are prone to so called adversarial
 images \cite{adversarial_examples}. In particular, the state-of-the-art image
 classifiers based on deep neural networks score very well in terms of
-prediction accuracy, when given genuine images. However, such a
+prediction accuracy when given genuine images. However, such a
 classifier can be fooled with an image that was purposely adjusted. To
-put it simply, what is seen as a unambiguous cat by a human observer can
+put it simply, what is seen as an unambiguous cat by a human observer can
 be confidently labelled as a dog by a classifier. For instance, this
 phenomenon challenges traffic sign classification used in autonomous
 vehicles because it has been shown that a few well-placed stickers are
-able to fool the classifier and make it mis-recognise a yield sign for a
+able to fool the classifier and make it misrecognise a yield sign for a
 main road sign \cite{adversarial_examples_2}.
 
 To reflect such weakness, problems are reframed to a game-theoretic
 setting in which two autonomous rational players compete while following
-their mutually conflicting objectives. The aforementioned example with
+their mutually conflicting objectives \cite{towards_deep_learning_models, defense_gan, gan}. The aforementioned example with
 images is, consequently, extended in the following way. One of the
 players acts as an image classifier and aims to maximise classification
-accuracy, whereas the other player, an adversary, perturbs the images to
-lower prediction confidence or, better, to make the classifier
+accuracy, whereas the other player, an attacker, perturbs the images to
+lower prediction confidence or, even better, to make the classifier
 misclassify the image.
 
-Of course, the same is seen in computer security–the field defined by
-adversarial nature. Intruders desire to obfuscate a detector by
+Of course, the same is seen in computer security–-the field defined by
+adversarial nature. Intruders desire to circumvent a detector by
 adjusting their attacks \cite{adversarial_malware}; malware is developed by
-optimising an executable binary \cite{adversarial_malware_pe}, and spams are improved
-statistically to avoid detection \cite{good_word_attacks}.
+optimising an executable binary \cite{adversarial_malware_pe}, and spams are improved statistically to avoid detection \cite{good_word_attacks}.
 
-The task central to this work is the problem of user classification in
-the adversarial setting. First, we examine the task as an instance of
-the user classification problem viewed by standard machine learning
-paradigm. Consequently, we show that omitting the adversarial nature in
-this particular problem exposes critical weaknesses, thus we extend the
-model to incorporate game-theoretic notions. As an instance of the user
-classification task, we consider a detector of malicious users that is
-deployed by a computer security company to see which users exploit their
-public API service.
+The aforementioned examples are instances of adversarial machine learning which is a field defined by two principal objectives: to design an attacker which is able to circumvent a classifier; and to design a classifier that is able to detect those attackers. In this work, we closely examine both aspects of adversarial machine learning and design an attacker and a detector uniquely combining machine learning and game theory.
+
+In contrast to classical statistical learning, an adversarial setting such as network security has three critical properties: firstly, only benign activity can be recorder; secondly, malicious activity responds to the presence of a detector and is optimised to meet the attacker's goal; and thirdly, a real-world detector is allowed to falsely misclassify only a limited portion of benign users.
+
+To address those three properties, we start with the expected risk minimisation framework \cite{vapnik} and adjust it account for a strict false positive rate constraint. We then define a model of an attacker and a detector as two competing entities that play a Stackelberg game \cite{stackelberg_games} and derive an optimisation task that builds upon statistical learning and game theory. Inspired by the state-of-the-art algorithms solving complex games \cite{stackgrad, exploitability_descent}, we propose an algorithm that gives an approximate solution to the game optimisation task, that is the algorithm outputs an adversarial detector robust to potential attacks. A critical part of our approach is an attack algorithm which is used as an opponent in the detector's algorithm and the detector learns to detect its attacks. In contrast to standard classifiers, our adversarial detector is stochastic. This means that its output is a posterior class distribution rather than a most probable class as it is done with standard classifiers. The final label is then drawn from the detector's output.
+
+We work with a real-world example to demonstrate our algorithms: a URL reputation service is usually used by anti-malware programs deployed at an end-user's device to warn the user that it is about to enter a malicious site. However, the reputation service gets misused by malicious actors who this way check wether a newly deployed malicious site of theirs has already been exposed. Using the proposed algorithms, we solve the task and design such a robust adversarial detector that is capable of recognising whether a user using this reputation service is benign or malicious solely based on URLs it queried the reputation service with and information in the corresponding HTTP requests. This is done based on real-world data provided by Trend Micro Ltd.
+
+To support our claims, we empirically show that the same level of robustness, which is achieved by our detector, is not reached with an anomaly detector on the provided real-world data. In particular, at the false positive rates $1\%$, $0.1\%$ and $0.01\%$, we show that the adversarial detector allows significantly lower portion of successful attacks. In addition, we show that our detector robustly detects attacks with more than $10$ low-scored URLs per day. Last but not least, we present our detector labels a few samples in the provided benign dataset as malicious with high confidence. On closer inspection, we find that those users exhibit suspicious behaviour and are likely a genuine attacker or an infected computer.
+
+\paragraph{Structure of Thesis:}
+In Background (Sec. \ref{sec:background}) and Related work (Sec. \ref{sec:related_work}), we review related work on adversarial machine learning. In Problem Analysis (Sec. \ref{sec:problem_analysis}), we identify specific requirements of adversarial machine learning and formally propose a solution to the problem of adversarial detection of malicious activity. In Game Definition (Sec. \ref{sec:game_definition}), we formally define a game in which a detector detects malicious users of a URL reputation system. Also, we propose two attack types: a good queries attack which performs straight-forward greedy attack and a gradient optimises attack's cost by composing obfuscation activity; and two detector types: an anomaly detector that omits the adversarial nature of the task and an adversarial detector that utilises it.
+In Experiments (Sec. \ref{sec:experiments}), we empirically evaluate performance of proposed models and algorithms on real-world data provided by Trend Micro Ltd. In addition, we analyse the results and identify critical differences between proposed models.

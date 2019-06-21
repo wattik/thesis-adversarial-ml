@@ -1,16 +1,61 @@
 \relax 
 \providecommand\hyper@newdestlabel[2]{}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Game Definition}{23}{section.5}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Use Case}{23}{subsection.5.1}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}Formal Definition}{23}{subsubsection.5.1.1}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Detector}{25}{subsection.5.2}}
-\citation{stackelberg_games}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Attacker}{26}{subsection.5.3}}
-\newlabel{sec:attacker}{{5.3}{26}{Attacker}{subsection.5.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Attacker's optimisation problem}{26}{subsubsection.5.3.1}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Game Definition}{33}{section.4}}
+\newlabel{sec:game_definition}{{4}{33}{Game Definition}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Formal Definition}{33}{subsection.4.1}}
+\newlabel{sec:formal_definition}{{4.1}{33}{Formal Definition}{subsection.4.1}{}}
+\newlabel{eq:derivable_histories}{{76}{35}{Formal Definition}{equation.4.76}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Features}{35}{subsection.4.2}}
+\newlabel{sec:features}{{4.2}{35}{Features}{subsection.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Attacker}{36}{subsection.4.3}}
+\newlabel{sec:attacker}{{4.3}{36}{Attacker}{subsection.4.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.3.1}Attacker's Private Loss}{36}{subsubsection.4.3.1}}
+\newlabel{sec:attacker_loss}{{4.3.1}{36}{Attacker's Private Loss}{subsubsection.4.3.1}{}}
+\citation{good_word_attacks}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Good Queries Attack}{37}{subsection.4.4}}
+\newlabel{sec:good_queries_attack}{{4.4}{37}{Good Queries Attack}{subsection.4.4}{}}
+\@writefile{loa}{\contentsline {algocf}{\numberline {2}{\ignorespaces Good Queries Attack\relax }}{37}{algocf.2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Gradient Attack}{37}{subsection.4.5}}
+\newlabel{sec:gradient_attack}{{4.5}{37}{Gradient Attack}{subsection.4.5}{}}
+\citation{obfuscated_gradients}
+\newlabel{prop:differentiable_attacker}{{4.1}{38}{}{proposition.4.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.5.1}Attack Parametrisation}{38}{subsubsection.4.5.1}}
+\newlabel{sec:attack_parametrisation}{{4.5.1}{38}{Attack Parametrisation}{subsubsection.4.5.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Elements of $V$}{38}{section*.10}}
+\citation{pgd}
+\citation{adversarial_examples}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.5.2}Gradient Attack Algorithm}{39}{subsubsection.4.5.2}}
+\newlabel{sec:gradient_attack_algorithm}{{4.5.2}{39}{Gradient Attack Algorithm}{subsubsection.4.5.2}{}}
+\@writefile{loa}{\contentsline {algocf}{\numberline {3}{\ignorespaces Gradient Attack Algorithm\relax }}{39}{algocf.3}}
+\newlabel{alg:gradient_attack}{{3}{39}{Gradient Attack Algorithm}{algocf.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Routine \texttt  {InitK()}}{39}{section*.11}}
+\@writefile{toc}{\contentsline {paragraph}{Routine \texttt  {Proj}$^A (z)$}{39}{section*.12}}
+\@writefile{toc}{\contentsline {paragraph}{Routine \texttt  {Proj}$^B(z, k^A)$}{39}{section*.13}}
+\@writefile{toc}{\contentsline {paragraph}{Routine \texttt  {MakeActivityHistory(k)}}{40}{section*.14}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.5.3}Imperfection of Gradient Attack}{40}{subsubsection.4.5.3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Detector}{40}{subsection.4.6}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.1}Anomaly Detector}{41}{subsubsection.4.6.1}}
+\newlabel{sec:knn_detector}{{4.6.1}{41}{Anomaly Detector}{subsubsection.4.6.1}{}}
+\newlabel{eq:knn_detector}{{86}{41}{Anomaly Detector}{equation.4.86}{}}
+\citation{obfuscated_gradients}
+\citation{obfuscated_gradients}
+\citation{selu}
+\citation{batch-norm}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.6.2}Adversarial Detector}{42}{subsubsection.4.6.2}}
+\newlabel{sec:neural_detector}{{4.6.2}{42}{Adversarial Detector}{subsubsection.4.6.2}{}}
+\newlabel{eq:logistic_function}{{89}{42}{Adversarial Detector}{equation.4.89}{}}
+\@writefile{toc}{\contentsline {paragraph}{SeLU Activations and Regularisation}{42}{section*.15}}
+\citation{pytorch}
+\newlabel{sec:training_set}{{4.6.2}{43}{Training Sets $T^\ben $ and $T^\mal $}{section*.16}{}}
+\@writefile{toc}{\contentsline {paragraph}{Training Sets $T^\mathsf  {B}$ and $T^\mathsf  {M}$}{43}{section*.16}}
+\@writefile{toc}{\contentsline {paragraph}{Implementation of Stochastic Detector}{43}{section*.17}}
+\@writefile{toc}{\contentsline {paragraph}{Handling \textsf  {No-Activity} in Detector}{43}{section*.18}}
+\citation{minibatch_descent}
+\@writefile{toc}{\contentsline {paragraph}{Similarity to Cross Entropy}{44}{section*.19}}
+\@writefile{toc}{\contentsline {paragraph}{On Complexity of Stochastic Detector}{44}{section*.20}}
 \@setckpt{./sections/game-definition}{
-\setcounter{page}{27}
-\setcounter{equation}{68}
+\setcounter{page}{45}
+\setcounter{equation}{92}
 \setcounter{enumi}{0}
 \setcounter{enumii}{0}
 \setcounter{enumiii}{0}
@@ -18,23 +63,29 @@
 \setcounter{footnote}{0}
 \setcounter{mpfootnote}{0}
 \setcounter{part}{0}
-\setcounter{section}{5}
-\setcounter{subsection}{3}
-\setcounter{subsubsection}{1}
+\setcounter{section}{4}
+\setcounter{subsection}{6}
+\setcounter{subsubsection}{2}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{0}
+\setcounter{figure}{1}
 \setcounter{table}{1}
+\setcounter{ContinuedFloat}{0}
+\setcounter{subfigure}{3}
+\setcounter{subtable}{0}
 \setcounter{Item}{0}
 \setcounter{Hfootnote}{0}
-\setcounter{bookmark@seq@number}{27}
-\setcounter{ContinuedFloat}{0}
+\setcounter{bookmark@seq@number}{41}
 \setcounter{parentequation}{0}
+\setcounter{AlgoLine}{7}
+\setcounter{algocfline}{3}
+\setcounter{algocfproc}{3}
+\setcounter{algocf}{3}
 \setcounter{proposition}{1}
-\setcounter{definition}{1}
+\setcounter{definition}{0}
 \setcounter{@pps}{0}
 \setcounter{@ppsavesec}{0}
 \setcounter{@ppsaveapp}{0}
 \setcounter{AM@survey}{0}
-\setcounter{section@level}{3}
+\setcounter{section@level}{4}
 }

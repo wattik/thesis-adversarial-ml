@@ -28,7 +28,7 @@ class EntriesCount:
         return 1
 
     def __call__(self, query_profile: QueryProfile):
-        return [np.log(len(query_profile.queries))]
+        return [len(query_profile.queries)]
 
 
 class FeaturesComposer:

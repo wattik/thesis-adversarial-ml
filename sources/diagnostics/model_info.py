@@ -19,7 +19,7 @@ experiment_filepath: str = False
 requests_filepath = "data/trend_micro_full/user_queries.csv"
 scores_filepath = "data/trend_micro_full/url_scores.csv"
 critical_urls_filepath = "data/trend_micro_full/critical_urls.csv"
-experiment_filepath = "../results/experiments/trend_micro_full/langrange_net_fgsm_small_input_space/"
+experiment_filepath = "../../results/experiments/trend_micro_full/langrange_net_fgsm_FPR_0.01/"
 
 # requests_filepath = "data/user_queries.csv"
 # scores_filepath = "data/url_scores.csv"

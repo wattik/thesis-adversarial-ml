@@ -20,8 +20,10 @@ class Label(Enum):
     def from_int(cls, n: int):
         if n == 1:
             return Label.M
-        else:
+        elif n == 0:
             return Label.B
+        else:
+            raise ValueError("Label cannot be made from %d" % str(n))
 
     @classmethod
     def draw(cls, prob_benign: float):
@@ -42,10 +44,6 @@ class ModelBase(ABC):
 
     def predict_one(self, query_profile: QueryProfile) -> Label:
         return self.predict([query_profile])[0]
-
-    @abstractmethod
-    def save(self, path: str):
-        pass
 
 
 class StochasticModelBase(ModelBase):

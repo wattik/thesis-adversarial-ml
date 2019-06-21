@@ -1,1 +1,5 @@
-\contentsline {table}{\numberline {1}{\ignorespaces Table to test captions and labels\relax }}{19}{table.caption.4}
+\contentsline {table}{\numberline {1}{\ignorespaces Proposed Attacker's Loss\relax }}{25}{table.caption.8}
+\contentsline {table}{\numberline {2}{\ignorespaces False Positive Rates on Test Data\relax }}{50}{table.caption.31}
+\contentsline {table}{\numberline {3}{\ignorespaces Gradient Attack Results\relax }}{50}{table.caption.32}
+\contentsline {table}{\numberline {4}{\ignorespaces Good Queries Attack Results\relax }}{50}{table.caption.33}
+\contentsline {table}{\numberline {5}{\ignorespaces Attack Cost Analysis\relax }}{55}{table.caption.43}

@@ -11,7 +11,7 @@ from models.query_profiles import QueryProfile, Request, NoQueriesProfile, Adver
 from threat_model.base import Attacker, CriterionAttacker, AttackResult
 
 
-class GoodQueriesAttacker(Attacker):
+class OldGoodQueriesAttacker(Attacker):
     def __init__(self, legitimate_queries: List[str], iteration):
         super().__init__(iteration)
         self.legitimate_queries = legitimate_queries
@@ -130,5 +130,3 @@ class GradientAttacker(CriterionAttacker):
                 query = queries.pop()
 
         return qp_adv
-
-

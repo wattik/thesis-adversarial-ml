@@ -1,47 +1,40 @@
-\section{Game Definition}
-The activity classification problem is modelled as a game
-of two players: a detector and an adversary. The goal of the detector is
-to identify the best user activity classifier, while the adversary seeks
-to optimally modify query historys of malicious users in such a way they
-get misclassified by the classifier.
+\section{Game Definition}\label{sec:game_definition}
+In the previous section, we proposed a malicious activity detection problem can be modelled as a game of two players: a detector and an adversary. The goal of the detector is to identify the best activity classifier, while the adversary seeks to optimally modify activity of malicious users in such a way they get misclassified by the classifier.
 
-\todo{More introductory words.}
-
-\subsection{Use Case}
-
-\todo{write: See, this is a running example.}
+Below, we show such formulation can solve a real-world problem. We take a URL reputation service as a running example and formalise it and propose an algorithm that approximates the optimal solution.
 
 In this work, we consider a network security company that runs a reputation
-service which returns rating of a queried URL. For example, if we query the service's API with \textsf{www.google.com}, the url is rated with high score whereas the malicious URL \textsf{www.malicious-url.com} is rated poorly. This type of a service is usually deployed by network security companies to provide their security software with access to most up-to-date database of URL ratings.
+service which returns rating of a queried URL. For example, if we query the service's API with \textsf{www.google.com}, the URL is rated with high score whereas the malicious URL \textsf{www.malicious-url.com} is rated poorly. This type of a service is usually deployed by network security companies to provide their security software with access to most up-to-date database of URL ratings.
 
 The typical usage scenario is coined as follows. A client running on an
 end-user’s device encounters the user is about to enter a website. To
 evaluate the danger level of the website, the client queries the API of the reputation service with the website URL. Accordingly, the client may show a warning message notifying the user of expected danger or carry out an
 appropriate action.
 
-Usually, URL rating systems aim to identify various danger types of a
-URL. As a running example in this work, we focus one particular type of malicious misuse of the URL reputation system: malware producers that asses a set of URLs which are used as communication entry-points for deployed malware
+Usually, URL rating systems aim to identify various URL danger types. Here, we focus on one particular type of malicious misuse: malware producers that asses a set of URLs which are used as communication entry-points for deployed malware
 units. With one of these URLs, a unit of deployed malware is able to
 receive commands and adjust its actions. However, to maintain
 consistency and availability of its malware units, the malware producer
 must regularly check whether any of its URLs has been exposed – by
 querying the publicly available URL rating system.
 
+We assume users access the service's API identified by a license and query it with HTTP requests. For the sake of simplicity, each request contains one URL whose reputation score is queried. The key element of an activity history, therefore, is the set of URLs the user has queried the service with. In particular, we record user's activity in a one-day time window. This means an activity history is a discrete object which contains different number of URLs for each user and captures a 24-hour activity record.
+
 To conclude, the task is as follows: the computer security company desires to
-distinguish malicious users of the URL rating service from benign ones based on the URLs each user queried the service with.
+distinguish malicious users of the URL rating service from benign ones based on the URLs each user queries the service with.
 
-\subsubsection{Formal Definition}
-In the this section, we formally define the running example of an attack to a reputation system.
+\subsection{Formal Definition}\label{sec:formal_definition}
+In this section, we formally define the running example of this work which is an attack to a reputation system.
 
-The service is queried with a URL $u \in \U$. The query consists of a typical HTTP requests properties and the url as the subject of the query. The service securely assigns each query to a user based on a license the user used. Thus, we define an activity history $h \in \H$ as a collection of queries of the user. For example, if a user sends a sequence of queries for which we record a queried URL, an arrival timestamp, a source IP or possibly other information, this is recorded and integrally stored in a corresponding user’s query history $h$.
+The service is queried with a URL $u \in \U$ where $\U$ is a set of all URLs. The query is a typical HTTP request with its attributes and the URL is the subject of the query. The service securely assigns each query to a user based on a license the user uses. Thus, we define an activity history $h \in \H$ as a collection of queries of the user. For example, if a user sends a sequence of queries for which we record a queried URL, an arrival timestamp, a source IP or possibly other information, this is recorded and integrally stored in a corresponding user’s activity history $h$.
 
 \begin{equation}
 (u_1, t_1, \mathsf{IP}_1, \dots), \, (u_2, t_2, \mathsf{IP}_2, \dots), \, \dots, \, (u_k, t_k, \mathsf{IP}_k, \dots) \longrightarrow h
 \end{equation}
 
-Note that a user's query history $h$ represents the ground objects based on which the detector classifies users. Note that the inner structure of $h$ is discrete and also $\H$ is generally discrete. This is problematic for attackers as there is no direct way of computing gradients with respect to elements of $h$.
+Recall that a user's activity history $h$ represents the ground object based on which the detector classifies users. Note that the inner structure of $h$ is discrete. This is problematic for attackers as there is no direct way of computing gradients with respect to $h$ or its elements.
 
-In the previous section, we defined a malicious user posses a primary goal that thoroughly defines its individual instance. In this example a single malicious user posses a private set of primary URLs $\pr{U} \subset \U$. The primary url set contains urls which the malicious user necessarily employs to achieve its primary goal. That is to obtain the current reputation rating for each URL in $\pr{U}$. In consequence the primary goal $g \in \G$ is composed solely of the primary URLs.
+In the previous section, we defined a malicious user posses a primary goal that thoroughly defines its individual instance. In this example, a single malicious user is defined by a private set of primary URLs $\pr{U} \subset \U$. The primary url set contains URLs which the malicious user necessarily employs to achieve its primary goal – that is to obtain the current reputation rating for each URL in $\pr{U}$. In consequence, the primary goal $g \in \G$ is defined entirely by the primary URLs.
 
 \begin{equation}
     g = \pr{U}
@@ -54,135 +47,280 @@ obfuscate its activity.
 \pr{U} \subseteq U
 \end{equation}
 
-Recall we assume the malicious user is a rational player thus the particular content of $U$ changes depending on the classifier. If there was no classifier and, therefore, malicious users were not motivated to
-adjust their behaviour, they would presumably query the service with $U$
+Recall we assumed the attacker is a rational player thus the particular content of $U$ changes depending on the classifier. If there was no classifier and, therefore, the attacker was not motivated to adjust its behaviour, it would presumably query the service with $U$
 resembling primary URLs and perhaps containing just a little
-overhead, ie. $U \cong \pr{U}$. No detector also means there is no need to strategies with the values of other properties request properties. This activity would be recorder in a corresponding activity history $h$.
+overhead, ie. $U \cong \pr{U}$. No detector also means there is no need to strategies with the values of other HTTP request properties.
 
 Nonetheless, once there actually is a classifier deployed, implying a
-cost for disclosure, the malicious users rationally query the service with additional legitimate URLs to obfuscate its primary goal. There are essentially to types of primary URLs $\pr{U}$ obfuscation: adding legitimate queries and adjusting properties of each query. Each primary URLs set $\pr{U}$ induces a bounded set of histories $S(\pr{U})$ that contains histories derivable from
+cost for disclosure, the attacker rationally queries the service with additional legitimate URLs to obfuscate its primary goal. There are essentially to types of primary URLs $\pr{U}$ obfuscation: adding legitimate queries and adjusting properties of each request. Note that the attacker is required to include all $u \in \pr{U}$ which simplifies the problem. The allowed obfuscation methods limit the activity history derivable from a particular $\pr{\U}$. That is, each primary URLs set $\pr{U}$ induces a set of histories $S(\pr{U}) \subset \H$ that contains histories derivable from
 $\pr{U}$ by obfuscation.
 
-\begin{equation}
+\begin{equation}\label{eq:derivable_histories}
 S(\pr{U}) = \{ h \in \H \mid \pr{U} \subseteq \textsf{urls in }h \}
 \end{equation}
 
 We capture this with the obfuscation function $\psi: \G \mapsto \H $ which a malicious user employs to transform its original primary goal $g$ to an
-obfuscated activity history. Since a primary goal $g$ is solely defined by a primary URLs set $\pr{U}$, we can redefine the obfuscation function for this use case to: $\psi: 2^\U \mapsto \H$. The obfuscation is naturally bounded by the aforementioned types, thus:
+obfuscated activity history $h$. Since a primary goal $g$ is solely defined by a primary URLs set $\pr{U}$, we can redefine the obfuscation function for this use case to: $\psi: 2^\U \mapsto \H$. The obfuscation is naturally bounded by the aforementioned types, thus:
 
 \begin{equation}
     \psi(g) = \psi(\pr{U}) \in S( \pr{U} )
 \end{equation}
 
-The presence of a classifier changes the probability distribution of activity histories generated by malicious users. Concretely, the distribution of malicious activity histories is now governed by the distribution of obfuscated primary goals.
+\subsection{Features}\label{sec:features}
+The key component of the detector is a feature map $\Phi: \H \mapsto \X$ where $\X \subset \R^N$ because the activity history space $\H$ is generally a discrete non-numerical set and the detector $D(d \mid x)$ requires numerical inputs. In our running example, $\H$ is a space of all possible HTTP request sequences that query a URL reputation system. Therefore, we need to construct a feature map $\Phi$ that ideally reassembles numerical attributes which are helpful in distinguishing malicious samples from benign ones. At the same time, however, we aim to omit spurious features that only provide false or correlated evidence. In an adversarial setting, these are for example features which the attacker's loss function does not depend on. In extreme case, the attacker can arbitrarily adjust those features so that its activity is not detected and it causes zero additional costs.
 
-\begin{equation}
-\dot{p}(h | M) = \sum_{\pr{U} : \psi(\pr{U}) = h} p(\pr{U})
-\end{equation}
+The feature map used in this work comprises a histogram and a density of URL scores, total count of queries and a request time distribution. The first is certainly a good-quality feature, the second may become a partially spurious feature and the last is absolutely arbitrary to the attacker's model we proposed.
 
-This illustrates how the general adversarial machine notions map to a problem instance. In the previous section we used $h$ as a general variable that represents the ground discrete objects that are classified by the detector. However, as shown above, the inner structure of $h$ can be ...
-\todo{blabla}.
+In URL scores histogram, we sort URLs in a given activity to bins according to their scores. Features represent observed frequencies in each bin. URL scores density is a normed frequency histogram, i.e. we take frequency histogram and normalise it so that the values sum up to one. Total count simply represents the number of obfuscating requests (i.e. without requests related to a primary goal). A request time distribution is again a normed frequency histogram of query times within a day in which requests were sent.
 
-\todo{note that primary goal g comprises only partially h, thus there is room for obfuscation.}
+Intuitively, this feature map points to a straight-forward attack method: add legitimate URLs until obfuscation is achieved. We call this method a good queries attack and use it as a baseline attack (more details in Sec. \ref{sec:good_queries_attack}).
 
-
-
-
-\subsection{Detector}
-
-\todo{Reflect D(d, x) in the following definition}
-
-Mathematically, the task of the detector is to find a mapping
-$h \in \mathcal{H}$ which classifies a query history’s feature vector
-$x \in \mathcal{X}$ to a class
-$\mathbb{C} = \{ \mathsf{B}, \mathsf{M} \}$, ie.
-$h: \mathcal{X} \mapsto \mathbb{C}$. Note that $\mathsf{B}$ stands
-for benign users, while $\mathsf{M}$ denotes malicious users.
-
-A feature vector representing a query history is given by a feature map
-$\Phi : h \mapsto \mathcal{X}$ which takes a query history $h$
-as an argument and maps it to a real vector
-$x \in \mathcal{X} \subseteq \mathbb{R}^d$. Naturally, $\Phi$ is
-surjective and is given a priori to task solving.
-
-Following the ERM framework, the optimal classifier $h^*$ is given by
-minimising its expected risk:
-
-\begin{equation}
-R_{-1}(h) = \E_{(h,c) \sim \dot{p}} \left \ell_{-1}(h \circ \Phi(h), \, c) \right
-\end{equation}
-
-where $\dot{p}(h,c)$ represents the joint probability of a query
-history $h \in h$ and a class $c \in \mathbb{C}$, partly
-modified by the adversary as explained above. $\ell_{-1}$ stands for a
-classification loss function.
-
-Generally, we prefer some classifier instances to others, therefore, we
-employ a regularisation term $\Omega_{-1}(h)$. In conclusion, the
-optimal classifier $h^*$ is given by the following equation.
-
-\begin{equation}
-h^* = \min_{h \in \mathcal{H}} R_{-1}(h) + \Omega_{-1}(h)
-\end{equation}
-
-Taking into account the Neyman-Pearson Task:
-
-
+The good queries attack however cannot properly distribute requests across time nor it can mix in URLs with different score values to mimic benign users activity. Therefore, we use a gradient attack that generates obfuscation activity based on a criterion gradient. This method is certainly more complex and requires interpolating the discrete history space $\H$. More details in Sec. \ref{sec:gradient_attack}.
 
 \subsection{Attacker}\label{sec:attacker}
+In context of the reputation service presented in the previous sections, an attacker instance is a malicious actor that posses a set of primary URLs $\pr{U}$ and aims to query the service to find out the reputation of each URL from $\pr{U}$.
 
-Since the objectives of all malicious users are equivalent, ie. they aim
-to obfuscate their private set of primary queries $\pr{Q}$, the final
-query history of each of them is strictly a function of $\pr{Q}$. Due
-to the shared goal, we represent the malicious users as a single-body
-aggregate player, the adversary.
+Relating to the definition of the player attacker in Sec. \ref{sec:attacker-def}, the attacker's goal is to identify an obfuscation function
+$\psi: 2^\U \mapsto \H$. However, with an assumption on a particular form of the attacker's loss, the attacker's task decomposes and instead of identifying $\psi$, the optimal goal obfuscation is a solution of the optimisation problem in Prop. \ref{prop:mal_loss}. We further defined an obfuscation algorithm $\pi$ which outputs an approximation of an optimal adversarial activity history.
 
-The adversary aims to identify an obfuscation function
-$g: \pr{h} \mapsto h$. This is done for a fixed $h$ and $\Phi$
-by minimising the risk of the adversary $R_{+1}(g)$. However,
-following the threat model we restrict the adversary to produce only
-malicious samples (in contrast to the general form of the Stackelberg
-Prediction Game in \cite{stackelberg_games}) and these are inherently given by
-the distribution of strictly primary query historys $p(\pr{h})$.
-This simplifies the adversary’s risk $R_{+1}(g)$ to a new form:
+That said, to reflect realistic attackers, we extend the attacker's operation space by a not-to-attack option. Such an option is needed because the solution to the problem in Prop. \ref{prop:mal_loss} gives an optimal activity history $h^*$ even if the actual cost of carrying out this activity exceeds the cost of no activity by far. Taking this notion into account, we allow the attacker to give up on its primary goal and carry out no activity. This activity is denoted by a token \NA. Accordingly, the codomain of an obfuscation function $\psi$, the attacker's loss and the decomposition of the optimisation problem adjust to this extension.
+
+In effect, this means that given a primary URL set $\pr{U}$, the attacker solves the optimisation problem in Prop. \ref{prop:mal_loss} and checks whether the value of the solution is lower than the detection cost $L_0$. If it is lower, it carries out the optimal activity history. If the value of the optimum is larger than $L_0$ does not generate any activity (\NA).
+
+\subsubsection{Attacker's Private Loss}\label{sec:attacker_loss}
+The attacker's loss (as in Prop. \ref{prop:mal_loss}) has two components: a public term and a private term. The public term is a single value $L_0$ that is paid if the attacker is detected. The private term $\Omega_\plus(g, h)$ is undefined and relates to the specifics of the particular problem domain. Relating to the URL reputation system, we propose a private loss $\Omega_\plus(\pr{U}, U)$ which reflects only the number of queries the attacker produces to obfuscate its primary goal $g$, i.e. the attacker pays an amount $L_u$ for each extra legitimate URL it uses as a disguise.
 
 \begin{equation}
-R_{+1}(g) = \E_{ \pr{h} \sim p_{\pr{h}} } \left \ell_{+1}(h \circ \Phi \circ g (\pr{h}), \, \mathsf{M} ) \right
+    \Omega_\plus(\pr{U}, U) = L_u \cdot (|U| - |\pr{U}|)
 \end{equation}
 
-where $p_{\pr{h}}$ gives the probability distribution from which
-$\pr{h}$ are drawn.
-$\left \ell_{+1}: \mathbb{C} \times \mathbb{C} \mapsto \mathbb{R}$ is
-the adversary’s cost function.
-
-Similarly to $h$-regularisation, we prefer some obfuscation functions
-to others which is articulated by a regulariser $\Omega_{+1}(g)$. In
-conclusion, the optimal obfuscation function $g^*$ is given by the
-following equation:
+The particular value of $L_u$ is again domain- and case-dependent. To find a reasonable value, we use a following reasoning: an activity history $h$ that is labelled as $0\%$ malicious (i.e. $D_\theta(\mal \mid \Phi(h)) = 0$) costs exactly $L_0$ when it contains $\frac{L_0}{L_u}$ additional obfuscation URLs. Below, in Sec. \ref{sec:training_set}, we propose primary goals for this running example. Those primary goals contain from 1 to 40 URLs. We propose to limit the attacker to produce at most 2,000 additional URLs to construct an obfuscation activity that obfuscates a primary goal of at most $40$ URLs. This gives a relation between $L_u$ and $L_0$.
 
 \begin{equation}
-g^* = \min_{g \in \mathcal{G}} R_{+1}(g) + \Omega_{+1}(g)
+    L_u = \frac{L_0}{2000}
 \end{equation}
 
-\subsubsection{Attacker's optimisation problem}
-In practical terms, if the detector's decision is differentiable, then the attacker may use gradient descent to optimise its actions. And if the cost of the optimal action is larger then the cost of its detection, it chooses not to attack at all.
+\subsection{Good Queries Attack}\label{sec:good_queries_attack}
+In Def. \ref{def:response_algorithm} we proposed that an approximative approach can be used to obfuscate primary goals. We take inspiration in Lowd et al. \cite{good_word_attacks} and propose a base line algorithm that does not give an optimal solution but may carry out a successful attack. This attack is based on the assumptions that legitimate URLs very well obfuscate primary URLs $\pr{U}$. This means, we keep adding legitimate URLs to the resulting activity history as long as it decreases the attacker's optimisation criterion. The final activity history consists of primary URLs $\pr{U}$ and the appropriate number of URLs from $V$. The remaining request parameters are set randomly.
 
-Three layers: X,H,G non differentiable transitions.
+\begin{algorithm}[H]
+    \SetAlgoLined
+    \KwIn{$D_\theta(\mal \mid x), \pr{U} \subset \U$, legitimate URLs $V \subset \U$}
+    $U \gets \pr{U}$\;
 
-Link to Gradient Obfuscation.
+    \While{ $D_\theta(\mal \mid \Phi(U))$ decreases}{
+        arbitrarily select $u \in V$\;
+        $U \gets U \cup \{u\}$\;
+    }
 
-Let $\Phi: \H \mapsto \X$ be a feature map that creates feature vectors $\Phi(h) \in \X \subset \R^N$. Assume $\Phi$ constructs features of $h$ based on various numerical properties and attributes $p \in \mathbb{P}$.
+    \Return \texttt{CreateActivityHistory}$(U)$
 
-\begin{definition}
-    Let $V_\Phi = \{v_1, \dots, v_K \}$ be a set of vectors that compose a basis of $\mathbb{P}$. We call $V_\Phi$ a basal mixtures of $\Phi$. Let $\phi_V: \G \times \R^L \mapsto \H$ be a mapping $\phi_V(g, t)$ which is differentiable in $t$ and composes activity histories $h$ mixing the primary goal and vectors from $V_\Phi$ based on $t$.
-\end{definition}
+    \caption{Good Queries Attack}
+\end{algorithm}
 
-Note that vectors from $V_\Phi$ must extis. Sometimes full vdoes nt aexist.
+\subsection{Gradient Attack}\label{sec:gradient_attack}
+In this section, we propose the gradient attack algorithm $\pi$ (in accordance to an attack algorithm in Def. \ref{def:response_algorithm}) that approximately obfuscates $\pr{U}$ in $T$ iterations by descending the criterion $L_0 \cdot D_\theta(\mal \mid \Phi(h)) + \Omega_\plus(\pr{U}, h)$ along its gradient (as given in Prop. \ref{prop:mal_loss}).
 
-IN this way we can bypass S(g) by simply chossing a proper t.
+Notice the game of a detector $D_\theta$ and an attacker operates in three layers of spaces: internally the detector infers its decisions in a space $\X \subset \R^N$ but practically it does so utilising a feature map $\Phi$ with a discrete space $\H$ on its input. And thirdly, the attacker's algorithm $\pi$ obfuscates primary goals from a discrete space $\G$. The spaces $\X$, $\H$ and $\G$ (or in our running example $\R^N$, requests space and URL space $\U$ respectively) are entirely distinct.
 
-For example histogram.
+In the gradient attack, we want to take gradient of $D_\theta(\mal | x )$ with respect to inputs and use it to optimally obfuscate the primary URLs $\pr{U}$. To do so, we introduce a space $K \subset \R^L$ that is an attack parameter space and a mapping $\varphi  :2^\U \times K \mapsto \R^N$ that, using primary URLs $\pr{U} \subset \U$ and an attack parameterisation $k \in K$, composes a feature vector $x \in \R^N$ such that the intermediate corresponding activity history $h$ meets the constraints imposed by the set of derivable histories $S(\pr{U})$. This is specifically useful in case of the attacker's optimisation criterion. Because if we substitute a feature map $\Phi$ for $\varphi$, we arrive this way at an optimisation task with a search space now being $K \subset \R^L$. Note that a particular form of $\varphi$ is dependent on $\Phi$.
 
-\begin{proposition}
+\begin{proposition}\label{prop:differentiable_attacker}
+    Let $V \subset \U$ be a set of URLs and let $\varphi  :2^\U \times K \mapsto \R^N$ be an attack parametrisation function that is differentiable in $k = [k^A, k^B] \in K \subset \R^L$. The attacker's separated optimisation task becomes:
+
+    \begin{equation*}
+        \begin{aligned}
+        & \underset{k} {\text{minimise}}
+        & & L_0 \cdot D(\mal \mid \varphi (\pr{U}, k)) + \Omega_\plus(\pr{U}, k) \\
+        & \text{subject to}
+        & & \sum_j k_j^B = 1 \\
+        & & & k_i^A \in \N
+        \end{aligned}
+    \end{equation*}
 
 \end{proposition}
+
+The introduction of $\varphi$ is inspired by Athalye et al. \cite{obfuscated_gradients} who show that a non-differentiable layer in a neural net can be interpolated. They substitute such a layer for a differentiable one with similar properties and successfully compute the gradient.
+
+\subsubsection{Attack Parametrisation}\label{sec:attack_parametrisation}
+Given a particular feature map $\Phi$, it is critical to find $K$ and $\varphi$ that are ideally able to construct any $x \in \X$. This is understandably not always possible. With the feature map presented above, we therefore take the following to identify $K$ and $\varphi$.
+
+We construct a rich enough set $V \subset \U$ which contains URLs. We associate each $u_i \in V$ with a variable $k^A_i \in \N$ which denotes that the URL $u_i$ shall be used $k^A_i$ times in the activity history that obfuscates the primary URLs. This creates a mixture of ULRs that adjusts the score histogram and the total count of requests in the feature map.
+
+In terms of the request time entropy in the feature map, we assume it is computed over bins representing a time interval. Thus, we associate each bin $j$ with a variable $k_j^B \in [0, 1]$ that reflects a relative request mass in this bin. Naturally, the variables $k_j^B$ are normalised: $\sum_j k_j^B = 1$. With such attack parametrisation we are able to compute gradient of the criterion with respect to $k$ and construct activity histories in $S(\pr{U})$ if we have a rich enough set $V$.
+
+The attack parametrisation function then arranges requests according to $k = [k^A, k^B]$ drawing URLs from $V$ and then computes a feature vector $x$ as if it was done with a feature map $\Phi$. Notice that we constructed $\varphi_V$ to account for the derivable histories set $S(\pr{U})$ (as defined in Eq. \eqref{eq:derivable_histories}).
+
+\paragraph{Elements of $V$}
+Ideally, we construct the set $V$ so that it contains URLs that are independent in terms of their influence on a feature map. As mentioned, the feature map $\Phi$ we use in this work constructs features based on a reputation scores histogram, a request count and request time entropy. The selection of $V$ influences only the reputation scores histogram. Therefore, we construct $V$ so that it contains URLs which each populates one bin of the reputation scores histogram. Such $V$ creates a rich-enough mixture using which we are able to construct any activity history in $S(\pr{U})$.
+
+\subsubsection{Gradient Attack Algorithm}\label{sec:gradient_attack_algorithm}
+Prop. \ref{prop:differentiable_attacker} gives a non-linear optimisation with a differentiable criterion. However, the search space is constrained by $\sum_j k_j^B = 1 $ and $k_i^A \in \N$. To solve this problem we use the projected gradient descent (PGD) \cite{pgd} combined with the fast gradient sign method (FGSM) \cite{adversarial_examples}. The attack algorithm $\pi$ of the gradient attack is shown below (Alg. \ref{alg:gradient_attack}).
+
+\begin{algorithm}[H]
+    \SetAlgoLined
+    \KwIn{$D_\theta(\mal \mid x), \pr{U} \subset \U$, $V \subset \U$}
+    $c(k) = L_0 \cdot D_\theta(\mal \mid \varphi_V(\pr{U}, k)) + \Omega_\plus(\pr{U}, k)$\;
+
+    $k^{(0)} \gets $ \texttt{InitK()}\;
+    \For{$t = 1, 2, \dots T$ }{
+        $k^{A,(t)} \gets$ \texttt{Proj}$^A(
+                \nabla_{k^A} c(k)
+            )$\;
+        $k^{B,(t)} \gets$ \texttt{Proj}$^B(
+                \nabla_{k^B} c(k),
+                k^{A,(t)}
+            )$\;
+    }
+
+    \Return \texttt{MakeActivityHistory}$(V, k^{(T)})$
+
+    \caption{Gradient Attack Algorithm}\label{alg:gradient_attack}
+\end{algorithm}
+
+\paragraph{Routine \texttt{InitK()}}
+Initialisation of $k^{(0)}$ is critical because the gradient attack descents along a criterion's gradient and it turns out that setting $k^{A, (0)} = 0$, i.e. starting with solely $\pr{U}$ does not converge very well. Thus we initialise $k^{A, (0)}_i$ uniformly randomly from $\{0, 1, \dots, 2000 \}$ and set $k^{B, (0)} = \frac{1}{\text{number of bins}}$ so that it starts with maximal entropy in request time distribution.
+
+\paragraph{Routine \texttt{Proj}$^A (z)$}
+Input of this routine $z$ is a gradient vetoer with respect to $k^{A}$. We take a sign of the gradient as in FGSM but we do not scale the gradient anyhow. We update $k^{A}$ accordingly and then crop values below zero. This projection ensures $k_i^{A} \in \N$.
+
+\begin{equation}
+    k_i^{A} \gets \max\{ 0, \sign(z_i) \}
+\end{equation}
+
+\paragraph{Routine \texttt{Proj}$^B(z, k^A)$}
+We maintain the scale of the input gradient $z$ (i.e. the learning rate is set to 1.0), update $k^B$ standardly, crop negative values and normalise with $Z$ to sum up to one.
+
+\begin{equation}
+    k_i^B \gets \frac{\max\{ 0,  k_i^B + z_i \} }{Z}
+\end{equation}
+
+Notice, we know the current number of requests from $k^A$:
+
+\begin{equation}
+    |U| = |\pr{U}| + \sum_i k_i^A
+\end{equation}
+
+As we defined it, $k_i^B$ corresponds to relative frequency of requests sent in a time interval $i$. Since $k^B$ is arbitrary distribution after the update, we adjust it to reflect the number of requests $|U|$. First, a time bin $i$ gets  $\texttt{floor}(k_i^B \cdot |U|)$ requests assigned. Flooring causes some requests were not assigned to a bin, thus we distribute the remaining requests randomly across bins – $\delta_i \in \{0 ,1 \}$ denotes whether a bin $i$ gets assigned a remaining request. Finally, we use these assignments to compute the relative frequency $k_i^B$.
+
+\begin{equation}
+    k_i^B \gets \frac{\texttt{floor}(k_i^B \cdot |U|) + \delta_i}{|U|}
+\end{equation}
+
+\paragraph{Routine \texttt{MakeActivityHistory(k)}}
+First, we build the multi-set $U$ by concatenating $\pr{U}$ and $V$ according to $k^A$.
+
+\begin{equation}
+    U \gets \pr{U} \cup \{
+        \underbrace{v_1, v_1, \dots}_{k_1^A \textrm{ times}},
+        \underbrace{v_2, v_2, \dots}_{k_2^A \textrm{ times}},
+        \dots,
+        \underbrace{v_{|V|}, v_{|V|}, \dots}_{k_{|V|}^A \textrm{ times}}
+    \}
+\end{equation}
+
+Using the same procedure as in \texttt{Proj}$^B(z, k^A)$ we assign URLs from $U$ to time bins. Finally, we create requests that each contains a URL $u \in U$ and is sent at the time associated with the bin that $u$ belongs to. We return the activity history $h$ which comprises these requests.
+
+\subsubsection{Imperfection of Gradient Attack}
+
+Descending along gradient is tricky, especially when projection is involved, as the descent may end up in a local minimum. The gradient attack algorithm solves the task of finding an optimal activity history $h \in \Psi^*_g$ and thus yielding $h$ which is a local optimum is problematic. However, as we adopted a rather agent-driven view of the game (as in Prop. \ref{prop:approximative_task}) we think of the gradient attack algorithm $\pi_T$ as a feasible agent that does its best to solve the task. In spite of these imperfections, we then train the detector to play against such approximative adversaries.
+
+In the following section we propose an algorithm that solves the detector's optimisation problem.
+
+\subsection{Detector}
+In this section, we introduce two types of a detector. The first type is an anomaly detector based on $k$ nearest neighbours which solves the task in Def. \ref{def:anomaly_detection}. The second type is a stochastic detector modelled with a neural network that solves the task in Prop. \ref{prop:approximative_task}.
+
+The output of both detectors is purposely stochastic. That is, they model the posteriori distribution $p(d \mid x)$ where $d \in \C$ is a decision and $x \in \X$ is a feature vector with a model $D_\theta(d \mid x)$. At test time, a realisation of a final label $d$ is drawn from $D_\theta(d \mid x)$. At train time, the values of probability $D_\theta(d \mid x)$ are used in the training process.
+
+\subsubsection{Anomaly Detector}\label{sec:knn_detector}
+The task of detecting malicious behaviour can also be formulated as an anomaly detection problem (as in Def. \ref{def:anomaly_detection}). We collect examples of benign behaviour and then construct an anomaly detector whose false positive rate equals $\tau_0$. This approach omits entirely the attacker's model and is based on an anomaly measure $d_k(x)$. We assume more anomalous, i.e. malicious, samples are prone to higher values of $d_k(x)$.
+
+There are various types of anomaly detectors from which we pick one: $k$ nearest neighbours ($k$-NNs). We use average euclidian distance to $k$ nearest samples $P_k(x) \subset T^\ben$ in the training set $T^\ben$ as an anomaly measure $d_k(x)$.
+
+\begin{equation}
+    d_k(x) = \frac{1}{k} \sum_{x' \in P_k(x)} || x - x' ||_2
+\end{equation}
+
+To comply with a stochastic detector definition, we use the anomaly measure $d_k(x)$ to derive the posteriori probability $D_\alpha(\ben \mid x)$ as follows:
+
+\begin{equation}\label{eq:knn_detector}
+    D_\alpha(\ben \mid x) = \exp(-\frac{d_k(x)^2}{\alpha^2})
+\end{equation}
+
+The parameter $\alpha \in \R$ adjusts sensitivity to $x$ and is equivalent in terms of the false positive rate to a threshold on the anomaly measure that is usually used with $k$-NNs. Thus, redefining $k$-NNs to be a stochastic anomaly detector is redundant in practice, however, we do it anyway as it is convenient for comparison purposes with a true stochastic detector.
+
+The constraint on the false positive rate in Def. \ref{def:anomaly_detection} suggests that our task is to find $\alpha$ for which the false positive rate equals $\tau_0$. We use fast gradient sign method (FGSM) to find the optimal $\alpha$ by minimising the following problem on training samples $T_m = \{\Phi(h_i)\}^m_i=1$:
+
+\begin{equation}
+    \min_\alpha \, (\frac{1}{m}\sum_{x_i \in T_m} D_\alpha(\mal \mid x_i) - \tau_0)^2
+\end{equation}
+
+The gradient attack in Alg. \ref{alg:detector_algorithm} requires the detector $D_\alpha(\ben \mid x)$ to be differentiable in $x$. $D_\alpha(\ben \mid x)$ is differentiable up to $d_k(x)$. $d_k(x)$ is not continuous in those $x$ for which $P_k(x)$ changes its elements. We estimate the gradient of $d_k(x)$ by simply taking derivative while keeping the set of $k$ nearest neighbours $P_k(x)$ fixed.
+
+\begin{equation}
+    \nabla_x d_k(x) = \frac{1}{k} \sum_{x' \in P_k(x)} \frac{x - x'}{ || x - x' ||_2 }
+\end{equation}
+
+In our experiments, we use $k=5$ as this is empirically the best value.
+
+\subsubsection{Adversarial Detector}\label{sec:neural_detector}
+We model an adversarial stochastic detector $D_\theta$ with a neural network which takes a feature vector $x \in X$ on its input and infers a probability distribution $D_\theta(d|x)$. In test time, an actual decision $d$ is drawn from the distribution $D_\theta(d|x)$. The detector's parameters $\theta$ correspond to the weights of the neural network.
+
+We empirically arrived at a relatively shallow network consisting of five fully connected layers. Since the number of inputs $N$ is relatively low ($N~20$), we assume this is a good trade-off between network's complexity and training time. To address the non-linear nature of features we start with the first two layers being wide with $10 \cdot N$ neurons. Then we narrow the net: the third layer has $5 \cdot N$, the fourth has $5 \cdot N$. Each layer is activated with a SeLU unit. The final layer has $1$ output which is transformed with a logistic function (Eq. \eqref{eq:logistic_function}) to be bounded by $[0,1]$.
+
+\begin{equation}\label{eq:logistic_function}
+    f(z) = \frac{1}{1 + \exp(-z)}
+\end{equation}
+
+The output of the final layer's activation (i.e. logistic function) is intended to be an estimate of the posteriori probability $p(\mal \mid x)$.
+
+\paragraph{SeLU Activations and Regularisation}
+Instead of classical ReLU, we use the SeLU (Eq. \eqref{eq:selu}) activation because of better properties of its gradient and its self-normalisation effect. During the process of learning we take gradient of $D_\theta(d|x)$ with respect to $x$ to construct obfuscated activity histories. We found that near-optimal $D_\theta$ tends to adjust its weights so that initial steps of the adversarial optimisation are located in areas that are cropped but ReLU (i.e. the activations' inputs tend to be negative).
+
+This is expected behaviour, however, as argued in \cite{obfuscated_gradients}, from the attacker's point of view this is easily bypass-able in a white-box attack. For instance, the attacker replaces all ReLUs by SeLUs. This does not change properties of the network dramatically but gives the attacker access to the gradient.
+
+For that reason (and following the final advice of \cite{obfuscated_gradients}) we assume the attacker would gain access to gradients anyway using this trick, thus we train the net to learn to defend even such attacks and use SeLUs already. The second reason to use a SeLU as activation comes from the original paper \cite{selu} in which the SeLU was introduced. The authors prove it has weights self-normalisation properties, that is, a SeLU is able to replace batch-norm \cite{batch-norm} in a fully-connected feed forward neural nets and allows to use deep architectures with many layers.
+
+\paragraph{Training Sets  $T^\ben$ and  $T^\mal$}\label{sec:training_set}
+To identify the best parameters $\theta$ we use the detector's learning algorithm (Alg. \ref{alg:detector_algorithm}). This algorithm estimates gradients from realisations of primary goals and benign activity histories. We draw activity histories $\{ h_i \}$ from a training set $T^\ben$ we collected to capture the distribution of benign activity histories. In case of the primary goals that shall be drawn from $p(g)$, we take a different approach because the distribution $p(g) = p(\pr{U})$ is unknown. The key attributes of  the feature map $\Phi$ are based on the reputation scores of the queried URLs. We construct primary URLs sets $\pr{U}$ to reflect various ratios of already known bad-score URLs and not yet identified ones. This way we get a training set of primary urls $T^\mal$:
+
+\begin{align*}
+    T^\mal &= \{ \\
+        & \quad \{ \texttt{known malicious URL} \}, \\
+        & \quad \{ \texttt{uknown URL} \}, \\
+        & \quad \{ \texttt{known malicious URL}, \texttt{uknown URL} \}, \\
+        & \quad \{ \texttt{known malicious URL}, \texttt{known malicious URL}, \texttt{uknown URL} \}, \\
+        & \quad \{ \texttt{known malicious URL}, \texttt{uknown URL}, \texttt{uknown URL} \}, \\
+        & \quad \dots \\\
+    &\}
+\end{align*}
+
+\paragraph{Implementation of Stochastic Detector}
+We use pytorch \cite{pytorch} to implement the stochastic detector. However, due the specific requirements of the detector's learning algorithm (Alg \ref{alg:detector_algorithm}) such as the inner attack optimisation or the outer $\lambda$ double optimisation, we needed to implement the training process from scratch as the existing components of the pytorch framework does not fit the need. To compute gradients, we used the framework's autograd library, but gradient descent and the attack optimisation algorithm needed our custom implementation.
+
+\paragraph{Handling \NA in Detector}
+$T^\mal = \{ \pr{U_i}\} $ makes up a faithful mixture of reasonable primary URLs sets. In our experiments, we use a set $\pr{U_i}$ that contains at most $20$ \texttt{uknown URL}s and $20$ \texttt{known malicious URL}s. Since no prior preference over individual $\pr{U_i}$ is assumed, we draw $\pr{U_i}$ uniformly from $T^\mal$.
+
+We allowed the attacker not to carry out any activity if obfuscation is too costly for it. This is captured by the \NA token which the attacker's algorithm $\pi$ produces instead of an activity history $h$. Despite the detector's risk is derived assuming all primary goals are translated to some activity history, the introduction of \NA does not cause principal problems as we can simply reformulate the equation for the non-stationary probability $\dot{p}(h \mid \mal)$:
+
+\begin{equation}
+    \dot{p}(h \mid \mal) = \sum_{\pr{U}: \pi(\pr{U}, D_\theta) = h} p'(\pr{U})
+\end{equation}
+
+where $p'(\pr{U})$ is the probability of observing the primary URL set for which $\pi$ does not yield \NA (i.e. $p'(\pr{U})$ is $p(\pr{U})$ normalised by the sum of $p(\pr{U})$ that are not \NA). Consequently, during the Monte-Carlo estimation of the gradient, the estimate $\gamma^\mal$ is computed from a set of obfuscated activity histories $\{ \adv{h}_i \}$. This set is generated by $\pi$ from those $\pr{U}_i \in T^\mal$ that get obfuscated, i.e $\pi(\pr{U}_i, D_\theta) \neq \NA$:
+
+\begin{equation}
+    \gamma^\mal = \frac{1}{ |\{ \adv{h}_i \}| } \sum_{j=1}^{ |\{ \adv{h}_i \}| } \nabla_\theta D_\theta(\mal \mid \Phi(\adv{h}_j))
+\end{equation}
+
+\paragraph{Similarity to Cross Entropy}
+Using the Jensen's inequality, we can transform the criterion of $\theta$ minimisation (as in Eq. \eqref{eq:probs_introduced}) to a cross entropy loss. In Eq. \eqref{eq:probs_introduced} we essentially minimise $\E_{h,c} 1 - D_\theta (c \mid \Phi(h))$. If we remove constant terms and use Jensen's inequality, we arrive at a problem with equivalent solutions:
+
+\begin{equation}
+    \min_\theta - \E_{h,c} \log(D_\theta (c \mid \Phi(h)))
+\end{equation}
+
+If we estimate the expectation with $m$ samples, the criterion becomes the cross entropy loss. This suggests that we practically solve the same task that is solved when training state-of-the-art neural classifiers. However, the key differences are: we use the algorithm $\pi$ to create samples of a malicious class $\mal$ and instead of the classical mini-batch gradient descent \cite{minibatch_descent} we use Algorithm \ref{alg:detector_algorithm}.
+
+\paragraph{On Complexity of Stochastic Detector}
+The similarity to cross entropy imposes important implications. Since we practically use the same loss function but model a mixed strategy $\sigma$ instead of a single classifier $f$, the complexity of the detector $D_\theta$ needs to be much higher than the complexity of a classifier $f$. This also means, we shall expect training takes more time.

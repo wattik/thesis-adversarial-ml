@@ -1,4 +1,6 @@
 import csv
+import os
+import pickle
 from collections import defaultdict
 from random import shuffle, random
 from typing import List
@@ -55,6 +57,7 @@ class Dataset:
 
         self.qps_trn_ben = [qp for qp, l in zip(self.qps_trn, self.labels_trn) if l == Label.B]
         self.labels_trn_ben = [l for l in self.labels_trn if l == Label.B]
+        self.users_trn_ben = [user for user, l in zip(self.users_trn, self.labels_trn) if l == Label.B]
 
         self.qps_trn_mal = [qp for qp, l in zip(self.qps_trn, self.labels_trn) if l == Label.M]
         self.labels_trn_mal = [l for l in self.labels_trn if l == Label.M]
@@ -64,12 +67,21 @@ class Dataset:
         self.users_tst_ben = [user for user, l in zip(self.users_tst, self.labels_tst) if l == Label.B]
 
         self.qps_tst_mal = [qp for qp, l in zip(self.qps_tst, self.labels_tst) if l == Label.M]
+        self.labels_tst_mal = [l for l in self.labels_tst if l == Label.M]
 
         ############
 
         self.legitimate_queries = [url for qp in self.qps_trn for url in qp.queries if self.specificity(url) > 0.5]
         self.urls = list(set(url for qp in self.qps_trn for url in qp.queries))
 
+    def save(self, path):
+        with open(os.path.join(path, "dataset.pickle"), "wb") as file:
+            pickle.dump(self, file)
+
+    @classmethod
+    def load(cls, path):
+        with open(os.path.join(path, "dataset.pickle"), "rb") as file:
+            return pickle.load(file)
 
 #####################################
 
@@ -87,7 +99,6 @@ def load_query_profiles(filepath: str):
         for time, user, url in csv.reader(file, delimiter=' '):
             qp = user_entries[user]
             qp.add(Request(int(float(time)), url))
-            qp.user = user
 
         return list(user_entries.keys()), list(user_entries.values())
 

@@ -1,83 +1,142 @@
-\section{Background}
+\section{Background}\label{sec:background}
+This section gives a brief introduction to the background of the thesis topic. We discuss risk minimisation, regularisation and define a Neyman-Pearson Task. Then we present important notions of game theory and neural networks that are essential to this work. A thorough study on related work and state-of-the-art solutions is given in the next section.
 
 \subsection{Risk Minimisation}
 
-A classifier $h \in \mathcal{H}$ is a mapping
-$h: \mathbb{X} \mapsto \mathbb{C}$ that determines which class
-$c \in \mathbb{C}$ a sample $x \in \mathbb{X}$ belongs to. For the
+A classifier $f \in \F$ is a mapping
+$f: \X \mapsto \C$ that determines which class
+$c \in \C$ a sample $x \in \X$ belongs to. For the
 purposes of this work, we only describe binary classification in the
 following pages, however, the task is, naturally, expandable to a
-general discrete set $\mathbb{C}$. In the classical risk theory, the
-classifier $h$ is a subject to minimisation of expected risk $R(h)$
+general discrete set $\C$. In the classical risk theory, the
+classifier $f$ is a subject to minimisation of expected risk $R(f)$
 given a cost function
-$\ell: \mathbb{C} \times \mathbb{C} \mapsto \mathbb{R}$.
+$\ell: \C \times \C \mapsto \R$.
 
 \begin{equation}\label{eq:empirical-risk-minimisation}
-R(h) = \E_{(x,c) \sim p} \left[ \ell(h(x), c) \right]
+R(f) = \E_{x,c} \leftb \ell(f(x), c) \rightb
 \end{equation}
 
 Formally, the Expected Risk Minimisation (ERM) is given by:
 
 \begin{equation}
-\min_{h \in \mathcal{H}} R(h)
+\min_{f \in \F} R(f)
 \end{equation}
 
-Typically when working with binary classification, $\ell$ is consider
+Typically when working with binary classification, $\ell$ is considered
 a \emph{1-0 loss} which assigns an equal cost of magnitude \emph{1} for
-misclassifying objects. The expected risk in this case accounts only for
+misclassifying objects and a zero cost for correct classification. The expected risk in this case accounts only for
 the rate of false positives and false negatives. If we employ \emph{1-0
 loss} into the expected risk, we arrive at the following form:
 
 \begin{equation}
-R(h) = \sum_{c \in \mathbb{C}} p(c) \int_{x: h(x) \neq \mathsf{c}} p(x|c) \,  dx
+R(f) = \sum_{c \in \C} p(c) \int_{x: f(x) \neq c} p(x|c) \,  dx
 \end{equation}
 
 The integral can be considered a probability of classifying objects
 $x$ to an incorrect class given a correct class $c$, ie.
-$h(x) \neq c$. Let us consider binary classification in which
-$\mathbb{C} = \{ \mathsf{B}, \mathsf{M} \}$ where $\mathsf{M}$
-stands for a positive class (m for a malicious class) and $\mathsf{B}$
-for a negative class (b for a benign class). In the context of this
+$f(x) \neq c$. Let us consider binary classification in which
+$\C = \{ \ben, \mal \}$ where $\mal$
+stands for a positive class ($\mal$ as a malicious class) and $\ben$
+for a negative class ($\ben$ as a benign class). In the context of this
 work, the positive class refers to malicious activity, ie. activity that
 is desired to be uncovered, and the negative class covers benign,
-legitimate or normal behaviours. To conclude, the risk $R(h)$ can be
-rewritten as a mixture of two types of errors: the probability of false
-positives and the probability of false negatives.
+legitimate or normal behaviours. To conclude, the risk $R(f)$ can be
+rewritten as a mixture of two types of errors: the false
+positives rate and the false negatives rate.
 
 \begin{equation}
-R(h) = p(\mathsf{B}) \cdot p(\mathsf{M}|\mathsf{B}) + p(\mathsf{M}) \cdot p(\mathsf{B}|\mathsf{M})
+R(f) = p(\ben) \cdot \FPR(f) + p(\mal) \cdot \FNR(f)
 \end{equation}
 
-In practice, the probabilities are not known and, moreover, computing
-the expected risk often involves intractable integrals. Therefore, the
+In practice, computing an expected risk often involves intractable integrals. Therefore, the
 risk is empirically estimated from observed samples. The empirical risk
-$\hat{R}(h)$ estimated from a set of training samples
+$\hat{R}(f)$ estimated from a set of training samples
 $T_m = \{ (x_i, c_i) \}_{i=1}^{m}$ is defined as follows:
 
 \begin{equation}
-\hat{R}_{T_m}(h) = \frac{1}{m} \sum_{(x_i, c_i) \in T_m} L(h(x_i), c_i)
+\hat{R}_{T_m}(f) = \frac{1}{m} \sum_{(x_i, c_i) \in T_m} L(f(x_i), c_i)
 \end{equation}
 
 Vapnik \cite{vapnik} showed that with increasing $m$ the empirical risk
-$\hat{R}_{T_m}(h)$ approaches $R(h)$.
+$\hat{R}_{T_m}(f)$ approaches $R(f)$.
 
 \subsection{Regularisation}
 
 When examining possible classifiers, we usually have a priori knowledge
 of certain classifier instances being more suitable than others. Hence,
-some classifiers $h$ correspond to models that are more likely to be
+some classifiers $f$ correspond to models that are more likely to be
 inadequate, and some are a priori preferred. The reasons may vary, but
 mostly one desires to decrease models complexity to avoid over-fitting.
 To capture this knowledge, a regularisation term
-$\Omega_D: \mathcal{H} \mapsto \mathbb{R}$ penalising some classifiers
-$h$ is often added to the risk.
+$\Omega: \F \mapsto \R$ penalising some classifiers
+$f$ is often added to the risk.
 
 \subsection{Neyman-Pearson Task}\label{sec:neyman-pearson}
-The Neyman-Pearson Task is a problem in which the false negative rate (\textsf{FNR}) is minimised while the false positive rate (FPR) is maintained lower than a given threshold.
+The Neyman-Pearson Task \cite{neyman-pearson} is a problem in which the priori class probabilities are unknown and thus only the false negative rate ($\FNR$) is minimised while the false positive rate ($\FPR$) is maintained lower than a given threshold.
 
 \begin{equation}\label{eq:neyman-pearson}
     \min_{f \in \F}
         \FNR(f)
         \st
-        \FPR(f)
+        \FPR(f) \leq \tau_0
+\end{equation}
+
+\subsection{Game Theory}
+In the context of this work, let us consider a game of two players: a defender (denoted as $\minus$) and an attacker (denoted as $\plus$). A player $i \in \{ \minus, \plus\}$ is associated with its action space $\A_i$. A player plays a pure strategy $a_i \in \A_i$ or a mixed strategy $\sigma_i \in \Delta(\A_i)$ which is a probability distribution over the player's actions space. Each player is expected to be a rational actor which carries out activity according to its risk. A player's risk is a function $R_i$ that evaluates what risk is taken depending on players' strategies.
+
+In a Stackelberg Game, the player $\minus$ is a leader that commits to a strategy publicly while the player $\plus$ is a follower who exploits the leader's public strategy.
+In other words, the follower (here an attacker) recognises the committed mixed strategy $\sigma_\minus$ and selects a pure strategy $a_\plus$ that minimises its risk $R_\plus(\sigma_\minus, a_\plus) = \E_{a_\minus \sim \sigma_\minus} R_\plus(a_\minus, a_\plus)$.
+An action $a_\plus$ that responds to $\sigma_\minus$ minimises risk $R_\plus(\sigma_\minus, a_\plus)$ is called a best response.
+
+\begin{equation}
+    \BR(\sigma_\minus) = \argmin_{a_\plus \in \A_\plus} R_\plus(\sigma_\minus, a_\plus)
+\end{equation}
+
+The defender is expected to be a rational actor too, therefore, it optimally crafts its mixed strategy. Knowing the attacker plays a best response $a^*_\plus \in \BR(\sigma_\minus)$ it commits to play $\sigma^*_\minus$ that minimises its risk $R_\minus(a^*_\plus, \sigma_\minus) = \E_{a_\minus \sim \sigma_\minus} R_\minus(a^*_\plus, a_\minus)$. The tuple $(\sigma^*_\minus, a^*_\plus)$ is called a Stackelberg equilibrium (SE).
+Since the attacker can arbitrarily choose any $a^*_\plus \in \BR(\sigma_\minus)$ (because all of them are optimal to the attacker), we define a strong Stackelberg equilibrium (SSE) in which the attacker breaks ties in favour of the defender, that is the attacker plays such $a^*_\plus \in \BR(\sigma_\minus)$ which minimises the defender's risk $R_\minus(a_\plus, \sigma_\minus)$.
+
+\begin{equation}
+    \min_{\sigma_\minus, a_\plus} R_\minus(a_\plus, \sigma_\minus) \st  a_\plus \in \BR(\sigma_\minus)
+\end{equation}
+
+\subsection{Neural Networks}
+A neural network is a function approximator that consists of layered linear functions whose output is transformed with a non-linear activation. Literature proposes a great variety of neural networks architectures \cite{relu, selu, defense_gan, gan, pgd, image_net, cnn, transformer}. In the context of this work, we define a feed forward neural network with fully-connected layers. A feed forward neural network takes an input $x$ and transforms it with its layers one-by-one in a predefined sequence so that the output of the layer $l$ is the input of the layer $l+1$. The last layer's output is the output of the neural network. We define a fully connected layer as:
+\begin{equation}
+    y = f(W \cdot x + b)
+\end{equation}
+where $x \in \R^N$ is the layer's input and $y \in \R^M$ is the layer's output. The matrix $W \in \R^{(M \times N)}$ and the vector $b \in \R^M$ are parameters of the layer. The function $f$ is an activation of the layer.
+
+Often, a rectified linear unit (ReLU) \cite{relu} is used as an activation.
+\begin{equation}
+    f(x) = \max\{0, x\}
+\end{equation}
+
+In this work, we use a scaled exponential linear unit (SeLU) \cite{selu} which is defined by the following function:
+
+\begin{equation}\label{eq:selu}
+    \textsf{selu}(x) = \lambda
+    \begin{cases}
+        x & x > 0 \\
+        \alpha \cdot (e^{x} - 1) & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+The authors of SeLU \cite{selu} propose the constants have the following values: $\alpha \approx 1.6733$ and $\lambda \approx 1.0507$.
+
+In classification problems, a neural network $f(c, x)$ approximates the posteriori probability $p(c \mid x)$ where $c \in \C$ is a class and $x \in \X$ is an object which is to be labeled. To make a final decision about an input $x$, the class with highest probability is taken, i.e. $\argmax_{c \in \C} f(c, x)$. Usually, classification neural networks are trained by minimising a cross-entropy loss. For a target distribution $\hat{y}$ and an estimated distribution $y$, the cross entropy is defined as follows:
+
+\begin{equation}
+    l(\hat{y}, y) = \sum_{c \in \C} \hat{y}(c) \cdot \log(y(c))
+\end{equation}
+
+Since in classification problems each sample has one particular class assigned, the cross entropy loss changes. Given a sample $x$, its true class $c$ and an estimator $f$, the loss is given by $log(f(c,x))$. With a mini-batch gradient descent, one can optimise the parameters of the neural network. Let $\theta$ be parameters of a neural network $f_\theta(c, x)$, then a gradient of the cross entropy loss can be estimated with $m$ samples (called a mini batch) as follows:
+\begin{equation}
+    \frac{1}{m} \sum_{i=1}^m \nabla_\theta \log(f(c_i, x_i))
+\end{equation}
+
+The mini-batch gradient descent adjusts parameters of the neural net in each step $t$ by drawing $m$ samples ${(c_i, x_i)}$ from the joint data  distribution $p(c, x)$ and subtracting gradient of the loss scaled with a learning rate $\gamma$:
+
+\begin{equation}
+    \theta^{t+1} = \theta^{t} - \gamma \cdot \frac{1}{m} \sum_i^m \nabla_\theta \log(f(c_i, x_i))
 \end{equation}

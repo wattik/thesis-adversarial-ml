@@ -1,1 +1,284 @@
-\section{Experiments}
+\section{Experiments}\label{sec:experiments}
+In previous sections, we proposed a theoretical approach to solve adversarial detection problems. Then we introduced an industrial problem which we formally modelled in accordance to the proposed theory. The outcome is an adversarial detector which when properly trained is able to detect unseen malicious activity. To support the claim we conduct experiments on real-world data (provided by Trend Micro Ltd.) and compare the proposed adversarial detector with an anomaly detector, both being attacked by the good queries attack and the gradient attack. The experiments evaluate: (1) capability of a detector to meet the false positive rate constraint, (2) capability of a detector to detect attacks (measured by the successful attacks rate), (3) performance of the proposed attack algorithms. Further, we analyse the results and identify that: (1) the dataset of benign data contains a few highly suspicious samples, (2) the adversarial detector is highly robust to primary goals with more than 10 low-scored URLs and (3) even more powerful attackers than those at train time are detected at relatively large rates.
+
+\subsection{Dataset}
+The problem of detecting malicious activity in requests to a URL reputation service was proposed by the company Trend Micro Ltd. as a real world problem that is an instance of adversarial machine learning. Thus, we use the company's data to evaluate the proposed algorithms in this work. The dataset we were, gratefully, given contains information that is, nonetheless, private and cannot be made public. Therefore, we do not put the dataset online. However, we are able to include general information and statistics to preview the properties of the dataset.
+
+The dataset consists of genuine real-world activity recorded at such a URL reputation service. Users are uniquely identifiable, thus we are able to make up activity histories of each user. The users are located in the Czech Republic at the time of recording based on the IP address location.
+
+First, we clean data by removing requests that are broken or their information is incomplete. These count: a queried URL is not a valid URL or it is missing. Then we remove requests with a URL that is not a genuine accessible URL: that are, for instance, URLs containing \texttt{.arpa} or \texttt{.in\_addr}. Then the activity is sorted to days and each queried URL is given a genuine reputation score returned by the reputation service. Then we collect these per-one-day per-user activity histories and remove those containing less then $10$ queries (i.e. 10 requests per user per day) for we assume an  activity this low is anomalous and including it would poisson the final data set.
+
+The total number of samples after pre-processing is $54,970$ which split into a training set of $43$ thousand samples and a testing set of $11$ thousand samples (we use $80$-$20$ ratio). The reputation scores that are returned by the service are processed so that they correspond to a probability of a particular URL being benign. We are given only such values of the score so that the corresponding probability values are either $0.1$, $0.5$ or $0.9$. The dataset contains only few malicious URLs
+($0.05\%$). The unrated URLs count $15.0\%$ and the benign ones $84.95\%$ of the URLs. Any future unknown (i.e. not included in the dataset) URL is considered unrated.
+
+The distribution of URL use has very long tails. Fig. \ref{fig:url-frequency-histogram} shows roughly $50 \%$ of the URLs are used only once and $90 \%$ are used up to $10$ times. On the other hand, the dataset contains URLs that the service was queried with over $1,000$ times.
+
+An average sample comprises an activity history of $700$ requests (per day). However, this distribution is fat-tailed. Most samples have around $1000$ requests, yet there are samples with over $10,000$ requests and, on the other hand, samples with $10$ requests. The histogram of the distribution is depicted in Fig. \ref{fig:requests-per-activity-histogram}.
+
+In Fig. \ref{fig:request-time-histogram}, the request time distribution within a day is shown. Requests are sent mostly between $8$am and $10$pm with a peek between $6$pm and $9$pm. Also, there is a little drop around noon, suggesting this is a proper lunch time among recorded users. At night time from midnight until $7$am, there is a significant drop in the number of sent requests. Ideally, to disguise as a benign user, an attacker shall follow this distribution and adjusts its attack and obfuscation accordingly.
+
+\begin{figure}[!htb]
+    \centering
+
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{request-time-histogram}
+            \caption{}\label{fig:request-time-histogram}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{requests-per-activity-histogram}
+            \caption{}\label{fig:requests-per-activity-histogram}
+        \end{subfigure}
+
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{score-histogram}
+            \caption{}\label{fig:score-histogram}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{url-frequency-histogram}
+            \caption{}\label{fig:url-frequency-histogram}
+        \end{subfigure}
+
+    \caption{The histograms show distributions of activity captured in March, 2019 among users of a URL reputation service, located in the Czech Republic. The dataset is provided by Trend Micro Ltd. Fig. \ref{fig:request-time-histogram} depicts request day-time distribution, Fig. \ref{fig:requests-per-activity-histogram} shows the amount of requests that is sent in one day activity of a user. Fig. \ref{fig:score-histogram} shows the distribution of a URL reputation score which is associated with a URL query. Finally, Fig. \ref{fig:url-frequency-histogram} shows the repetitive nature of such a reputation service.}
+\end{figure}
+
+
+\subsection{Setting}
+To evaluate the training and attack algorithms we use the dataset provided by Trend Micro Ltd. In terms of attackers, we use the good queries attack algorithm (Sec. \ref{sec:good_queries_attack}) and the gradient attack algorithm (Sec. \ref{sec:gradient_attack}). To compare various approaches to detection, we use an anomaly detector based on $k$-NN (Sec. \ref{sec:knn_detector}) and an adversarial detector based on a neural network (Sec. \ref{sec:neural_detector}).
+
+Since the detector's learning algorithm is proposed to learn against an attacking adversary, it is reasonable to consider the detector based on a neural network shall be trained against both attacker types. However, theoretically and empirically the good queries attack is not as advanced as the gradient attack. Thus we only perform experiments in which the neural net detector is trained vs. the gradient attack. On the other hand, we evaluate attack performance for both attack types.
+
+\paragraph{False Positive Rate}
+We train the neural net detector against the gradient attack algorithm and show results for false positive rate threshold values $\tau_0$ being $1\%$, $0.1\%$ and $0.01\%$ ($10^{-2}$, $10^{-3}$ and $10^{-4}$). FPR of $0.01\%$ on this size of a test set (to repeat, it counts $11$ thousand samples) corresponds to $1$ sample. This is already reaching limits of statistical evaluation and results with FPR set to values below $0.1\%$ would ideally require bigger dataset size to reach greater significance.
+
+\paragraph{Attacker's Loss}
+The attacker losses are set to correspond to motivations given in Sec. \ref{sec:attacker_loss}. That is, we set the cost of being detected $L_0$ to $100$ units and the cost of a request $L_u$ to $0.05$ units. The maximum attack cost is set to $99$ (motivation is given in Sec. \ref{sec:attacker_loss}). We set $L_u$ to 100 and the maximum attack cost to 99 to disallow the attacker to attack in extreme cases when its criterion closely reaches the no-attack threshold. This happens especially when the attacker's instance is in the area with very high confidence of malicious activity and it becomes rational no to carry out any obfuscation but to use only primary URLs $\pr{U}$. These cases are now labelled \NA.
+
+\paragraph{Feature Map}
+As already mentioned in Sec. \ref{sec:features}, we use four types of features. The first feature map is a frequency histogram of URL reputation score values contained in an activity history. The dataset comprises only three distinct values of a score, thus we use three bins with edges at $0$, $0.33$, $0.66$, $1$. The second feature type is URL score density which is a normed frequency histogram. The third feature is a square root of a total count of requests per activity history. The distribution of requests counts is fat-tailed, thus we reduce the influence of large values by taking a square root. We also tried  logarithm but square root seems to perform better. Lastly, we add a normalised frequency histogram of request times to relate to time distribution of requests. We use $24$ bins that each covers one hour. The full feature map counts $31$ features in total. Data are normalised so that each input has empirical mean equal to $0.0$ and variance equal to $1.0$ on training data.
+
+\paragraph{Performance Measures}
+To evaluate the detector's performance, we use two main measures: the first is a false positive rate (FPR), the second is successful attacks rate (SAR). The false positive rate is the rate of misclassification on benign data which shall, for the optimal detector, equal to the threshold $\tau_0$. Any deviation from the value $\tau_0$, negative or positive, is a failure because such a detector either does not meet the FPR criterion or is too benevolent, suggesting there is a tighter one with better detection rate.
+
+The successful attack rate is the ratio of undetected attacks and the total number of attacks. SAR corresponds, in fact, to a false negative rate and is the main criterion of the detector's optimisation task (Prop. \ref{prop:detector_optimisation}). The obfuscation rate (OBR) is a subject of optimisation during the detector's learning (i.e. it is the false negatives rate). We define OBF as the ratio of undetected attacks and attacks performed (that is without \NA).
+The lower the successful attack rate and the obfuscation rate, the better the detector is.
+We also use other supporting measures: a \NA rate (NAR) and mean successful attack length (MAL). NAR gives a percentage of attacker instances that did not carry out any activity (and thus did not follow the goal). The mean successful attack length (MAL) gives an average number of additional URLs that were used in successful attacks (that is undetected attacks). To evaluate these measures, we use the as-if-deployed approach–-this means realisations of the probability $D_\theta(d \mid x)$ are drawn to make the final decision $d$. This suggests that the measured numbers are in fact realisations of random variables and thus those statistics are random variables as well.
+
+\subsection{Detector Learning Procedure}
+
+\paragraph{Lambda}
+A key difference of the detector's learning algorithm (Alg. \ref{alg:detector_algorithm}) to standard classification learning schemes is the constraint on FPR which results in the variable $\lambda$ as a control variable. Lemma \ref{lem:langrangian_relaxation} proposes it is better to think of $\lambda$ as a priori class probability $p(\mal) = \frac{1}{1 + \lambda}$ which changes during the training procedure so that the constraint on FPR is met. We found that $p(\mal)$ very quickly converges to really low values (around $\sim0.95$) so that the FPR constraint is met.
+To give little influence at least in the begging of learning to malicious data, we start training with $p(\mal) = 0.5$ (i.e. $\lambda = 1$). Once the FPR constraint is met and $FPR \leq \tau_0$, malicious data start again to have larger influence on gradient and $p(\mal)$ increases again.
+
+\paragraph{Learning Rate}
+We use gradient ascent to find $\lambda$ and gradient descent to find  parameters $\theta$. Since these are performed simultaneously but both correspond to different aspects of the problem, we found that their learning rates shall differ which goes along with suggestions in \cite{learning_rate}. We use a learning rate of magnitude $0.01$ in case of $\theta$ and a learning rate of $5.0$ in case of $\lambda$. This speeds up learning procedure especially in meeting the FPR constraint.
+
+\paragraph{Batch Size}
+In the process of gradient estimation, we generate $m$ samples for each class to get gradients conditioned on class. We call $m$ the batch size, although its meaning is different from the standard concept–-usually, a batch size refers to the number of samples drawn in total from a training set during a gradient descent step but we actually draw $m$ sample for each class (All introduced in Sec. \ref{sec:monte-carlo} and Sec. \ref{sec:learning_algorithm}). In terms of the value of the batch size, it turns out that the lower $m$ the greater the chance all of the drawn malicious instances generate \NA which essentially causes zero gradient attained on a malicious class. On the other hand, our set of primary goals (primary URLs) $T^\mal$ counts $360$ samples which after splitting creates a train set of 288 primary goals. Since we want to employ the mini-batch gradient descent \cite{minibatch_descent}, $m$ should be lower than the number of primary goals but reasonably large to suppress noise. To balance the two notions, we use $m=100$.
+
+\paragraph{Attacker's Optimisation}
+The obfuscation algorithm $\pi$ (Def. \ref{def:response_algorithm}) takes a primary URL set $\pr{U}$ and generates an obfuscated activity history $\adv{h}$ (or \NA) in $T$ steps. The gradient attack algorithm (Alg. \ref{alg:gradient_attack}) does so with a mixture of projected gradient descent (PGD) and fast gradient sign method (FGSM).
+As introduced in Sec. \ref{sec:gradient_attack_algorithm}, we set the initial time distribution of activity $k^B$ to be uniform and the initial number of obfuscation URLs $k^A$ randomly to any of $\{0, 1, \dots, 2000 \}$. Naturally, the optimal number of steps $T$ balances the quality of a solution and time needed to find it. We use $T = 400$ which turns out to be a reasonable balance.
+
+\subsection{Results}
+In this section, we show that the problem of detecting malicious behaviour is better solved with an adversarial detector which outperforms an anomaly detector. First, we show performance of the detectors in various settings and analyse their exploitability against two attack types. Secondly, we analyse the attacks performed against the best detector and show what kinds of attacks are are very likely to be detected.
+
+\subsubsection{Optimal Detector}\label{sec:optimal_detector}
+To address the problem of detecting malicious users of a URL reputation service, we use two models of a detector: an anomaly detector based on $k$-NN and an adversarial stochastic detector based on a neural net. We show that the neural net trained against a model of an attacker outperforms the anomaly detector. We use three FPR thresholds, $\tau_0 \in \{ 1\%, 0.1\%, 0.01\% \}$, and perform attacks with the good queries attack and the gradient attack.
+
+\paragraph{False Positive Rate Threshold}
+A key requirement of a detector in network security is that the false positive rate (FPR) is below a threshold $\tau_0$ (as argued in Sec. \ref{sec:property_one}). To validate our detectors are able to meet this constraint, we fit them on train data and measure FPR on test data. The adversarial detector is fitted against the gradient attack. The FPR results are shown in Tab. \ref{tab:false_positives_rate}. All training sessions successfully converge below a desired threshold value. However, the anomaly detector does not meet the FPR constraint on a test set in case of $\tau_0 = 1\%$ and $\tau_0 = 0.1\%$, whereas the adversarial succeeds in all settings.
+
+Note that the training FPR is usually below the desired threshold. Take for instance the anomaly detector that with $\tau_0 = 1\%$ gives a training FPR $ 0.85 \%$.
+This is caused, we argue, by the distribution of benign data. The distribution contains a relatively large number of outliers that sparsely located far from the distribution. This causes a detector with fixed limited complexity (i.e. k in $k$-NN) is not capable of reaching the exact value of $tau_0$.
+
+\begin{table}[h]
+\centering
+
+    \begin{tabular}{|l||c|c|c|c|c|c|}
+    \hline
+    FPR Threshold $\tau_0$        & \multicolumn{2}{c|}{$1\%$}              & \multicolumn{2}{c|}{$0.1\%$}            & \multicolumn{2}{c|}{$0.01\%$}           \\ \hline
+                              & \multicolumn{1}{l|}{$k$-NN} & AdvDet & \multicolumn{1}{l|}{$k$-NN} & AdvDet & \multicolumn{1}{l|}{$k$-NN} & AdvDet \\ \hline\hline
+    FPR on Train Data & 0.58\% & 0.96\% & 0.09\% & 0.07 \% & 0.01\% & 0.01\% \\ \hline
+    FPR on Test Data & 1.03\% & 0.96\% & 0.11 \% & 0.08\% & 0.01 \% & 0.01\% \\ \hline
+    \end{tabular}
+
+    \caption{False Positive Rates on Test Data}
+    \label{tab:false_positives_rate}
+
+\end{table}
+
+
+\begin{table}[h]
+\centering
+
+    \begin{tabular}{|l||c|c|c|c|c|c|}
+    \hline
+    FPR Thresh. $\tau_0$        & \multicolumn{2}{c|}{$1\%$}              & \multicolumn{2}{c|}{$0.1\%$}            & \multicolumn{2}{c|}{$0.01\%$}           \\ \hline
+                              & \multicolumn{1}{l|}{$k$-NN} & AdvDet & \multicolumn{1}{l|}{$k$-NN} & AdvDet & \multicolumn{1}{l|}{$k$-NN} & AdvDet \\ \hline\hline
+
+    NAR & 52\% & 57\% & 54\% & 32\% & 45\% & 1 \% \\ \hline
+    OBR & 25\% & 3\% & 85\% & 39\% & 95\% & 49\% \\ \hline
+    SAR & 12\% & 1 \% & 39\% & 27\% & 52\% & 48\% \\ \hline
+
+    \end{tabular}
+
+    \caption{Gradient Attack Results}
+    \label{tab:gradient_attack_results}
+
+\end{table}
+
+\begin{table}[h]
+\centering
+
+    \begin{tabular}{|l||c|c|c|c|c|c|}
+    \hline
+    FPR Thresh. $\tau_0$        & \multicolumn{2}{c|}{$1\%$}              & \multicolumn{2}{c|}{$0.1\%$}            & \multicolumn{2}{c|}{$0.01\%$}           \\ \hline
+                              & \multicolumn{1}{l|}{$k$-NN} & AdvDet & \multicolumn{1}{l|}{$k$-NN} & AdvDet & \multicolumn{1}{l|}{$k$-NN} & AdvDet \\ \hline\hline
+    NAR & 88\% & 94\% & 54\% & 4\% & 0\% & 0\% \\ \hline
+    OBR & 44\% & 50\% & 78\% & 13\% & 98\% & 32\% \\ \hline
+    SAR & 5\% & 3\% & 36\% & 12\% & 98\% & 32\% \\ \hline
+    \end{tabular}
+
+    \caption{Good Queries Attack Results}
+    \label{tab:good_queries_attack_results}
+
+\end{table}
+
+\paragraph{Exploitability by Gradient Attack}
+We measure exploitability with a successful attack rate (SAR). The adversarial detector gives better performance than the anomaly detector in terms of SAR. The results of the gradient attack algorithm are shown in Tab. \ref{tab:gradient_attack_results} and the trend is shown in Fig. \ref{fig:gradient-attack-fpr-sar}. With the FPR threshold at $1\%$, successful attack rate (SAR) is at 12\% for the anomaly detector ($k$-NN) and 4\% for the adversarial detector.
+But with lower thresholds, the difference narrows. At $0.1 \%$, the anomaly detector at $39 \%$ and the adversarial detector allows SAR at $32 \%$. With FPR threshold $\tau_0 = 0.01 \%$, the adversarial detector (SAR $48 \%$) outperforms the anomaly detector (SAR $52 \%$). But both detectors reach almost 50\% exploitability. To sum it up, the adversarial detector outperforms the anomaly detector, especially at 1\% threshold.
+
+We assume that the narrowing performance margin is also given by a low number of benign samples for this low FPR thresholds. As mentioned, for the 0.01\% threshold, the detector achieves the desired constraint by misclassifying at most only 5 benign samples among the outliers in the train set. We conjecture that with a greater dataset, the adversarial detector achieves lower SAR values even with $\tau_0 = 0.01\%$.
+
+\begin{figure}[h]
+    \centering
+
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{gradient_attack_success}
+        \caption{Successful Attack Rate (SAR) of Gradient Attack}
+        \label{fig:gradient-attack-fpr-sar}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{good_queries_success}
+        \caption{Successful Attack Rate (SAR) of Good Query Attack}
+        \label{fig:good_queries-attack-fpr-sar}
+    \end{subfigure}
+
+
+    \caption{Successful attack rate (SAR) as a function of the false positive rate (FPR). Note that, as the FPR threshold is increased, both detectors become more robust. At all FPR levels and with both attack types, the adversarial detector outperforms the anomaly detector.}
+
+\end{figure}
+
+\paragraph{Exploitability by Good Queries Attack}
+The good queries attacks algorithm adds legitimate obfuscating requests to the final activity history as long as the cost of an attack decreases. In comparison to the gradient attack, it is weaker but more realistic to capture behaviour of a malicious user that rather intuitively obfuscates its primary goal. In Tab. \ref{tab:good_queries_attack_results} we show the results of the good queries attack against anomaly and adversarial detectors at various levels of FPR. The overall trend is depicted in Fig. \ref{fig:good_queries-attack-fpr-sar}. It is clear that, same as with the gradient attack, the adversarial detector allows fewer attacks in at all FPR levels.
+
+The difference is best seen at $\tau_0 = 0.1\%$ where the anomaly detector achieves a successful attack rate (SAR) of 36\%, whereas the adversarial detector achieves 12\%. Note that, with $\tau_0 = 0.01\%$ and the anomaly detector, the good query attack (SAR 98\%) performs surprisingly better than the gradient attack (SAR 52\%). This is caused by the large NAR of 45\% in the gradient attack while it is 0\% with the good query attack -- this means a large portion of attacks was not carried out due to, probably, too few iterations. However, if we consider the obfuscation rate (OBR) which is the percentage of successful undetected obfuscations out of actually performed attacks, both attacks are nearly similar with this detector.
+
+To conclude, both detectors are robust against the good queries attack but the adversarial detector allows lower attack success rates at all FPR levels.
+
+
+\paragraph{Suspicious Outliers in Dataset}
+The set of benign activity $T^\ben$ comprises data of real users of the company Trend Micro Ltd. During the training process of our detector, some benign samples tended to be classified as malicious with relatively high confidence (over $90\%$). A closer inspection revealed these samples truly contain requests with URLs that are suspicious. In fact, a single user was repeatedly labelled malicious in two of its sample (i.e. two independent days of activity). For instance, this user queried the service with a URL of a domain which, when visited, redirects to google.com if no URI path is given. But once a specific and long URI path is appended to the domain, it instead redirects several times to various other domains and gives an empty site in the end. Of course, this is far from identifying this particular user is a true malicious actor - it very well may have been an infected computer - but it shows that the detector correctly labels samples that contain suspicious activity and considers them outliers.
+
+\subsubsection{Attack Analysis}\label{sec:attack_analysis}
+
+\begin{figure}[p]
+    \centering
+
+    \includegraphics[width=0.95\textwidth]{attacks-trend}
+    \caption{Primary Goals – \NA Dependency. We found that there is an emerging pattern in the obfuscation ability against the adversarial detector. Some primary goals tend to be too costly to be obfuscated so the algorithm turns them to \NA. This figure shows the pattern: we draw primary goals (primary URL sets) that are modified to \NA in red and primary goals that are turned into an activity history in blue. The axes correspond to parameters of the primary goals we generated: the x-axis shows a number of URLs with a malicious reputation score in a primary goal $\pr{U}$; the y-axis shows the number of unrated URLs. The figure depicts individual primary goals as dots and an estimated density distributions with contours. Clearly, primary goals with more $10$ malicious URLs tend to become \NA whereas primary goals with fewer than $10$ malicious URLs tend to be conversed to an obfuscated activity history and a corresponding attack is carried out. All data are from a test set of primary goals and the results are taken from an attack against the adversarial detector with $FPR = 0.1\%$.}\label{fig:attack-trends}
+
+\end{figure}
+
+\paragraph{Primary Goal - No-Attack Dependency}
+
+\begin{figure}[p]
+    \centering
+
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{attack-400}
+            \caption{Attack with $T = 400$ and $L_u = 0.05$}\label{fig:attack-400}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{attack-800}
+            \caption{Attack with $T = 800$ and $L_u = 0.05$}\label{fig:attack-800}
+        \end{subfigure}
+
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{attack-800-smaller-cost}
+            \caption{Attack with $T = 800$ and $L_u = 0.005$}\label{fig:attack-800-smaller-cost}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{attack-1600}
+            \caption{Attack with $T = 1600$ and $L_u = 0.0005$}\label{fig:attack-1600}
+        \end{subfigure}
+
+    \caption{The figures plot single activity histories as points in a feature space. All images are PCA-transformations of the feature space with identical principal components. Black points are \NA, red points are obfuscation activity of individual attacker instances, blue points are benign activity histories. The contours correspond to the class posteriori probability modelled with the detector. All pictures show the results of the adversarial detector. Upper left, the results of the gradient attack with $400$ iterations – NAR is $57.33\%$. Upper right, attack with $800$ iterations - NAR is $29.33\%$. Bottom left, attack with $800$ iterations but less expensive per-request cost, $L_u = 0.005$. Bottom right, attack with $1600$ iterations but extremely inexpensive per-request cost, $L_u = 0.0005$. Note that attacks are located in different areas as we change attacker's costs. In the extreme case (bottom right), nearly all attacks are located beyond the detector's contours.}\label{fig:attack-iterations}
+\end{figure}
+
+As argued, the problem of malicious activity detection is difficult in that only benign data are available at the time of training. In this work, we proposed a model of an attacker and, consequently, created a feasible set of primary goals. The training set of malicious data $T^\mal$ contains primary URLs sets $\pr{U_i}$ that we crafted purposely to represent various attackers. We generated $\pr{U_i}$ to comprise URLs with a malicious reputation score and URLs with a yet unrated reputation score. (All introduced in Sec. \ref{sec:training_set})
+
+We trained an adversarial detector and then performed attacks with the gradient attack algorithm. We found that there is a pattern in what primary goals tend to get obfuscated and what are turned into \NA. The relation is depicted in Fig. \ref{fig:attack-trends} where we plot each test set primary goal as a single point parametrised by the contents of the primary goal (i.e. the primary URL set $\pr{U_i}$). Primary goals that are turned to \NA are coloured in red and primary goals that are obfuscated and reassemble an attack are coloured blue. To outline the pattern, we estimate probability density for each group: \NA and attacks. The figure shows that primary URLs sets containing more than roughly $10$ truly malicious URLs are more likely to become \NA. Whereas primary URLs sets with less than $10$ truly malicious URLs are prone to become an obfuscated activity history.
+
+This means that the optimal detector is more exploitable by attacker instances that have fewer truly malicious URLs in their primary goals whereas an attacker instance with a lot of truly malicious URLs tends to be detected. This implies that, after deploying this detector, an attacker which has full knowledge of the setting deals with a fact that employing more than ten malicious URLs a day leads to too costly obfuscation and it is rational not to attack.
+
+\paragraph{\NA Rates}
+The attacks performed in our experiments tend to have large \NA rates (usually NAR is between $50\%$ and $80\%$). A \NA occurs if, given a primary goal, the attack algorithm fails to create an obfuscation activity history because carrying out the attack is too costly. However, it seems this happens too often due to imperfections of the attack algorithm: it for example gets stuck in a local optimum or convergence takes too many iterations. We argue relatively high NAR is mainly caused by the number of iterations of the attack algorithm which, despite already being high ($400$), is sometimes insufficient for finding a less costly activity history. This can be seen when we attack a fitted detector with a gradient attack that runs in $800$ iterations. By doubling the number of iterations, NAR drops from $57.33\%$ to $29.33\%$. Interestingly enough, these attacks, nonetheless, maintain comparable OBR and SCR, i.e. detector's exploitability remains unchanged even though the attacker uses more iterations to craft the attack. Fig. \ref{fig:attack-400} shows attacks of a 400-iterations attacker and Fig. \ref{fig:attack-800} shows a 800-iterations attacker. The figures depict a PCA-transformed feature space with test data of both benign and malicious classes. The red points are final malicious attacks, while the black points are primary goals turned to \NA. The contours show a class posteriori probability modelled by the detector, but projected to a hyperplane attained by PCA. Note that the original problem has over 30 dimensions, thus this view skews distances and causes some relations are misleading. However, the main point can be illustrated: when attacking with 800 iterations the attacker converts more primary goals to an activity history than with 400 iterations.
+
+\paragraph{Attack Cost Analysis}
+
+\begin{table}[t]
+\centering
+
+    \begin{tabular}{|l|c|c||c|c|c|c|}
+    \hline
+                          & $L_u$     & Iterations & NAR      & SAR      & OBR      & MAL      \\ \hline\hline
+    Train Time Attack     & $0.05 \%$ & $400$   & $57\%$ & $1 \%$ & $3 \%$ & $20$ \\ \hline
+    More Iterations       & $0.05 \%$ & $800$   & $29 \%$ & $1 \%$ & $1 \%$ & $19$ \\ \hline
+    Cheaper Requests      & $0.005 \%$ & $800$   & $5\%$ & $29\%$ & $30 \%$ & $146$ \\ \hline
+    The Cheapest Requests & $0.0005 \%$ & $1,600$   & $0 \%$ & $94 \%$ & $94 \%$ & $2003$ \\ \hline
+    \end{tabular}
+
+\caption{Attack Cost Analysis}
+\label{tab:attack-cost-analysis}
+
+\end{table}
+
+The attacker's loss has two constants: a cost for being detected $L_0$ and a cost for sending one request $L_u$. As presented in Sec \ref{sec:attacker_loss}, we use $L_0 = 100$ and $L_u = 0.05$. To repeat, per-request cost $L_u = 0.05$ can be interpreted as follows: an activity history that is labelled as $0\%$ malicious costs exactly $L_0$ when it contains $2,000$ additional obfuscation URLs. Or to put it differently, an obfuscation activity may contain at most 2, 000 additional requests. However, as we pointed out in the dataset analysis above, the median of the number of requests per activity history is actually $\sim 1,000$ and the distribution contains well-represented activity histories even with $\sim 5,000$ requests.
+Thus by this choice, we limit the attacker to create activity histories with fewer than 2000 requests which, however, we argue is a reasonable amount for an attacker.
+
+To check whether attacks with lower per-request cost $L_u$ are able to circumvent the detector, we perform attacks with cheaper costs. In addition: during attack generation, we use $400$ iterations in the attack's gradient algorithm which in each iteration changes the number of requests by little (usually the change is $2$ or $3$ requests). Thus, a smaller $L_u$, which implies higher maximal number of requests, necessarily requires more iteration steps – which is costly and causes significant increase in training time.
+
+From the reasons above, we attack the adversarial detector with the gradient attack with: 400 iterations and $L_u = 0.05$ (train time attack), 800 iterations and $L_u = 0.05$ (more iterations), 800 iterations and $L_u = 0.005$ (cheaper requests) and 1,600 iterations and $L_u = 0.0005$ (the cheapest requests). The attacks' results can be seen in Tab. \ref{tab:attack-cost-analysis}. The attacks are depicted in Fig. \ref{fig:attack-iterations}.
+
+As discussed above, doubling the iterations number from 400 to 800 maintains the adversarial detector's exploitability. However, if we lower the per-request cost to $L_u = 0.005$ which changes the maximum number of requests to 20,000, the detector's exploitability suffers. The successful attack rate (SAR) increases to $30\%$ from $1 \%$. Following the lower cost of requests, the mean attack length increases as well from 20 to 146. OBR rises to $30.99\%$ with NAR at $5.33\%$. This also shows that attacks that were carried out previously at higher costs are now turned into an activity history with greater chance of a successful obfuscation. However, the values are not critical and are comparable to the values attained on an anomaly detector with a train time attack ($L_u = 0.05$ and 400 iterations.).
+
+The resulting attacks of this setting can also be seen in Fig. \ref{fig:attack-800-smaller-cost}. Note that points representing the attacks moved towards the detector's contours but they remained in the malicious-labeled area. We assuem the shift in attack placements reflects the lower per-request cost as the attacker is able to mix in more obfuscation URLs and move closer to legitimate benign samples with occasional low-score URL appearances.
+
+Finally, an attack with $L_u = 0.0005$ (equivalent to $200,000$ max-requests number) and the number of iterations $1,600$ increases OBR rapidly to $94.67 \%$ while entirely erasing NAR ($ 0.0\%$). Accordingly, MAL increases to $2,000$. The detector is largely exploitable by this attack. Same is seen in Fig. \ref{fig:attack-1600} which depicts attacks with the cheapest per-requests cost. Most of the attacks are now moved pass the detector's contours to the area of the feature space with high benign posteriori probability. Note that compared to the previous attacks, the cheapest cost attack instances are placed in a different area - higher along the y-axis. This corresponds to the fact that obfuscation may occur with more requests creating an activity history with mean attack length around 2,000. These activity histories were not generated during training as the train time attacker was limited to at most 2,000 additional requests. Therefore, we may expect that this is a blind spot of the detector because it was not trained to detect such attacks.
+
+It is important point out that the last attack (the cheapest cost) is off scale compared to the attack used at train time. In addition, we conjecture that a detector becomes robust even to this attack if it is trained against it using the detector's learning algorithm (that is following the same procedure but with much lower attacker costs and more iterations during the attack). This, however, will increase computational requirements and training time.
+
+\paragraph{Anomaly Detector - Adversarial Detector Comparison}
+As argued, an anomaly detector does not incorporate a model of an attacker which means it defends attacks "from all directions". Whereas, an adversarial detector takes advantage from the attacker model and defends only "directions which are susceptible to lure attacks". This is better seen in Fig. \ref{fig:contours-comparison} which depicts a view of the feature space transformed with PCA. The figure shows contours of detectors' posterior class probability $D_\theta(\mal | x)$. In case of the adversarial detector, we see that the detector's contours are shaped to reflect areas in which an attack is likely and entirely omit areas in which attacks are not found. Whereas, in case of the anomaly detector, contours only reflect the benign data distribution. This is the main advantage given to an adversarial detector - it models its posterior probability so that it reflects possible attacks.
+
+\begin{figure}[p]
+    \centering
+
+        \begin{subfigure}[b]{0.45\textwidth}
+            \includegraphics[width=\textwidth]{adv-grad-attack}
+            \caption{Adversarial Detector}\label{fig:adv_grad_attack}
+        \end{subfigure}
+        ~
+        \begin{subfigure}[b]{0.43\textwidth}
+            \includegraphics[width=\textwidth]{knn-grad-attack}
+            \caption{Anomaly Detector}\label{fig:knn_adv_attack}
+        \end{subfigure}
+
+    \caption{The figures plot single activity histories as points in a feature space. All images are PCA-transformations of the feature space with identical principal components. Black points are \NA, red points are obfuscation activity of individual attacker instances, blue points are benign activity histories. The contours correspond to the class posteriori probability modelled with the detector. The pictures compare the shape of detector's posterior class probability that is depicted wtih contours. On left, the adversarial detector shapes its contours to reflect possible attacks, whereas, on right, the anomaly detector omits the attacker's model and thus adjusts its contours to face all possible anomalies. This gives the adversarial detector advantage in that it reflect the attck distribution.}\label{fig:contours-comparison}
+\end{figure}

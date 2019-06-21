@@ -106,19 +106,6 @@ class ParamFeaturesComposer:
 
         return res
 
-    # def construct_bases(
-    #         self, init_qps: List[QueryProfile], urls: List[str], use_torch: bool
-    # ) -> List[Tuple[Array, Array]]:
-    #     bases_groups = [f.construct_bases(init_qps, urls, use_torch) for f in self.units]
-    #
-    #     return bases_groups
-    #
-    # def construct_param_features(self, bases_groups, k: Array) -> Array:
-    #     return torch.cat(tuple(
-    #         module.construct_param_features(ground, k, ingredient)
-    #         for (ground, ingredient), module in zip(bases_groups, self.units)
-    #     ), dim=1)
-
     def make_parametric_features(self, init_qps: List[QueryProfile], urls: List[str]) -> "ParametricFeatureMap":
         return ParametricFeatureMap([
             unit.make_parametrized_features(init_qps, urls) for unit in self.units

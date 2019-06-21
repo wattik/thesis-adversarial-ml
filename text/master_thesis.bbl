@@ -15,6 +15,23 @@ A.~M. Nguyen, J.~Yosinski, and J.~Clune, ``Deep neural networks are easily
   fooled: High confidence predictions for unrecognizable images,'' {\em CoRR},
   vol.~abs/1412.1897, 2014.
 
+\bibitem{towards_deep_learning_models}
+A.~Madry, A.~Makelov, L.~Schmidt, D.~Tsipras, and A.~Vladu, ``Towards deep
+  learning models resistant to adversarial attacks,'' {\em arXiv preprint
+  arXiv:1706.06083}, 2017.
+
+\bibitem{defense_gan}
+P.~Samangouei, M.~Kabkab, and R.~Chellappa, ``Defense-gan: Protecting
+  classifiers against adversarial attacks using generative models,'' {\em arXiv
+  preprint arXiv:1805.06605}, 2018.
+
+\bibitem{gan}
+I.~J. Goodfellow, J.~Pouget-Abadie, M.~Mirza, B.~Xu, D.~Warde-Farley, S.~Ozair,
+  A.~Courville, and Y.~Bengio, ``Generative adversarial nets,'' in {\em
+  Proceedings of the 27th International Conference on Neural Information
+  Processing Systems - Volume 2}, NIPS'14, (Cambridge, MA, USA),
+  pp.~2672--2680, MIT Press, 2014.
+
 \bibitem{adversarial_malware}
 K.~Grosse, N.~Papernot, P.~Manoharan, M.~Backes, and P.~McDaniel, ``Adversarial
   examples for malware detection,'' in {\em European Symposium on Research in
@@ -33,45 +50,26 @@ D.~Lowd and C.~Meek, ``Good word attacks on statistical spam filters,'' in {\em
 V.~N. Vapnik, {\em Statistical Learning Theory}.
 \newblock Wiley-Interscience, 1998.
 
-\bibitem{provable_defenses}
-J.~Z. Kolter and E.~Wong, ``Provable defenses against adversarial examples via
-  the convex outer adversarial polytope,'' {\em arXiv preprint
-  arXiv:1711.00851}, vol.~1, no.~2, p.~3, 2017.
-
 \bibitem{stackelberg_games}
 M.~Br{\"u}ckner and T.~Scheffer, ``Stackelberg games for adversarial prediction
   problems,'' in {\em Proceedings of the 17th ACM SIGKDD international
   conference on Knowledge discovery and data mining}, pp.~547--555, ACM, 2011.
 
-\bibitem{antidote}
-B.~I. Rubinstein, B.~Nelson, L.~Huang, A.~D. Joseph, S.-h. Lau, S.~Rao,
-  N.~Taft, and J.~D. Tygar, ``Antidote: understanding and defending against
-  poisoning of anomaly detectors,'' in {\em Proceedings of the 9th ACM SIGCOMM
-  conference on Internet measurement}, pp.~1--14, ACM, 2009.
+\bibitem{stackgrad}
+K.~Amin, S.~Singh, and M.~P. Wellman, ``Gradient methods for stackelberg
+  security games,'' in {\em Proceedings of the Thirty-Second Conference on
+  Uncertainty in Artificial Intelligence}, UAI'16, (Arlington, Virginia, United
+  States), pp.~2--11, AUAI Press, 2016.
 
-\bibitem{transformer}
-A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N. Gomez,
-  L.~Kaiser, and I.~Polosukhin, ``Attention is all you need,'' {\em CoRR},
-  vol.~abs/1706.03762, 2017.
+\bibitem{exploitability_descent}
+E.~Lockhart, M.~Lanctot, J.~P{\'{e}}rolat, J.~Lespiau, D.~Morrill, F.~Timbers,
+  and K.~Tuyls, ``Computing approximate equilibria in sequential adversarial
+  games by exploitability descent,'' {\em CoRR}, vol.~abs/1903.05614, 2019.
 
-\bibitem{towards_deep_learning_models}
-A.~Madry, A.~Makelov, L.~Schmidt, D.~Tsipras, and A.~Vladu, ``Towards deep
-  learning models resistant to adversarial attacks,'' {\em arXiv preprint
-  arXiv:1706.06083}, 2017.
-
-\bibitem{adversarial_examples_glasses}
-I.~Evtimov, K.~Eykholt, E.~Fernandes, T.~Kohno, B.~Li, A.~Prakash, A.~Rahmati,
-  and D.~Song, ``Robust physical-world attacks on machine learning models,''
-  {\em CoRR}, vol.~abs/1707.08945, 2017.
-
-\bibitem{pgd}
-A.~Kurakin, I.~J. Goodfellow, and S.~Bengio, ``Adversarial machine learning at
-  scale,'' {\em CoRR}, vol.~abs/1611.01236, 2016.
-
-\bibitem{obfuscated_gradients}
-A.~Athalye, N.~Carlini, and D.~Wagner, ``Obfuscated gradients give a false
-  sense of security: Circumventing defenses to adversarial examples,'' {\em
-  arXiv preprint arXiv:1802.00420}, 2018.
+\bibitem{neyman-pearson}
+J.~Neyman and E.~Pearson, ``On the problem of the most efficient tests of
+  statistical hypotheses,'' {\em Philosophical Transactions of the Royal
+  Society, A}, vol.~231, pp.~289--337, 01 1933.
 
 \bibitem{relu}
 X.~Glorot, A.~Bordes, and Y.~Bengio, ``Deep sparse rectifier neural networks,''
@@ -80,9 +78,104 @@ X.~Glorot, A.~Bordes, and Y.~Bengio, ``Deep sparse rectifier neural networks,''
   vol.~15 of {\em Proceedings of Machine Learning Research}, (Fort Lauderdale,
   FL, USA), pp.~315--323, PMLR, 11--13 Apr 2011.
 
+\bibitem{selu}
+G.~Klambauer, T.~Unterthiner, A.~Mayr, and S.~Hochreiter, ``Self-normalizing
+  neural networks,'' in {\em Proceedings of the 31st International Conference
+  on Neural Information Processing Systems}, NIPS'17, (USA), pp.~972--981,
+  Curran Associates Inc., 2017.
+
+\bibitem{pgd}
+A.~Kurakin, I.~J. Goodfellow, and S.~Bengio, ``Adversarial machine learning at
+  scale,'' {\em CoRR}, vol.~abs/1611.01236, 2016.
+
+\bibitem{cnn}
+A.~Krizhevsky, I.~Sutskever, and G.~E. Hinton, ``Imagenet classification with
+  deep convolutional neural networks,'' in {\em Proceedings of the 25th
+  International Conference on Neural Information Processing Systems - Volume
+  1}, NIPS'12, (USA), pp.~1097--1105, Curran Associates Inc., 2012.
+
+\bibitem{transformer}
+A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N. Gomez,
+  L.~Kaiser, and I.~Polosukhin, ``Attention is all you need,'' {\em CoRR},
+  vol.~abs/1706.03762, 2017.
+
+\bibitem{provable_defenses}
+J.~Z. Kolter and E.~Wong, ``Provable defenses against adversarial examples via
+  the convex outer adversarial polytope,'' {\em arXiv preprint
+  arXiv:1711.00851}, vol.~1, no.~2, p.~3, 2017.
+
+\bibitem{huang}
+L.~Huang, A.~D. Joseph, B.~Nelson, B.~I. Rubinstein, and J.~D. Tygar,
+  ``Adversarial machine learning,'' in {\em Proceedings of the 4th ACM Workshop
+  on Security and Artificial Intelligence}, AISec '11, (New York, NY, USA),
+  pp.~43--58, ACM, 2011.
+
+\bibitem{barreno}
+M.~Barreno, B.~Nelson, R.~Sears, A.~D. Joseph, and J.~D. Tygar, ``Can machine
+  learning be secure?,'' in {\em Proceedings of the 2006 ACM Symposium on
+  Information, Computer and Communications Security}, ASIACCS '06, (New York,
+  NY, USA), pp.~16--25, ACM, 2006.
+
 \bibitem{adversarial_malware_binary}
 A.~Huang, A.~Al{-}Dujaili, E.~Hemberg, and U.~O'Reilly, ``Adversarial deep
   learning for robust detection of binary encoded malware,'' {\em CoRR},
   vol.~abs/1801.02950, 2018.
+
+\bibitem{antidote}
+B.~I. Rubinstein, B.~Nelson, L.~Huang, A.~D. Joseph, S.-h. Lau, S.~Rao,
+  N.~Taft, and J.~D. Tygar, ``Antidote: understanding and defending against
+  poisoning of anomaly detectors,'' in {\em Proceedings of the 9th ACM SIGCOMM
+  conference on Internet measurement}, pp.~1--14, ACM, 2009.
+
+\bibitem{adversarial_examples_glasses}
+I.~Evtimov, K.~Eykholt, E.~Fernandes, T.~Kohno, B.~Li, A.~Prakash, A.~Rahmati,
+  and D.~Song, ``Robust physical-world attacks on machine learning models,''
+  {\em CoRR}, vol.~abs/1707.08945, 2017.
+
+\bibitem{obfuscated_gradients}
+A.~Athalye, N.~Carlini, and D.~Wagner, ``Obfuscated gradients give a false
+  sense of security: Circumventing defenses to adversarial examples,'' {\em
+  arXiv preprint arXiv:1802.00420}, 2018.
+
+\bibitem{black-box}
+N.~Papernot, P.~D. McDaniel, I.~J. Goodfellow, S.~Jha, Z.~B. Celik, and
+  A.~Swami, ``Practical black-box attacks against deep learning systems using
+  adversarial examples,'' {\em CoRR}, vol.~abs/1602.02697, 2016.
+
+\bibitem{black_box_adversarial_attacks}
+A.~Ilyas, L.~Engstrom, A.~Athalye, and J.~Lin, ``Black-box adversarial attacks
+  with limited queries and information,'' {\em arXiv preprint
+  arXiv:1804.08598}, 2018.
+
+\bibitem{sgd}
+J.~Kiefer and J.~Wolfowitz, ``Stochastic estimation of the maximum of a
+  regression function,'' {\em Ann. Math. Statist.}, vol.~23, pp.~462--466, 09
+  1952.
+
+\bibitem{mnist}
+Y.~LeCun and C.~Cortes, ``{MNIST} handwritten digit database,'' {\em -}, 2010.
+
+\bibitem{lambda_trick}
+V.~L. Jaromir~Janisch, Tom{\'a}{\v s}~Pevn{\'y}, ``Classification with costly
+  features as a sequential decision-making.'' (under review), 2019.
+
+\bibitem{learning_rate}
+W.~Suttle, Z.~Yang, K.~Zhang, Z.~Wang, T.~Basar, and J.~Liu, ``A multi-agent
+  off-policy actor-critic algorithm for distributed reinforcement learning,''
+  {\em CoRR}, vol.~abs/1903.06372, 2019.
+
+\bibitem{batch-norm}
+S.~Ioffe and C.~Szegedy, ``Batch normalization: Accelerating deep network
+  training by reducing internal covariate shift,'' {\em CoRR},
+  vol.~abs/1502.03167, 2015.
+
+\bibitem{pytorch}
+A.~G. Baydin, B.~A. Pearlmutter, A.~A. Radul, and J.~M. Siskind, ``Automatic
+  differentiation in machine learning: A survey,'' {\em J. Mach. Learn. Res.},
+  vol.~18, pp.~5595--5637, Jan. 2017.
+
+\bibitem{minibatch_descent}
+S.~Ruder, ``An overview of gradient descent optimization algorithms,'' {\em
+  CoRR}, vol.~abs/1609.04747, 2016.
 
 \end{thebibliography}

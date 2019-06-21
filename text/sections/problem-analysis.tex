@@ -1,7 +1,4 @@
-\section{Problem Analysis}
-
-\todo{What is a proper name for this section?}
-
+\section{Problem Analysis}\label{sec:problem_analysis}
 In the present state of Internet, it is common for a site owner to run
 models classifying users or their behaviour. The task spans from user’s
 interests specification to detecting deviating activity. Since such
@@ -17,11 +14,12 @@ lower cost. As a result, machine learning models of any kind aiming to
 capture behaviours of those users necessarily need to have the adversary
 nature incorporated in their design.
 
-The straight-forward approach of solving this task would be to collect
+In this work, we deal with a task of detecting malicious activity in network security. That is a problem that combines adversarial motivations of involved actors and principles of statistical learning to account for a distribution of observed activity. The goal of this section is to propose a theoretical background that gives an optimisation problem for finding a robust activity detector. In the following section, we then introduce an industrial real-world problem which is an instance of this task and propose a solution to it using the developed theory.
+
+The straight-forward approach of solving the task of malicious activity detection would be to collect
 many examples of both kinds of user activity; that is to asses a dataset
 containing well-represented both malicious and benign users. This
-approach would follow the standard ERM framework and would give an
-activity classifier that minimises expected risk but omits the
+approach would follow the standard expected risk minimisation framework (ERM) and would give an activity classifier that minimises expected risk but omits the
 adversarial nature. However, one might arrive at difficulties during the
 construction of a balanced dataset for there is usually very few records
 of malicious activity, disproportionally less than the collection of
@@ -29,51 +27,38 @@ normal, benign users. Also, and more importantly, the malicious actors
 modify their attack vectors once their method is exposed or they
 discover details concerning the detector.
 
-Taking that into account, we consider the setting as a game of a classifier
+Taking that into account, we consider the setting is a game of a classifier
 competing with a body of malicious users. This approach necessarily
 modifies the ERM framework and enhances it with game-theoretic notions.
 
-This section first discusses the use-case which motivates this work.
-Then, a suitable threat model is prosed and the game is formally
-defined, supplemented with reasoning for given choices.
-
-\todo{Emphasise the general adversarial machine learning problem as the core of this section.}
-f
-\todo{revisit the section introduction to inform about all subsections and refer to them}
-
-A malicious activity detection system is essentially a classifier that classifies users based on their behaviour. This in principle is a machine learning problem of finding a classifier $f \in \F$ minimising expectation of detection loss $\ell_{-1}$. The detector is a mapping $f: \X \mapsto \C$ which takes vectors $x \ in \X$ on its input and produces a decision $d \in \C$. However, the ground variable representing a discrete input object is a user's activity history $h \in \H$ which is translated to a corresponding feature vector with a feature map $\Phi: \H \mapsto \X$.
-
-All variables and functions related strictly to a detector are subscripted with $-1$, whereas we use $+1$ in the attacker's case. This choice follows Brückner et al \cite{stackelberg_games}.
-
-As already mentioned, minimising the expected risk – as it is done in general classification problems – does not help to solve the problem of detection. The expected risk minimisation framework (ERM) consists of identifying an optimal classifier $f$ that minimises expectation of $\ell_\minus : \C \times \C \mapsto \R$ over the set $\X \times \C$.
-
- The expected risk can be formulated as a convex combination of risks conditioned on a class.Assuming there is two classes, i.e. $\C = \{ \ben, \mal \}$, the expected risk can be rewritten as a combination of the risk attained on the malicious class and the risk attained on the benign class.
+\paragraph{Expected Risk Minimisation}
+A malicious activity detection system is essentially a classifier that classifies users based on their behaviour. This in principle is a machine learning problem of finding a classifier $f \in \F$ minimising expectation of detection loss $\ell_{-1} : \C \times \C \mapsto \R$. The classifier is a mapping $f: \X \mapsto \C$ which takes vectors $x \in \X$ on its input and produces a decision $d \in \C$. However, the ground variable representing the object to be classified is a user's activity history $h \in \H$ which is translated to a corresponding feature vector by a feature map $\Phi: \H \mapsto \X$. All variables and functions related strictly to a detector are subscripted with $-1$, whereas we use $+1$ in the attacker's case. This choice follows Brückner et al. \cite{stackelberg_games}. ERM consists of identifying an optimal classifier $f$ that minimises expectation of $\ell_\minus$ over tuples of a feature vector and a class from $\X \times \C$. The expected risk can be formulated as a convex combination of risks conditioned on a class. Assuming there is two classes, i.e. $\C = \{ \ben, \mal \}$, the expected risk can be rewritten as a combination of the risk attained on the malicious class and the risk attained on the benign class.
 
 \begin{definition}\label{def:risk}
-    Let the risk attained on the malicious a class $\mal$, $R_\minus(f \mid \mal)$, be the expectation of the loss conditioned on class $\mal$. Let the risk attained on the benign class $\ben$, $R_\minus(f \mid \ben)$, be the expectation of the loss conditioned on a class $\ben$.
+    Let the risk attained on a malicious class $\mal$, $R_\minus(f \mid \mal)$, be the expectation of the loss conditioned on class $\mal$. Let the risk attained on a benign class $\ben$, $R_\minus(f \mid \ben)$, be the expectation of the loss conditioned on class $\ben$.
 
-    \begin{align}
-        R_\minus(f \mid \mal)  &= \E_{x} \left \ell_\minus(f(x), \mal) \mid \mal \right \\
-        R_\minus(f \mid \ben)  &= \E_{x} \left \ell_\minus(f(x), \mal) \mid \ben \right
-    \end{align}
+    \begin{align*}
+        R_\minus(f \mid \mal)  &= \E_{x} \leftb \ell_\minus(f(x), \mal) \mid \mal \rightb \\
+        R_\minus(f \mid \ben)  &= \E_{x} \leftb \ell_\minus(f(x), \mal) \mid \ben \rightb
+    \end{align*}
 
 \end{definition}
 
 \begin{definition}[Detector's Expected Risk Minimisation]\label{def:erm}
     In standard classification, the optimal classifier $f^*$ is the solution of the following problem:
 
-    \begin{equation}\label{eq:erm}
+    \begin{equation*}
         \begin{aligned}
         & \underset{f \in \F} {\text{minimise}}
         & & p(\ben) \cdot R_\minus(f \mid \ben)
         +
         p(\mal) \cdot R_\minus(f \mid \mal)
         \end{aligned}
-    \end{equation}
+    \end{equation*}
 \end{definition}
 
 
-\subsection{Specifics of Adversarial Machine Learning}
+\subsection{Specifics of Adversarial Machine Learning}\label{sec:specifics_of_aml}
 
 In this section, we examine adversarial machine learning in the domain of network security in general terms. The central task is to detect malicious users in the network without ideally affecting legitimate users.
 
@@ -86,123 +71,112 @@ The expectations in Def. \ref{def:erm} are usually estimated from a set of examp
     An individual attacker follows its private objective and (possibly rationally) chooses actions minimising its cost.
 \end{itemize}
 
-\subsection{Property 1: Unknown Class Probabilities}
+\subsubsection{Property 1: Unknown Class Probabilities}\label{sec:property_one}
+To reflect the first property, we necessarily need to  give up on ERM. We propose to redefine the detection problem to comply with the Neyman-Pearson Task (recall Sec. \ref{sec:neyman-pearson}). The Neyman-Pearson task minimises the false negative rate (FNR) while keeping the false positive rate (FPR) below a certain level. This way the priori class probabilities are omitted. Inspired by this approach, we defined that the optimal detector minimises a risk attained on malicious class $R_\minus(f \mid \mal)$ and keeps the risk on benign class $R_\minus(f \mid \ben)$ below a threshold. This reflects the desired strict constraint of real-world detection problems which is to identify an optimal detector but to avoid affecting benign users up to certain tolerance level. Conveniently, with a zero-one loss, the risk attained on malicious class $R_\minus(f \mid \mal)$ becomes the false positive rate and similarly the benign class risk $R_\minus(f \mid \ben)$ becomes the false negatives rate.
 
-To reflect the first property, we redefine the detection problem to comply with the Neyman-Pearson Task \ref{sec:neyman-pearson}. Since we aim to detect malicious activity, the false positives comprise benign users classified as malicious. And, vice-versa, the false negatives are malicious users classified as benign.
+\begin{definition}[Neyman-Pearson Detection Task]\label{def:np_task}
+    The Neyman-Pearson detection task minimises the expected loss conditioned on the malicious class while the expected loss conditioned on the benign class is maintained lower than a threshold $\tau_0$.
 
-\begin{definition}[Neyman-Pearson Task]\label{def:np_task}
-    The Neyman-Pearson Task translates to minimising the expected loss conditioned on the malicious class while the expected loss conditioned on the benign class is maintained lower than a threshold.
-
-    \begin{equation}\label{eq:erm}
+    \begin{equation*}
         \begin{aligned}
         & \underset{f \in \F} {\text{minimise}}
         & & R_\minus(f \mid \mal) \\
         & \text{subject to}
         & & R_\minus(f \mid \ben) \leq \tau_0 \\
         \end{aligned}
-    \end{equation}
+    \end{equation*}
 \end{definition}
 
-Using this formulation, prior class probabilities are omitted and, in addition, the task reflects the nature of security detection problems in which there is a hard constraint on false positives. In other words, we aim to find a classifier $f$ that does not affect legitimate activity but given this constraint is the best detector of malicious activity. As shown later, this form is particularly useful if the detector is a neural network.
+Using this formulation, prior class probabilities are omitted and, in addition, the task reflects the nature of security detection problems in which there is a hard constraint on false positives. In other words, we aim to find a classifier $f$ that does not affect legitimate activity but given this constraint is the best detector of malicious activity.
 
-\subsection{Property 2: Adversarial Setting}
+\subsubsection{Property 2: Adversarial Setting}
 By assuming an attacker is a rational actor that pursuits its goal, the setting of statistical learning changes to an adversarial game of two players: a detector and an attacker.
 
-We sort sampled activity into two classes: benign ($\ben$) and malicious ($\mal$). The former is activity generated by legitimate users and the later is activity produced solely by attackers in pursuit of their objectives.
+We sort sampled activity into two classes: benign ($\ben$) and malicious ($\mal$). The former is activity generated by legitimate users and the later is activity produced solely by an attacker in pursuit of its objectives.
 
-To avoid detection, each individual attacker obfuscates its primary activity by acting nearly as a legitimate user. However, if a good detector is deployed the obfuscation requires a large quantity of legitimate activity. If the obfuscation effort is too costly the attacker may seize to attack at all.
+To avoid detection, each individual attacker obfuscates its primary goal. However, if a good detector is deployed, obfuscation requires a large quantity of legitimate activity to make the final activity mask the primary goal entirely and avoid detection. The obfuscated activity of an attacker, in consequence, is recorder by the detector and stored as an activity history based on which the detector assigns a label to it.
 
-The obfuscated activity of an attacker, in consequence, is recorder by the detector and stored as an activity history based on which the detector assigns a label to it. The intuitive goal of the detector is to label legitimate activity history as benign, i.e. $\ben$, and the activity history generated by an attacker as malicious, i.e. $\mal$.
+\subsubsection{Stackelberg Game}\label{sec:stackelberg_game}
+In practice, the detector is fixed after deployment and the choice of its particular form and parameters necessarily occurs before the deployment. This is a case of a Stackelberg game \cite{stackelberg_games} in which the detector is a leader and the attacker is a follower. For theoretical properties (its existence for instance) we assume a strong Stackelberg equilibrium is played.
 
-In the following sections, we closely explore and examine the motivations and aspects implied by the adversarial setting in network security.
+In a Stackelberg game, the follower plays a best response to the leader's public strategy and the leader optimises this strategy, accounting for the follower's best response. In such a setting, the leader optimally plays a mixed strategy while the follower plays a pure strategy. This means the attacker obfuscates its activity optimally without a need of randomisation by playing a best response to detector's strategy.
 
-\subsubsection{Stackelberg Game}
-In practice, the detector is fixed after deployment and the choice of its particular form and parameters necessarily occurs before the deployment. This is a case of a Stackelberg game \cite{stackelberg_games} in which the detector is a leader and the attacker is a follower. For the sake of simplicity we assume the Strong Stackelberg Equilibrium is played.
-
-In a Stackelberg game, the follower plays a best response to the leader's public strategy and the leader optimises this strategy accounting the follower's best response. In such a setting, the leader optimally plays a mixed strategy.
-
-This means, the attacker obfuscates its activity optimally without a need of randomisation by playing a best response to detector's strategy.
-
-As mentioned, the detector may necessarily randomise its actions to achieve the optimal cost. This translates to a detector playing a mixed strategy $\sigma(f) : \F \mapsto [ 0,1 ] $ instead of a single particular $f$.
+As mentioned, the detector may necessarily randomise its actions to achieve the optimal cost. This translates to a detector playing a mixed strategy $\sigma(f) : \F \mapsto [ 0,1 ] $ instead of a single particular $f$. To put it differently, the player detector posses a probability distribution over all possible classifiers $\sigma(f)$ and, according to it, randomises the choice of a particular classifier $f$ and labels an input sample $x \in X$ as a class $d \in C$, $d = f(x)$. In conclusion, the detector decides a sample $x \in \X$ belongs to a class $d \in \C$ based on a probability $D_\sigma(d \mid x)$ that is constructed in accordance to $\sigma(f)$. The notion is captured in the following definition.
 
 \begin{definition}\label{def:stochastic-detector}
     A stochastic detector $D: \X \mapsto \C$ is a probability distribution $p(d \mid x )$ generating a decision $d \in \C $ conditioned on an observed sample $x \in \X$. $D_\sigma$ is given by a detector playing a mixed strategy $\sigma: \F \mapsto [0,1]$:
 
-    \begin{equation}
+    \begin{equation*}
         D_\sigma(d|x) = \sum_{f: f(x) = d} \sigma(f)
-    \end{equation}
+    \end{equation*}
 
 \end{definition}
 
-\subsubsection{Information Available to Attacker}
-We assume the attacker has full knowledge of the detector's structure and parameters.
-
-\subsubsection{Attacker}
+\subsubsection{Attacker}\label{sec:attacker-def}
 We model the attacker as a rational actor which plays the action minimising its expected costs. The particular form of costs and actions depends largely on the domain. Therefore, here we only present general notions defining the attacker and, later in Section \ref{sec:attacker}, we propose the attacker's model that suits the running example of attacks to a URL reputation service.
 
-We propose all attackers follow the same objective and they differ only in their particular primary goal. That is, the activity obfuscation is practically the same task shared by all attackers and two attackers differ in what they aim to obfuscate.
+According to \cite{stackelberg_games}, we propose all attackers follow the same objective and they differ only in their particular primary goal. That is, the activity obfuscation is practically the same task shared by all attackers and two attackers differ in what they aim to obfuscate. The final activity history of each of them is strictly a function of the primary goal.
 
-For that reason, the model of an attacker considers a common body of attacker instances in which an individual attacker instance is thoroughly defined by its primary goal $g \in \G$. The common shared obfuscation function $\psi: \G \mapsto \H$ takes a primary goal $g$ on its input and maps it to an activity history $h = \psi(g)$ that obfuscates the primary goal.
+For that reason, the model of the attacker considers a single-body aggregate player in which an individual attacker instance is thoroughly defined by its primary goal $g \in \G$. The common shared obfuscation function $\psi: \G \mapsto \H$ takes a primary goal $g$ on its input and maps it to an activity history $h = \psi(g)$ that obfuscates the primary goal. Since we assume the attacker is required to meet its primary goal $g$, the outcomes of the obfuscation function are limited to contain activity related to meeting the primary goal, that is $\psi(g) \in S(g)$. The set $S(g)$ contains all activity histories that meets the primary goal $g$.
 
-\todo{obfs function maps to S(g), maybe make definition of psi}
+The attacker is a rational player which operates in a stochastic environment (goals have a prior distribution). This is captured by the risk of the attacker defined below.
 
 \begin{definition}
-    The attacker's risk $R_\plus : \Psi \times \F \mapsto \R$ is given as the expectation of its loss $\ell_\plus : \G \times \Psi \times \C \mapsto \R$. That is:
+    Let the primary goals $g \in \G$ be generated by a probability $p(g)$. Let $Psi$ be a family of obfuscation functions $\psi: \G \mapsto \H$. Let $f \in \F$ be a classifier and $\Phi: \H \mapsto \X$ a feature map. The attacker's risk $R_\plus : \Psi \times \F \mapsto \R$ is given as the expectation of its loss $\ell_\plus : \G \times \Psi \times \C \mapsto \R$. That is:
 
-    \begin{equation}
-        R_\plus(\psi, f) = \E_g \left \ell_\plus (g, \psi, f(\Phi(\psi(g)))) \right
-    \end{equation}
+    \begin{equation*}
+        R_\plus(\psi, f) = \E_g \leftb \ell_\plus (g, \psi, f(\Phi(\psi(g)))) \rightb
+    \end{equation*}
+
 \end{definition}
-
-\todo{couple of words what the loss comprises.}
 
 Relating to game theory, the obfuscation function $\psi$ is an attacker's action and its best response to $\sigma$ is given by minimising the attacker's expected risk $\E_{f \sim \sigma} R_\plus(\psi, f)$.
 
-\begin{proposition}[Attacker's best response]\label{prop:br}
+\begin{proposition}[Attacker's Best Response]\label{prop:br}
     The attacker's best response $\BR(\sigma)$ to a mixed strategy $\sigma$ is a set of obfuscation functions $\psi: \G \mapsto \H$ that are the minimisers of the expectation of the attacker's loss $\ell_\plus$.
 
-    \begin{equation}
-        \BR(\sigma) = \argmin_\psi \E_{g,d} \left \ell_\plus (g, \psi, d) \right
-    \end{equation}
+    \begin{equation*}
+        \BR(\sigma) = \argmin_\psi \E_{g,d} \leftb \ell_\plus (g, \psi, d) \rightb
+    \end{equation*}
 \end{proposition}
 
 \begin{proof}
     \begin{align}
         \BR(\sigma) &= \argmin_\psi \E_{f \sim \sigma} R_\plus(\psi, f) \\
-            &= \argmin_\psi \E_{f, g} \left \ell_\plus (g, \psi, f(\Phi(\psi(g)))) \right \\
+            &= \argmin_\psi \E_{f, g} \leftb \ell_\plus (g, \psi, f(\Phi(\psi(g)))) \rightb \\
             &= \argmin_\psi \sum_f \sum_g  \ell_\plus (g, \psi, f \circ \Phi \circ \psi(g))  \cdot  p(g) \cdot  \sigma(f)  \\
-            &= \argmin_\psi \sum_g \sum_d \sum_{f: f \circ \Phi \circ \psi(g) = d}  \ell_\plus (g, \psi, d) \cdot  p(g)\sigma(f) \\
+            &= \argmin_\psi \sum_g \sum_d \sum_{f: f \circ \Phi \circ \psi(g) = d}  \ell_\plus (g, \psi, d) \cdot  p(g) \cdot \sigma(f) \\
             &= \argmin_\psi \sum_g \sum_d \ell_\plus (g, \psi, d)  \cdot   p(g)  \cdot  \sum_{f: f \circ \Phi \circ \psi(g) = d} \sigma(f) \\
             &= \argmin_\psi \sum_g \sum_d \ell_\plus (g, \psi, d) \cdot  p(g)  \cdot D_\sigma(d \mid \Phi \circ \psi(g) ) \\
-            &= \argmin_\psi \E_{g,d} \left \ell_\plus (g, \psi, d) \right
+            &= \argmin_\psi \E_{g,d} \leftb \ell_\plus (g, \psi, d) \rightb
     \end{align}
 \end{proof}
 
-\subsubsection{Stochastic Detector}
+\subsubsection{Stochastic Detector}\label{sec:stochastic_detector}
 The detector's pure strategy consists of a particular detector $f$. However, as proposed above, its optimal strategy is generally mixed and the detector, therefore, randomises its final decision $d \in \C$.
 
 A mixed strategy in case of the detector is a probability distribution $\sigma : \F \mapsto [0,1]$ which assigns a probability to each particular detector $f$. The decision $d$ representing the estimated class of a sample $x$ is, consequently, a random variable whose probability distribution is the aggregate of probabilities $\sigma(f)$ for which $f(x) = d$. To capture that, we defined a decision distribution $D(d|x)$ in Def. \ref{def:stochastic-detector}.
 
 In this work, we model $D(d|x)$ with a neural network which fruitfully allow us to bypass potentially infinite enumeration of detectors from $\F$. The detector's mixed strategy is, in conclusion, represented by the distribution $D_\theta (d|x)$ where $\theta$ is a parameters vector.
 
-As proposed by Brückner et al. \cite{stackelberg_games}, the attacker's impact on the setting can be modelled by a distribution shift. However, in contrast to \cite{stackelberg_games}, in this work we assume only the malicious class activity is governed by adversarial objectives and benign activity is maintained unchanged irrespective to the detector's presence. Taking that into account, we define that the distribution of samples produced by attackers $p(x \mid \mal)$ is shifted in reaction to the presence of a deployed detector $D$ and changes to $\dot{p}(x \mid \mal, D)$.
+As proposed by Brückner et al. \cite{stackelberg_games}, the attacker's impact on the setting can be modelled by a distribution shift. However, in contrast to \cite{stackelberg_games}, in this work we assume only the malicious class activity is governed by adversarial objectives and benign activity is maintained unchanged irrespective of the detector's presence. Taking that into account, we define that the distribution of samples produced by attackers $p(x \mid \mal)$ is shifted in reaction to the presence of a deployed detector $D$ and changes to $\dot{p}(x \mid \mal)$.
 
 In a standard classification problem, we find $f$ minimising the expected risk. In our adversarial setting, the detector is necessarily a distribution $D$ that is a solution to the Neyman-Pearson Task with a non-stationary distribution of samples $\dot{p}(x \mid \mal)$.
 
 \begin{proposition}
     Let the attacker play a best response $\BR(\sigma)$ to a mixed strategy $\sigma$, then the detector's risk of a mixed strategy $\sigma$ attained on malicious activity, $R_\minus(\sigma \mid \mal)$, is given by the best-case expectation of its loss attained on malicious activity.
 
-    \begin{align}
-        R_\minus(\sigma \mid \mal) = \E_f \left R_\minus(f) \mid \mal \right = \min_{\psi \in \BR(\sigma) } \,
-            \E_{q, d} \left \ell_\minus (d, \mal) \mid \mal \right
-    \end{align}
+    \begin{align*}
+        R_\minus(\sigma \mid \mal) = \E_f \leftb R_\minus(f) \mid \mal \rightb = \min_{\psi \in \BR(\sigma) } \,
+            \E_{q, d} \leftb \ell_\minus (d, \mal) \mid \mal \rightb
+    \end{align*}
 
     Similarly, the detector's risk of mixed strategy $\sigma$ attained on benign activity, $R_\minus(\sigma \mid \ben)$, is given by the expectation of its loss attained on benign activity.
 
-    \begin{align}
-        R_\minus(\sigma \mid \ben) = \E_f \left R_\minus(f) \mid \ben \right =
-            \E_{h, d} \left \ell_\minus (d, \ben) \mid \ben \right
-    \end{align}
+    \begin{align*}
+        R_\minus(\sigma \mid \ben) = \E_f \leftb R_\minus(f) \mid \ben \rightb =
+            \E_{h, d} \leftb \ell_\minus (d, \ben) \mid \ben \rightb
+    \end{align*}
 
 \end{proposition}
 
@@ -210,8 +184,8 @@ In a standard classification problem, we find $f$ minimising the expected risk. 
 
 For the risk of a mixed strategy attained on malicious activity, it holds that:
 \begin{align}
-    R_\minus(\sigma \mid \mal) &= \E_f \left R_\minus(f) \mid \mal \right \\
-    &= \E_{f, x} \left \ell_\minus(f(x), \mal) \mid \mal \right \\
+    R_\minus(\sigma \mid \mal) &= \E_f \leftb R_\minus(f) \mid \mal \rightb \\
+    &= \E_{f, x} \leftb \ell_\minus(f(x), \mal) \mid \mal \rightb \\
     &= \sum_f \sum_x \ell_\minus(f(x), \mal)  \cdot  \dot{p}(x \mid \mal)  \cdot  \sigma(f)
 \end{align}
 
@@ -234,54 +208,79 @@ Using the substitution and considering the best-case, we arrive at:
     &= \min_{\psi \in \BR(\sigma)}
         \sum_g \sum_d \ell_\minus(d, \mal) \cdot p(g) \cdot D_\sigma(d \mid \Phi \circ \psi(g)) \\
     &= \min_{\psi \in \BR(\sigma) } \,
-        \E_{q, d} \left \ell_\minus (d, \mal) \mid \mal \right
+        \E_{q, d} \leftb \ell_\minus (d, \mal) \mid \mal \rightb
 \end{align}
 
 Similarly for the risk of a mixed strategy attained on benign activity:
 
 \begin{align}
-    R_\minus(\sigma \mid \ben) &= \E_f \left R_\minus(f) \mid \ben \right \\
-    &= \E_{f, x} \left \ell_\minus(f(x), \ben) \mid \ben \right \\
+    R_\minus(\sigma \mid \ben) &= \E_f \leftb R_\minus(f) \mid \ben \rightb \\
+    &= \E_{f, x} \leftb \ell_\minus(f(x), \ben) \mid \ben \rightb \\
     &= \sum_f \sum_x \ell_\minus(f(x), \ben)  \cdot p(x \mid \ben) \sigma(f) \\
     &= \sum_f \sum_h \ell_\minus( f \circ \Phi(h) ), \ben) \cdot  p(h \mid \ben)  \cdot \sigma(f) \\
     &= \sum_h \sum_d \ell_\minus(d, \ben)  \cdot p(h \mid \ben) \cdot  D_\sigma(d \mid \Phi(h)) \\
-    &= \E_{h, d} \left \ell_\minus(d, \ben) \mid \ben \right
+    &= \E_{h, d} \leftb \ell_\minus(d, \ben) \mid \ben \rightb
 \end{align}
 \end{proof}
 
 \begin{definition}
     For simplicity, we interchangeably use $\sigma$ and $D_\sigma$ and $D_\theta$ as the detector's strategy. Thus:
 
-    \begin{equation}
-         R_\minus(D_\sigma \mid \cdot) = R_\minus(\sigma \mid \cdot) = R_\minus(\theta \mid \cdot)
-    \end{equation}
+    \begin{equation*}
+         R_\minus(D_\sigma \mid \cdot) = R_\minus(\sigma \mid \cdot) = R_\minus(D_\theta \mid \cdot)
+    \end{equation*}
 
 \end{definition}
 
 
-\begin{proposition}[Detector's optimisation problem]
+\begin{proposition}[Detector's Optimisation Problem]
     Let the detector minimise the expected risk attained on malicious activity, while maintaining the expected risk attained on benign activity upper-bounded by $\tau_0$. Let the attacker minimise its expected risk. Then the stochastic detector $D_\theta$ parametrised by $\theta$ and the obfuscation function $\psi$ which are the solution to the following bi-level optimisation problem are the Stackelberg equilibrium.
 
-    \begin{equation}\label{eq:detector_optimisation}
+    \begin{equation*}
         \begin{aligned}
         & \underset{\theta, \psi} {\text{minimize}}
-        & & \E_{q, d} \left \ell_\minus (d, \mal) \mid \mal \right \\
+        & & \E_{q, d} \leftb \ell_\minus (d, \mal) \mid \mal \rightb \\
         & \text{subject to}
-        & & \E_{h, d} \left \ell_\minus(d, \ben) \mid \ben \right \le \tau_0 \\
-        & & & \psi \in \argmin_{\psi'} \E_{g,d} \left \ell_\plus (g, \psi', d) \right
+        & & \E_{h, d} \leftb \ell_\minus(d, \ben) \mid \ben \rightb \le \tau_0 \\
+        & & & \psi \in \argmin_{\psi'} \E_{g,d} \leftb \ell_\plus (g, \psi', d) \rightb
         \end{aligned}
-    \end{equation}
+    \end{equation*}
 
+    \label{prop:detector_optimisation}
 \end{proposition}
 
 \begin{proof}
  The proposition follows directly from the definitions and propositions above.
 \end{proof}
 
-\todo{This is cool as it follows directly from ERM when three assumptions are added: Neyman-Pearson, Rational Attacker, Stackelberg Game}
+\subsubsection{On Stochasticity Importance}\label{sec:stochasticity_importance}
+To understand the importance of stochasticity of a detector, let us present a toy example in which a deterministic detector has inevitably inferior performance to a stochastic detector. Consider an instance of a problem in Prop. \ref{prop:detector_optimisation} in which the false positive rate (FPR) constraint allows misclassifying only one benign sample. However, the distribution of the benign data has two outliers in the region where the attacker places its obfuscated sample. See visualisation in Fig. \ref{fig:toy-example-setting} which demonstrates this setting.
 
-\todo{Smooth out the sequence of those propositions by mix-in explanations. This is a key train thought and it is important to stress it out clearly.}
+To achieve best performance, a deterministic detector shapes its decision line so that one of these outliers is well-classified while the other is misclassified. This solution meets the constraint. However, the attacker's the best response obfuscation function moves the malicious sample towards the one benign sample that is classified correctly. Had the detector chosen the other outlier to be well classified, the attacker would have adjusted and placed its attack to the now well classified benign sample. According to the Detector's optimisation problem, the optimal deterministic detector achieves zero detection rate. The final decision line is depicted in Fig. \ref{fig:toy-example-deterministic-detector}.
 
+Now, consider a stochastic detector instead. To maximise detection rate while still meeting the FPR constraint, the detector adjusts the posteriori distribution in such a way that the two outliers are both covered with $50 \%$ probability of maliciousness. This meets the constraint on FPR and maximises detection rate since all possible obfuscations (in the region of possible obfuscations) are given also $50\%$ detection probability. This is fully shown in Fig. \ref{fig:toy-example-stochastic-detector}.
+
+\begin{figure}[p]
+    \centering
+
+        \begin{subfigure}[b]{0.6\textwidth}
+            \includegraphics[width=\textwidth]{toy-example-setting}
+            \caption{Problem setting}\label{fig:toy-example-setting}
+        \end{subfigure}
+
+        \begin{subfigure}[b]{0.6\textwidth}
+            \includegraphics[width=\textwidth]{toy-example-deterministic-detector}
+            \caption{Deterministic Detector}\label{fig:toy-example-deterministic-detector}
+        \end{subfigure}
+
+        \begin{subfigure}[b]{0.6\textwidth}
+            \includegraphics[width=\textwidth]{toy-example-stochastic-detector}
+            \caption{Stochastic Detector}\label{fig:toy-example-stochastic-detector}
+        \end{subfigure}
+
+    \caption{This figure shows a setting in which a deterministic detector underperforms a stochastic detector. Blue dots correspond to benign samples. Red dot is a malicious sample. Dashed semi-circle is bounds the region of possible obfuscation of the malicious sample. In Fig. \ref{fig:toy-example-deterministic-detector} the blue line is a decision line of a deterministic detector. The arrow shows the obfuscation path from a primary sample to the obfuscated one. Fig. \ref{fig:toy-example-stochastic-detector} depicts contours of a stochastic detector where blue-shaded lines outline areas of high benign-ness probability and red-shaded lines conversely high maliciousness probability. The shadow line is a $50 \%$ boundary. The stochastic detector gives more optimal solution to the detector's optimisation problem (Prop. \ref{prop:detector_optimisation})
+    }
+\end{figure}
 
 \subsection{Assumption on Losses}
 As it is common in ERM, we expect the detector's loss $\ell_\minus$ is a zero-one loss. This simplifies the primary objective in the detector's optimisation problem.
@@ -289,10 +288,10 @@ As it is common in ERM, we expect the detector's loss $\ell_\minus$ is a zero-on
 \begin{proposition}\label{prop:ben_loss}
     Let the detector's loss $\ell_\minus$ be a zero-one loss. Then the detector's risk attained on malicious activity $R_\minus(\theta \mid \mal)$ is the expectation of the posteriori probability of a benign class conditioned on malicious activity. Similarly for the risk attained on benign activity $R_\minus(\theta \mid \mal)$:
 
-    \begin{align}
-        R_\minus(\theta \mid \mal) &= \min_{\psi \in \BR(\sigma)} \E_g \left D_\theta(\ben \mid \Phi \circ \psi (g)) \mid \mal \right \\
-        R_\minus(\theta \mid \ben) &= \E_h \left D_\theta(\mal \mid \Phi (h)) \mid \ben \right
-    \end{align}
+    \begin{align*}
+        R_\minus(\theta \mid \mal) &= \min_{\psi \in \BR(\sigma)} \E_g \leftb D_\theta(\ben \mid \Phi \circ \psi (g)) \mid \mal \rightb \\
+        R_\minus(\theta \mid \ben) &= \E_h \leftb D_\theta(\mal \mid \Phi (h)) \mid \ben \rightb
+    \end{align*}
 \end{proposition}
 
 \begin{proof}
@@ -300,14 +299,14 @@ As it is common in ERM, we expect the detector's loss $\ell_\minus$ is a zero-on
 
     \begin{align}
         R_\minus(\theta \mid \mal) &= \min_{\psi \in \BR(\sigma) } \,
-            \E_{q, d} \left \ell_\minus (d, \mal) \mid \mal \right \\
+            \E_{q, d} \leftb \ell_\minus (d, \mal) \mid \mal \rightb \\
            &= \min_{\psi \in \BR(\sigma) } \,
-               \E_q \left \sum_d \ell_\minus (d, \mal) D_\theta(d \mid \Phi \circ \psi(q)) \mid \mal \right \\
+               \E_q \leftb \sum_d \ell_\minus (d, \mal) D_\theta(d \mid \Phi \circ \psi(q)) \mid \mal \rightb \\
            &= \min_{\psi \in \BR(\sigma) } \,
-               \E_q \left D_\theta(\ben \mid \Phi \circ \psi(q)) \mid \mal \right \\
-        R_\minus(\theta \mid \ben) &= \E_{h, d} \left \ell_\minus (d, \ben) \mid \ben \right \\
-           &= \E_h \left \sum_d \ell_\minus (d, \ben) D_\theta(d \mid \Phi (h)) \mid \ben \right \\
-           &= \E_h \left D_\theta(\mal \mid \Phi (h)) \mid \ben \right
+               \E_q \leftb D_\theta(\ben \mid \Phi \circ \psi(q)) \mid \mal \rightb \\
+        R_\minus(\theta \mid \ben) &= \E_{h, d} \leftb \ell_\minus (d, \ben) \mid \ben \rightb \\
+           &= \E_h \leftb \sum_d \ell_\minus (d, \ben) D_\theta(d \mid \Phi (h)) \mid \ben \rightb \\
+           &= \E_h \leftb D_\theta(\mal \mid \Phi (h)) \mid \ben \rightb
     \end{align}
 
 \end{proof}
@@ -323,27 +322,27 @@ Following Brückner et al. \cite{stackelberg_games}, we defined the attacker as 
 \begin{table}
     \centering
 
-        \begin{tabular}{|l|l|}
+        \begin{tabular}{|c||l|}
             \hline
-            $d$    & $\ell_\plus(g, \psi, d)$         \\ \hline
+            $d$    & $\ell_\plus(g, \psi, d)$         \\ \hline\hline
             $\ben$ & $\Omega_\plus(g, \psi(g))$       \\ \hline
-            $\mal$ & $L_0 + \Omega_\plus(g, \psi(g))$ \\ \hline
+            $\mal$ & $\Omega_\plus(g, \psi(g)) + L_0$ \\ \hline
         \end{tabular}
 
-    \caption{Table to test captions and labels}
+    \caption{Proposed Attacker's Loss}
     \label{tab:attacker_loss}
 \end{table}
 
-The motivation of this particular form of the loss is simple. If an attacker is detected it pays the amount $L_0$ for acquiring a new license or an account so that it is able to carry out further activity. However, the more complex activity histories it creates to obfuscate its primary goal, the more costly carrying out such activity is. This is represented by $\Omega_\plus: \G \times \H \mapsto \R$.
+The motivation of this particular form of the loss is simple. If an attacker is detected it pays the amount $L_0$ for acquiring a new license or an account so that it is able to carry out further activity. However, the more complex activity histories it creates to obfuscate its primary goal, the more costly carrying out such activity is. This is represented by a private private cost $\Omega_\plus: \G \times \H \mapsto \R$.
 
-Recall that the obfuscation function $\psi(g)$ is constrained by the set of activity histories $S(g)$ such that $\psi(g) \in S(g)$, i.e. $\psi(g)$ can only create activity histories in $S(g)$. The set $S(g)$ in practice defines activity histories that the attacker is able to construct from $g$.
+Recall that the obfuscation function $\psi$ is constrained by the set of activity histories $S(g)$ such that $\psi(g) \in S(g)$, i.e. $\psi(g)$ can only create activity histories in $S(g)$. The set $S(g)$ defines activity histories that the attacker is able to construct from $g$.
 
 \begin{proposition}\label{prop:mal_loss}
-    Let the attacker's loss be defined by Tab. \ref{tab:attacker_loss}. Let the attacker's private cost be a function $\Omega_\plus: \G \times \H \mapsto \R$. Then the attacker's best response problem of finding the optimal obfuscation function $\psi^*$ decomposes to identifying $\Psi^*(g)$ such that $\psi^*(g) \in  \Psi^*(g) \subset S(g) $ and $\Psi^*(g)$ is the set of solution to the following problem.
+    Let the attacker's loss be defined by Tab. \ref{tab:attacker_loss}. Let the attacker's private cost be a function $\Omega_\plus: \G \times \H \mapsto \R$. Then the attacker's best response problem of finding $\BR(\sigma)$  decomposes into identifying set of optimal obfuscations $\Psi^*_g$ such that if $\psi^* \in \BR(\sigma) $ then $\psi^*(g) \in \Psi^*_g$. In other words, $\Psi^*_g$ is the set of solutions to the following problem.
 
-    \begin{equation}
-        \Psi^*(g) = \argmin_{h \in S(g)} L_0 \cdot D_\sigma(\mal \mid \Phi(h)) + \Omega_\plus(g, h)
-    \end{equation}
+    \begin{equation*}
+        \Psi^*_g = \argmin_{h \in S(g)} L_0 \cdot D_\sigma(\mal \mid \Phi(h)) + \Omega_\plus(g, h)
+    \end{equation*}
 
 \end{proposition}
 
@@ -351,70 +350,252 @@ Recall that the obfuscation function $\psi(g)$ is constrained by the set of acti
     Proposition \ref{prop:br} defines the attacker's best response problem in which the expectation is over variables $g$ and $d$.
 
     \begin{align}
-        \psi^* \in \BR(\sigma) &= \argmin_\psi \E_{g,d} \left \ell_\plus (g, \psi, d) \right \\
-        &= \argmin_\psi \E_g \E_d \left \ell_\plus (g, \psi, d) \right \label{eq:inner_exp}
+        \psi^* \in \BR(\sigma) &= \argmin_\psi \E_{g,d} \leftb \ell_\plus (g, \psi, d) \rightb \\
+        &= \argmin_\psi \E_g \E_d \leftb \ell_\plus (g, \psi, d) \rightb \label{eq:inner_exp}
     \end{align}
 
-    Let us substitute the loss $\ell_\plus$ for its tabular form in Tab. \ref{tab:attacker_loss}. The inner expectation in Eq. \ref{eq:inner_exp} simplifies and becomes:
+    Let us substitute the loss $\ell_\plus$ for its tabular form in Tab. \ref{tab:attacker_loss}. The inner expectation in Eq. \eqref{eq:inner_exp} simplifies and becomes:
 
-    \begin{align*}
-        \E_d \left \ell_\plus (g, \psi, d) \right & = \Omega_\plus (g, \psi(g) ) \cdot D_\sigma(\ben \mid \Phi \circ \psi (g)) \, + \\
+    \begin{align}
+        \E_d \leftb \ell_\plus (g, \psi, d) \rightb & = \Omega_\plus (g, \psi(g) ) \cdot D_\sigma(\ben \mid \Phi \circ \psi (g)) \, + \\
         & \quad + (L_0 + \Omega_\plus(g, \psi(g))) \cdot D_\sigma(\mal \mid \Phi \circ \psi (g)) \\
         & = \Omega_\plus(g, \psi(g)) \cdot ( 1 - D_\sigma(\mal \mid \Phi \circ \psi (g)) ) \, + \\
         & \quad + (L_0 + \Omega_\plus(g, \psi(g))) \cdot D_\sigma(\mal \mid \Phi \circ \psi (g)) \\
         & = L_0 \cdot D_\sigma(\mal \mid \Phi \circ \psi (g)) + \Omega_\plus(g, \psi(g))
-    \end{align*}
+    \end{align}
 
     This gives us a simplified of the best response problem:
 
-    \begin{equation*}
-        \argmin_\psi \E_g \left L_0 \cdot D_\sigma(\mal \mid \Phi \circ \psi (g)) + \Omega_\plus(g, \psi(g)) \right
-    \end{equation*}
+    \begin{equation}
+        \argmin_\psi \E_g \leftb L_0 \cdot D_\sigma(\mal \mid \Phi \circ \psi (g)) + \Omega_\plus(g, \psi(g)) \rightb
+    \end{equation}
 
-    The best response problem now contains only $\psi(g)$ and the expectation can be decomposed. The criterion is minimised if we set $\psi(g)$ to $h$ that minimises $L_0 \cdot D_\sigma(\mal \mid \Phi (h)) + \Omega_\plus(g, h)$. However, the obfuscation function $\psi$ is constrained by $S(g)$. Taking $S(g)$ into account, we arrive at the following form.
+    The best response problem now contains only the term $\psi(g)$ and, hence, the expectation can be decomposed. The criterion is minimised if we set $\psi(g)$ to $h$ that minimises $L_0 \cdot D_\sigma(\mal \mid \Phi (h)) + \Omega_\plus(g, h)$. However, the obfuscation function $\psi(g)$ is constrained by $S(g)$. Taking $S(g)$ into account, we arrive at the following form.
 
-    \begin{equation*}
-        \psi^*(g) \in \Psi^*(g) = \argmin_{h \in S(g)} L_0 \cdot D_\sigma(\mal \mid \Phi (h) ) + \Omega_\plus(g, h)
-    \end{equation*}
+    \begin{equation}
+        \psi^*(g) \in \Psi^*_g = \argmin_{h \in S(g)} L_0 \cdot D_\sigma(\mal \mid \Phi (h) ) + \Omega_\plus(g, h)
+    \end{equation}
 
-    $\Psi^*(g)$ simply denotes the solution of the optimisation problem.
+    $\Psi^*_g$ simply denotes the solution of the optimisation problem.
 
 \end{proof}
 
-Having
+\subsection{Approximate Best Response}
+The attacker's best response problem decomposes into separate optimisation problems for each primary goal $g$ and the solution of each individual optimisation task is a set $\Psi^*_g$. The criterion of the task is, however, arbitrarily non-linear (especially in $D_\theta(d \mid x)$) and, therefore, finding the solution requires advanced approximative methods. For instance, take gradient descent that in principal identifies an approximation of a local minimum. Thus, in practice we are not able to identify $\Psi^*_g$ or its elements accurately.
 
-\begin{proposition}
-    Considering the losses in Propositions \ref{prop:ben_loss} and \ref{prop:mal_loss}, the detector's optimisation problems \ref{eq:detector_optimisation} becomes:
+To address this challenge, we take inspiration in agent-based theory in which each player in a game is formulated as an agent with a policy $\pi$ which represents its decision strategy. For instance, Lockhart et al. \cite{exploitability_descent} or Amin et al. \cite{stackgrad} use approximative methods to find a game's equilibrium while iteratively adjusting player's policies. Here, we deal with a Stackelberg game in which only one player optimises its strategy, the detector, and the other player plays a best response to it.
+
+We propose to use an iterative attack algorithm $\pi$ that takes a primary goal $g$ as its input and outputs an activity history $\adv{h}$ that obfuscates $g$.
+
+\begin{definition}[Attack Algorithm]\label{def:response_algorithm}
+
+    Consider the separate attacker's problem in Prop. \ref{prop:mal_loss} to be a non-linear problem with a set of solutions $\Psi^*_g$. Then we define an attack algorithm $\pi$ that takes a primary goal $g \in \G$ and a detector $D_\theta$ as its input and generates an activity history $\adv{h} \in S(g)$ that approximates the element of $\Psi^*_g$ which is favoured by the detector. In other words, $\pi$ approximates the obfuscation function $\psi^*$ which is in a strong Stackelberg equilibrium.
+
+\end{definition}
+
+Note that the attack algorithm $\pi(g, D_\theta)$ is an approximation of a best response obfuscation function $\psi^* \in \BR(D_\theta)$. This is particularly useful in the detector's optimisation problem because its bilevel form can be simplified with an attack algorithm.
+
+\begin{proposition}\label{prop:approximative_task}
+    Considering the losses in propositions \ref{prop:ben_loss} and \ref{prop:mal_loss} and an attack algorithm $\pi$ as an approximation of the attacker's best response, then the detector's optimisation problem in Prop.  \ref{prop:detector_optimisation} transforms to the following form, if $\pi$ returns the best-case activity history in case of a tie.
 
     \begin{equation*}
         \begin{aligned}
-        & \underset{\theta} {\text{maximise}}
-        & & \E_g \left \max_{\adv{h} \in \Psi^*(g)} D_\theta(\mal \mid \Phi (\adv{h})) \mid \mal \right \\
+        & \underset{\theta} {\text{minimise}}
+        & & \E_g \leftb D_\theta(\ben \mid \Phi ( \, \pi(g, D_\theta) \, )) \mid \mal \rightb \\
         & \text{subject to}
-        & & \E_{h} \left D_\theta(\mal \mid \Phi (h)) \mid \ben \right \le \tau_0 \\
-        & & & \Psi^*(g) = \argmin_{h' \in S(g)} L_0 \cdot D_\sigma(\mal \mid \Psi(h')) + \Omega_\plus(g, h')
+        & & \E_{h} \leftb D_\theta(\mal \mid \Phi (h)) \mid \ben \rightb \le \tau_0 \\
         \end{aligned}
     \end{equation*}
 \end{proposition}
 
+Notice that there is a practical problem with this formulation: in practice, $\pi(g)$ does not necessarily produce a best-case activity history. For example, if $\pi(g)$ is a gradient descent-based algorithm, it converges to a local minimum which is (1) not necessarily a global minimum and (2) is not necessarily the best-case activity history.
+
+\subsection{Detector's Learning Algorithm}\label{sec:detector_learning_algorithm}
+In this section, we introduce an iterative training mechanism that finds a local minimum of the detector's approximative optimisation problem (Prop. \ref{prop:approximative_task}).
+
+The problem in Prop. \ref{prop:approximative_task} involves a constraint that we lift to the criterion using a Langrangian multiplicator. Inspired by Janisch et al. \cite{lambda_trick} and Suttle et al. \cite{learning_rate}, we transform the problem to a maxmin problem and find an approximate solution with gradient descent. The approach also builds on Lockhart et al. \cite{exploitability_descent} who proposed the Exploitability Descent which iteratively adjusts players' policies based on a current best response.
+
+Recall we defined the risks attained on malicious activity and benign activity respectively. With the definition of the attack algorithm (Def. \ref{def:response_algorithm}) the risks have the following form.
+
+\begin{align}
+    R_\minus(\theta \mid \mal) &= \E_g \leftb D_\theta(\ben \mid \Phi ( \, \pi(g, D_\theta) \, )) \mid \mal \rightb \\
+    R_\minus(\theta \mid \ben) &= \E_{h} \leftb D_\theta(\mal \mid \Phi (h)) \mid \ben \rightb
+\end{align}
+
+\begin{lemma}\label{lem:langrangian_relaxation}
+
+    Let $L(\lambda, \theta) = R_\minus(\theta \mid \mal) + \lambda \cdot (R_\minus(\theta \mid \ben) - \tau_0)$ be the Langrangian of the task in Prop. \ref{prop:approximative_task}. Then following statements hold true:
+
+    \begin{itemize}
+        \item The solutions of the task in Prop. \ref{prop:approximative_task} are also solutions of the task below with corresponding values of $\lambda$:
+
+        \begin{equation*}\label{eq:langrangian_relaxation}
+           \max_{\lambda \ge 0} \min_\theta L(\lambda, \theta)
+       \end{equation*}
+
+        \item The derivative of $L(\lambda, \theta)$ with respect to $\lambda$ is:
+
+        \begin{equation*}\label{eq:lambda_update}
+            \nabla_\lambda L(\lambda, \theta) = R_\minus(\theta \mid \ben)   - \tau_0
+        \end{equation*}
+
+        \item The derivative of $L(\lambda, \theta)$ with respect to $\theta$ is colinear with the following vector:
+
+        \begin{equation*}\label{eq:theta_update}
+            \nabla_\theta L(\lambda, \theta) \propto p(\mal) \cdot \nabla_\theta R_\minus(\theta \mid \mal) + p(\ben) \cdot \nabla_\theta R_\minus(\theta \mid \ben)
+        \end{equation*}
+
+    \end{itemize}
+
+\end{lemma}
+
 \begin{proof}
-    \todo{todo}
+    Using the Langrange multiplicators method, the Langrangian of the detector's optimisation problem (Prop. \ref{prop:approximative_task}) becomes:
+
+    \begin{equation}
+        L(\lambda, \theta) = R_\minus(\theta \mid \mal) + \lambda \cdot (R_\minus(\theta \mid \ben) - \tau_0)
+    \end{equation}
+
+    The solutions of the problem in Prop. \ref{prop:approximative_task} are also the solutions of the following problem:
+
+    \begin{equation}
+       \max_{\lambda \ge 0} \min_\theta L(\lambda, \theta)
+   \end{equation}
+
+    The gradient of $L(\lambda, \theta)$ with respect to $\lambda$ is straight-forward:
+
+    \begin{equation}
+        \nabla_\lambda L(\lambda, \theta) = R_\minus(\theta \mid \ben) - \tau_0
+    \end{equation}
+
+    However, notice that in terms of $\theta$, the gradient unveils an interesting fact – that is, by taking the partial derivatives we assume that $\lambda$ is fixed. Therefore, we essentially solve a minimisation problem with $\lambda$ being a constant:
+
+    \begin{equation}\label{eq:constant_lambda}
+       \min_\theta R_\minus(\theta \mid \mal) + \lambda \cdot (R_\minus(\theta \mid \ben) - \tau_0)
+    \end{equation}
+
+    Since $\lambda$ and $\tau_0$ are constants, we can rearrange the problem \eqref{eq:constant_lambda} to the following form which is equivalent in terms of the optimal solution.
+
+    \begin{equation}\label{eq:probs_introduced}
+       \min_\theta p(\mal) \cdot R_\minus(\theta \mid \mal) + p(\ben) \cdot R_\minus(\theta \mid \ben)
+    \end{equation}
+
+    We dropped the constant term and defined $p(\ben) = \frac{\lambda}{1 + \lambda}$ and $p(\mal) = \frac{1}{1 + \lambda}$. Now, we take gradient of the criterion in \eqref{eq:probs_introduced} and arrive at:
+
+    \begin{equation}\label{eq:langrangian_theta}
+        \nabla_\theta L(\lambda, \theta) \propto p(\mal) \cdot \nabla_\theta R_\minus(\theta \mid \mal) + p(\ben) \cdot  \nabla_\theta R_\minus(\theta \mid \ben)
+    \end{equation}
+
+    Due to the rearrangement, the scale of $\nabla_\theta L(\lambda, \theta)$ differs from the criterion gradient. However, the vectors' directions are alike.
 \end{proof}
 
-\subsection{Anomaly Detection}
-Note the aforementioned problem is related to (unsupervised) anomaly detection in which is is assumed no information about the malicious class is known. Thus, formulating the problem as anomaly detection, we aim to identify a detector for which the expected loss conditioned on benign class is lower than a threshold. The anomaly detection view of the problem is utilised for example if a detector consists of a k nearest neighbours distance estimator.
+\subsubsection{Monte-Carlo Estimates of Gradient}\label{sec:monte-carlo}
+The gradient of the risk attained on benign activity $\nabla_\theta R_\minus(\theta \mid \ben)$ is the expectation of gradient of the posteriori probability $D_\theta(\mal \mid x)$.
 
-For our purposes we define anomaly detection as ...
+\begin{equation}\label{eq:theta_ben_update}
+    \nabla_\theta R_\minus(\theta \mid \ben) = \E_{h} \leftb \nabla_\theta D_\theta(\mal \mid \Phi (h)) \mid \ben \rightb
+\end{equation}
+
+And the gradient of the risk attained on malicious activity $\nabla_\theta R_\minus(\theta \mid \mal)$ is the expectation of the gradient of $D_\theta(\ben \mid \pi(g, D_\theta))$.
+
+\begin{equation}\label{eq:theta_mal_update}
+    \nabla_\theta R_\minus(\theta \mid \mal) = \E_{g} \leftb \nabla_\theta D_\theta(\ben \mid \Phi ( \pi(g, D_\theta) ) ) \mid \mal \rightb
+\end{equation}
+
+Notice that equations \eqref{eq:theta_ben_update} and \eqref{eq:theta_mal_update} contain expectations over spaces $\H$ and $\G$. Since $\H$ and $\G$ are generally discrete and infinite, we estimate the expectations with a Monte-Carlo method. The approach of estimating gradient with a Monte-Carlo method is inspired by Amin et al. \cite{stackgrad} who estimate policy gradient in similar manners.
+
+This means we draw $m$ random samples $\{ h_i \}$ from the distribution $p(h \mid \ben)$ and  $m$ random samples $\{ g_i \}$ from the distribution $p(g)$.
+Once we have $m$ independent realisations of an activity history and a primary goal, we compute averages of terms in corresponding expectations which gives us an unbiased estimate of the expectations.
+
+Averaging over $\{ h_i \}$ gives the estimate of $\nabla_\lambda L(\lambda, \theta)$.
+
+\begin{equation}
+    \nabla_\lambda L(\lambda, \theta) \approx \frac{1}{m} \sum^{m}_{i=1} D_\theta(\mal \mid \Phi (h_i)) - \tau_0
+\end{equation}
+
+To get $\nabla_\theta L(\lambda, \theta)$ estimates, we define $\gamma_\ben$ and $\gamma_\mal$ as the estimates of the gradient of the risk attained on benign activity, and malicious activity respectively.
+
+\begin{equation}
+    \gamma_\ben = \frac{1}{m} \sum^{m}_{i=1} \nabla_\theta D_\theta(\mal \mid \Phi (h_i))
+\end{equation}
+
+\begin{equation}\label{eq:mal_estimate}
+    \gamma_\mal = \frac{1}{m} \sum^{m}_{i=1} \nabla_\theta D_\theta(\mal \mid \Phi( \pi (g_i, D_\theta) ))
+\end{equation}
+
+Having the gradient estimates $\gamma_\mal$ and $\gamma_\ben$, the gradient of $L(\lambda, \theta)$ becomes:
+
+\begin{equation}
+    \nabla_\theta L(\lambda, \theta) \sim p(\mal) \cdot \gamma_\mal + p(\ben) \cdot \gamma_\ben
+\end{equation}
+
+Note the convenient property: the scale of $\nabla_\theta L(\lambda, \theta)$ is independent on $\lambda$ which instead only trims the convex combination of estimates $\gamma_\mal$ and $\gamma_\ben$. This significantly helps the learning algorithm's performance.
+
+\subsubsection{Learning Algorithm}\label{sec:learning_algorithm}
+To find a local minimum of the Langrangian $L(\lambda, \theta)$ we perform gradient descent for $\lambda$ and, conversely, gradient ascent for $\theta$. This is done iteratively in the scheme of the Exploitability Descent algorithm in \cite{exploitability_descent}.
+
+In each iteration of their algorithm, Lockhart et al. \cite{exploitability_descent} generate a best response of the adversary and then update the player's policy according to the best response. In our algorithm, we first sample the realisations $\{ h_i \}$ and $\{ g_i \}$. Then, using the algorithm $\pi$, we compute the obfuscated activity histories $\{ \adv{h_i} \}$. This step corresponds to finding the optimal best-response function $\psi^*$ and applying it to each primary goal $g_i$. Finally, we update $\lambda$ and $\theta$ according to the aforementioned equations.
+
+\begin{algorithm}
+    \caption{Detector's Learning Algorithm}\label{alg:detector_algorithm}
+    \KwIn{$\alpha_\lambda$, $\alpha_\theta$, $D_\theta$, $\pi$}
+
+    Initialise $\theta^{(0)}$\;
+    Initialise $\lambda^{(0)}$\;
+
+    \For{$t = 1, 2, \dots T$ }{
+        draw $m$ samples $\{ h_i \}$ from $p(h \mid \ben)$\;
+        draw $m$ samples $\{ g_i \}$ from $p(g)$\;
+
+        compute $\{ \adv{h_i} \}$ from $\{ g_i \}$ with $\pi(g, D_{\theta^{(t-1)}})$\;
+
+        $\lambda^{(t)} \gets
+            \lambda^{(t-1)} +
+                \frac{\alpha_\lambda}{m}\sum^{m}_{i=1}
+                D_\theta(\mal \mid \Phi(h_i) ) - \tau_0
+        $\;
+
+        compute $\gamma_\ben$ from $\{ h_i \}$\;
+        compute $\gamma_\mal$ from $\{\adv{h_i}\}$\;
+
+        $p(\ben) = \frac{\lambda^{(t-1)}}{1 + \lambda^{(t-1)}}$\;
+        $p(\mal) = \frac{1}{1 + \lambda^{(t-1)}}$\;
+
+        $\theta^{(t)} \gets \theta^{(t - 1)} - \alpha_\theta (p(\mal) \cdot \gamma_\mal + p(\ben) \cdot \gamma_\ben)$\;
+    }
+    \Return $D_\theta$
+\end{algorithm}
+
+As mentioned, $\pi$ in practice does not converge to the optimal best-case obfuscated activity history $\adv{h}$ but may get stuck in a local minimum. In light of Alg. \ref{alg:detector_algorithm}, this may not be a problem. As long as $\pi$ is relatively stable and outputs reasonable activity histories, it can be considered as a player with non-optimal, yet consistent strategy which the detector learns to defend against. The better the approximation and convergence properties of $\pi$ are, the more adequate the learning process of the detector becomes.
+
+In contrast to benign activity, the malicious estimate $\gamma_\mal$ in \eqref{eq:mal_estimate} encounters two problems. First, the distribution $p(g)$ is unknown and, second, $\nabla_\theta D_\theta(\mal \mid \Phi( \pi (g_i, D_\theta) )$ takes the gradient of a term that involves an algorithm.
+
+The absence of $p(g)$ is critical. Nonetheless, it can be faithfully crafted having the knowledge of a particular domain. For example, in this work, we propose a set of reasonable primary goals and uniformly draw from them.
+
+Taking the gradient of $D_\theta(\mal \mid \Phi( \pi (g_i, D_\theta) )$ with respect to $\theta$ is problematic because $\pi$ is also dependent on $\theta$. In \cite{exploitability_descent}, they simply ignore this dependence and consider only $D_\theta$ is a function of $\theta$.
+Even though we theoretically and empirically worked with a novel way of differentiating the output of the detector using the implicit function theorem, our method suffered from convergence issues and it yet requires further research. In experiments, therefore, we adopt the approach from \cite{exploitability_descent} and consider the output of $\pi$ is not differentiable.
+
+\subsubsection{Information Available to Opponents}
+We assume the game is played in a white box setting from the attacker's point of view whereas the detector has now information about the attack algorithm $\pi$. That means the attacker has full knowledge of the detector's structure and parameters and it has access to gradients of the detector and the detector has only access to the final obfuscated activities and has no knowledge of the way the malicious samples are identified. For instance, if a gradient-based attacker is used, a detector, with the full knowledge of the attacker's algorithm, may purposely adjust gradient in areas where the attacker performs first steps of gradient descent and, in result, learn to defend attacks from such an attacker type. However, this is essentially a way of overfitting and our goal is to attain a detector that solves the detector's optimisation task in which the opponent is rational and able to obfuscate its primary goals optimally (in terms of a Stackelberg Game).
+
+To conclude, we deal with a detection task in network security in which we aim to robustly detect malicious activity without limiting benign activity. An optimal detector for this problem is a stochastic binary classifier that can be approximated by solving the optimisation task in Prop. \ref{prop:approximative_task}. To do so, we propose an algorithm \ref{alg:detector_algorithm} which in $T$ iterations gives an approximation of an optimal detector.
+
+\subsection{Anomaly Detection}\label{sec:anomaly_detection}
+Note the problem in Prop. \ref{prop:approximative_task} requires a model of an attacker. We proposed such a model, however, we needed to come up with several assumptions concerning the attacker's motivation.
+
+Let us now show a different approach which is related to unsupervised anomaly detection. We now assume no information about the malicious class is known. Thus we aim to identify a detector for which the risk attained on benign activity is exactly equal to a threshold $\tau_0$.
 
 \begin{definition}[Anomaly Detection]\label{def:anomaly_detection}
     Let the optimal anomaly detector be a distribution $D_\theta(d | x)$, solely parametrised by a vector $\theta$, if it is a solution to the following problem:
 
-    \begin{equation}
+    \begin{equation*}
         \begin{aligned}
         & \text{find}
         & & \theta \\
         & \text{such that}
-        & & \E_h \left D_\theta(\mal \mid \Phi(h)) \mid \ben \right \leq \tau_0 \\
+        & & \E_h \leftb D_\theta(\mal \mid \Phi(h)) \mid \ben \rightb = \tau_0 \\
         \end{aligned}
-    \end{equation}
+    \end{equation*}
 \end{definition}
+
+This formulation of the original problem is usually beneficial in that it requires fewer amounts of theoretical assumptions and the implementation is more straight-forward. However, the lack of assumptions on the attacker's motivations causes there is no guarantee on the final shape of the detector. Performance of a particular anomaly detector instance is a term of sole empirical tests. We examine performance of a $k$ nearest neighbours anomaly detector later in Experiments.

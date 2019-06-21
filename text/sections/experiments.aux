@@ -1,9 +1,76 @@
 \relax 
 \providecommand\hyper@newdestlabel[2]{}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Experiments}{27}{section.6}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{45}{section.5}}
+\newlabel{sec:experiments}{{5}{45}{Experiments}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Dataset}{45}{subsection.5.1}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Setting}{46}{subsection.5.2}}
+\@writefile{toc}{\contentsline {paragraph}{False Positive Rate}{46}{section*.22}}
+\@writefile{toc}{\contentsline {paragraph}{Attacker's Loss}{46}{section*.23}}
+\newlabel{fig:request-time-histogram}{{2a}{47}{\relax }{figure.caption.21}{}}
+\newlabel{sub@fig:request-time-histogram}{{a}{47}{\relax }{figure.caption.21}{}}
+\newlabel{fig:requests-per-activity-histogram}{{2b}{47}{\relax }{figure.caption.21}{}}
+\newlabel{sub@fig:requests-per-activity-histogram}{{b}{47}{\relax }{figure.caption.21}{}}
+\newlabel{fig:score-histogram}{{2c}{47}{\relax }{figure.caption.21}{}}
+\newlabel{sub@fig:score-histogram}{{c}{47}{\relax }{figure.caption.21}{}}
+\newlabel{fig:url-frequency-histogram}{{2d}{47}{\relax }{figure.caption.21}{}}
+\newlabel{sub@fig:url-frequency-histogram}{{d}{47}{\relax }{figure.caption.21}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces The histograms show distributions of activity captured in March, 2019 among users of a URL reputation service, located in the Czech Republic. The dataset is provided by Trend Micro Ltd. Fig. \ref  {fig:request-time-histogram} depicts request day-time distribution, Fig. \ref  {fig:requests-per-activity-histogram} shows the amount of requests that is sent in one day activity of a user. Fig. \ref  {fig:score-histogram} shows the distribution of a URL reputation score which is associated with a URL query. Finally, Fig. \ref  {fig:url-frequency-histogram} shows the repetitive nature of such a reputation service.\relax }}{47}{figure.caption.21}}
+\@writefile{toc}{\contentsline {paragraph}{Feature Map}{47}{section*.24}}
+\citation{learning_rate}
+\@writefile{toc}{\contentsline {paragraph}{Performance Measures}{48}{section*.25}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Detector Learning Procedure}{48}{subsection.5.3}}
+\@writefile{toc}{\contentsline {paragraph}{Lambda}{48}{section*.26}}
+\@writefile{toc}{\contentsline {paragraph}{Learning Rate}{48}{section*.27}}
+\citation{minibatch_descent}
+\@writefile{toc}{\contentsline {paragraph}{Batch Size}{49}{section*.28}}
+\@writefile{toc}{\contentsline {paragraph}{Attacker's Optimisation}{49}{section*.29}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Results}{49}{subsection.5.4}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.1}Optimal Detector}{49}{subsubsection.5.4.1}}
+\newlabel{sec:optimal_detector}{{5.4.1}{49}{Optimal Detector}{subsubsection.5.4.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{False Positive Rate Threshold}{50}{section*.30}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces False Positive Rates on Test Data\relax }}{50}{table.caption.31}}
+\newlabel{tab:false_positives_rate}{{2}{50}{False Positive Rates on Test Data\relax }{table.caption.31}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Gradient Attack Results\relax }}{50}{table.caption.32}}
+\newlabel{tab:gradient_attack_results}{{3}{50}{Gradient Attack Results\relax }{table.caption.32}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Good Queries Attack Results\relax }}{50}{table.caption.33}}
+\newlabel{tab:good_queries_attack_results}{{4}{50}{Good Queries Attack Results\relax }{table.caption.33}{}}
+\@writefile{toc}{\contentsline {paragraph}{Exploitability by Gradient Attack}{51}{section*.34}}
+\newlabel{fig:gradient-attack-fpr-sar}{{3a}{51}{Successful Attack Rate (SAR) of Gradient Attack\relax }{figure.caption.35}{}}
+\newlabel{sub@fig:gradient-attack-fpr-sar}{{a}{51}{Successful Attack Rate (SAR) of Gradient Attack\relax }{figure.caption.35}{}}
+\newlabel{fig:good_queries-attack-fpr-sar}{{3b}{51}{Successful Attack Rate (SAR) of Good Query Attack\relax }{figure.caption.35}{}}
+\newlabel{sub@fig:good_queries-attack-fpr-sar}{{b}{51}{Successful Attack Rate (SAR) of Good Query Attack\relax }{figure.caption.35}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Successful attack rate (SAR) as a function of the false positive rate (FPR). Note that, as the FPR threshold is increased, both detectors become more robust. At all FPR levels and with both attack types, the adversarial detector outperforms the anomaly detector.\relax }}{51}{figure.caption.35}}
+\@writefile{toc}{\contentsline {paragraph}{Exploitability by Good Queries Attack}{51}{section*.36}}
+\@writefile{toc}{\contentsline {paragraph}{Suspicious Outliers in Dataset}{52}{section*.37}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.4.2}Attack Analysis}{52}{subsubsection.5.4.2}}
+\newlabel{sec:attack_analysis}{{5.4.2}{52}{Attack Analysis}{subsubsection.5.4.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Primary Goal - No-Attack Dependency}{52}{figure.caption.40}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Primary Goals \IeC {\textendash } \textsf  {No-Activity} Dependency. We found that there is an emerging pattern in the obfuscation ability against the adversarial detector. Some primary goals tend to be too costly to be obfuscated so the algorithm turns them to \textsf  {No-Activity} . This figure shows the pattern: we draw primary goals (primary URL sets) that are modified to \textsf  {No-Activity} in red and primary goals that are turned into an activity history in blue. The axes correspond to parameters of the primary goals we generated: the x-axis shows a number of URLs with a malicious reputation score in a primary goal $ U^{\mathsf  {pr}} $; the y-axis shows the number of unrated URLs. The figure depicts individual primary goals as dots and an estimated density distributions with contours. Clearly, primary goals with more $10$ malicious URLs tend to become \textsf  {No-Activity} whereas primary goals with fewer than $10$ malicious URLs tend to be conversed to an obfuscated activity history and a corresponding attack is carried out. All data are from a test set of primary goals and the results are taken from an attack against the adversarial detector with $FPR = 0.1\%$.\relax }}{53}{figure.caption.38}}
+\newlabel{fig:attack-trends}{{4}{53}{Primary Goals – \NA Dependency. We found that there is an emerging pattern in the obfuscation ability against the adversarial detector. Some primary goals tend to be too costly to be obfuscated so the algorithm turns them to \NA . This figure shows the pattern: we draw primary goals (primary URL sets) that are modified to \NA in red and primary goals that are turned into an activity history in blue. The axes correspond to parameters of the primary goals we generated: the x-axis shows a number of URLs with a malicious reputation score in a primary goal $\pr {U}$; the y-axis shows the number of unrated URLs. The figure depicts individual primary goals as dots and an estimated density distributions with contours. Clearly, primary goals with more $10$ malicious URLs tend to become \NA whereas primary goals with fewer than $10$ malicious URLs tend to be conversed to an obfuscated activity history and a corresponding attack is carried out. All data are from a test set of primary goals and the results are taken from an attack against the adversarial detector with $FPR = 0.1\%$.\relax }{figure.caption.38}{}}
+\newlabel{fig:attack-400}{{5a}{54}{Attack with $T = 400$ and $L_u = 0.05$\relax }{figure.caption.40}{}}
+\newlabel{sub@fig:attack-400}{{a}{54}{Attack with $T = 400$ and $L_u = 0.05$\relax }{figure.caption.40}{}}
+\newlabel{fig:attack-800}{{5b}{54}{Attack with $T = 800$ and $L_u = 0.05$\relax }{figure.caption.40}{}}
+\newlabel{sub@fig:attack-800}{{b}{54}{Attack with $T = 800$ and $L_u = 0.05$\relax }{figure.caption.40}{}}
+\newlabel{fig:attack-800-smaller-cost}{{5c}{54}{Attack with $T = 800$ and $L_u = 0.005$\relax }{figure.caption.40}{}}
+\newlabel{sub@fig:attack-800-smaller-cost}{{c}{54}{Attack with $T = 800$ and $L_u = 0.005$\relax }{figure.caption.40}{}}
+\newlabel{fig:attack-1600}{{5d}{54}{Attack with $T = 1600$ and $L_u = 0.0005$\relax }{figure.caption.40}{}}
+\newlabel{sub@fig:attack-1600}{{d}{54}{Attack with $T = 1600$ and $L_u = 0.0005$\relax }{figure.caption.40}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces The figures plot single activity histories as points in a feature space. All images are PCA-transformations of the feature space with identical principal components. Black points are \textsf  {No-Activity} , red points are obfuscation activity of individual attacker instances, blue points are benign activity histories. The contours correspond to the class posteriori probability modelled with the detector. All pictures show the results of the adversarial detector. Upper left, the results of the gradient attack with $400$ iterations \IeC {\textendash } NAR is $57.33\%$. Upper right, attack with $800$ iterations - NAR is $29.33\%$. Bottom left, attack with $800$ iterations but less expensive per-request cost, $L_u = 0.005$. Bottom right, attack with $1600$ iterations but extremely inexpensive per-request cost, $L_u = 0.0005$. Note that attacks are located in different areas as we change attacker's costs. In the extreme case (bottom right), nearly all attacks are located beyond the detector's contours.\relax }}{54}{figure.caption.40}}
+\newlabel{fig:attack-iterations}{{5}{54}{The figures plot single activity histories as points in a feature space. All images are PCA-transformations of the feature space with identical principal components. Black points are \NA , red points are obfuscation activity of individual attacker instances, blue points are benign activity histories. The contours correspond to the class posteriori probability modelled with the detector. All pictures show the results of the adversarial detector. Upper left, the results of the gradient attack with $400$ iterations – NAR is $57.33\%$. Upper right, attack with $800$ iterations - NAR is $29.33\%$. Bottom left, attack with $800$ iterations but less expensive per-request cost, $L_u = 0.005$. Bottom right, attack with $1600$ iterations but extremely inexpensive per-request cost, $L_u = 0.0005$. Note that attacks are located in different areas as we change attacker's costs. In the extreme case (bottom right), nearly all attacks are located beyond the detector's contours.\relax }{figure.caption.40}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Attack Cost Analysis\relax }}{55}{table.caption.43}}
+\newlabel{tab:attack-cost-analysis}{{5}{55}{Attack Cost Analysis\relax }{table.caption.43}{}}
+\@writefile{toc}{\contentsline {paragraph}{\textsf  {No-Activity} Rates}{55}{section*.41}}
+\@writefile{toc}{\contentsline {paragraph}{Attack Cost Analysis}{55}{table.caption.43}}
+\@writefile{toc}{\contentsline {paragraph}{Anomaly Detector - Adversarial Detector Comparison}{57}{section*.44}}
+\newlabel{fig:adv_grad_attack}{{6a}{58}{Adversarial Detector\relax }{figure.caption.45}{}}
+\newlabel{sub@fig:adv_grad_attack}{{a}{58}{Adversarial Detector\relax }{figure.caption.45}{}}
+\newlabel{fig:knn_adv_attack}{{6b}{58}{Anomaly Detector\relax }{figure.caption.45}{}}
+\newlabel{sub@fig:knn_adv_attack}{{b}{58}{Anomaly Detector\relax }{figure.caption.45}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces The figures plot single activity histories as points in a feature space. All images are PCA-transformations of the feature space with identical principal components. Black points are \textsf  {No-Activity} , red points are obfuscation activity of individual attacker instances, blue points are benign activity histories. The contours correspond to the class posteriori probability modelled with the detector. The pictures compare the shape of detector's posterior class probability that is depicted wtih contours. On left, the adversarial detector shapes its contours to reflect possible attacks, whereas, on right, the anomaly detector omits the attacker's model and thus adjusts its contours to face all possible anomalies. This gives the adversarial detector advantage in that it reflect the attck distribution.\relax }}{58}{figure.caption.45}}
+\newlabel{fig:contours-comparison}{{6}{58}{The figures plot single activity histories as points in a feature space. All images are PCA-transformations of the feature space with identical principal components. Black points are \NA , red points are obfuscation activity of individual attacker instances, blue points are benign activity histories. The contours correspond to the class posteriori probability modelled with the detector. The pictures compare the shape of detector's posterior class probability that is depicted wtih contours. On left, the adversarial detector shapes its contours to reflect possible attacks, whereas, on right, the anomaly detector omits the attacker's model and thus adjusts its contours to face all possible anomalies. This gives the adversarial detector advantage in that it reflect the attck distribution.\relax }{figure.caption.45}{}}
 \@setckpt{./sections/experiments}{
-\setcounter{page}{28}
-\setcounter{equation}{68}
+\setcounter{page}{59}
+\setcounter{equation}{92}
 \setcounter{enumi}{0}
 \setcounter{enumii}{0}
 \setcounter{enumiii}{0}
@@ -11,23 +78,29 @@
 \setcounter{footnote}{0}
 \setcounter{mpfootnote}{0}
 \setcounter{part}{0}
-\setcounter{section}{6}
-\setcounter{subsection}{0}
-\setcounter{subsubsection}{0}
+\setcounter{section}{5}
+\setcounter{subsection}{4}
+\setcounter{subsubsection}{2}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{0}
-\setcounter{table}{1}
+\setcounter{figure}{6}
+\setcounter{table}{5}
+\setcounter{ContinuedFloat}{0}
+\setcounter{subfigure}{2}
+\setcounter{subtable}{0}
 \setcounter{Item}{0}
 \setcounter{Hfootnote}{0}
-\setcounter{bookmark@seq@number}{28}
-\setcounter{ContinuedFloat}{0}
+\setcounter{bookmark@seq@number}{48}
 \setcounter{parentequation}{0}
+\setcounter{AlgoLine}{7}
+\setcounter{algocfline}{3}
+\setcounter{algocfproc}{3}
+\setcounter{algocf}{3}
 \setcounter{proposition}{0}
 \setcounter{definition}{0}
 \setcounter{@pps}{0}
 \setcounter{@ppsavesec}{0}
 \setcounter{@ppsaveapp}{0}
 \setcounter{AM@survey}{0}
-\setcounter{section@level}{1}
+\setcounter{section@level}{4}
 }

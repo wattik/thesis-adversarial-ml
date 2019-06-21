@@ -38,7 +38,12 @@ def make_min_set(specificity: Probability, legitimate_queries, bins) -> List[str
 class ParamFeatures:
     def __init__(self, featurizer: ParamFeaturesComposer, min_set: List[str], qps: List[AdversarialQueryProfile]):
         self.features = featurizer.make_parametric_features(qps, min_set)
-        self.k = torch.zeros(len(qps), len(min_set), requires_grad=True)
+
+        k_shape = (len(qps), len(min_set) - 1)
+        self.k = torch.cat((
+            torch.zeros(len(qps), 1),
+            torch.randint(0, 1000, k_shape, requires_grad=True, dtype=torch.float)
+        ), dim=1)
 
         self.min_set = min_set
         self.qps = qps
@@ -48,6 +53,9 @@ class ParamFeatures:
         adv_qps = []
         for qp, k_i in zip(self.qps, self.k):
             for url, n in zip(self.min_set, k_i):
+                if n < 0:
+                    raise ValueError(str(n))
+
                 for _ in range(int(n)):
                     qp.add(Request(0, url))
 
@@ -70,20 +78,18 @@ class ParamFeatures:
 
     def update(self, d_vars: List[Tensor], change_rate):
         d_k = d_vars[0]
-        d_vars = [change_rate * d_var for d_var in d_vars[1:]]
-
         self.k.data.sub_(d_k.sign())
-
+        d_vars = [change_rate * d_var for d_var in d_vars[1:]]
         self.features.update(d_vars)
 
     def project(self):
         self.k.data[self.k.data < 0] = 0
         self.k.data.round_()
 
-        self.features.project(self.k)
+        self.features.project(self.k.data)
 
 
-class HistogramFGSMAttacker(CriterionAttacker):
+class FGSMAttacker(CriterionAttacker):
     def __init__(
             self,
             featurizer: ParamFeaturesComposer,
@@ -102,7 +108,7 @@ class HistogramFGSMAttacker(CriterionAttacker):
         self.costs = costs
 
         self.n_bins = featurizer.n_features
-        self.min_set = make_min_set(specificity, legitimate_queries, np.linspace(0, 1, self.n_bins + 1))
+        self.min_set = make_min_set(specificity, legitimate_queries, np.linspace(0, 1, 3))
 
     def attack(self, model: StochasticModelBase, qps: List[QueryProfile]) -> AttackResult:
         results = AttackResult()

@@ -1,0 +1,123 @@
+User: 789cfe98-72e2-4373-bae9-279207906e63:3/3
+Probability: 46.66%
+Scores Histogram:
+tensor([[0.2400, 0.0800, 0.6800]])
+Scores Counts:
+tensor([[2.4495, 1.4142, 4.1231]])
+Malicious URLS:
+['stream-a-ams1xx2sfcdnvideo5269.eu']
+==================================================
+User: a195b57c-f516-4d82-b424-b456e6a4a21f:1/3
+Probability: 41.18%
+Scores Histogram:
+tensor([[0.2093, 0.2093, 0.5814]])
+Scores Counts:
+tensor([[11.2250, 11.2250, 18.7083]])
+Malicious URLS:
+['sexkiller.ml',
+ 'bestsites.club',
+ 'postme.pw',
+ 'starsession.pw',
+ 'goldbox.fun',
+ 'cutiehoney.xyz',
+ 'divilsteens-xxx.ru',
+ 'xxxkiwi.site',
+ 'luxteens.xyz',
+ 'smoothpussies.xyz',
+ 'porno-var.tk',
+ 'cuteschoolgirls.xyz',
+ 'lofile.club',
+ 'dronoplon.site',
+ 'tinymodels.top',
+ '10bum.xyz',
+ 'bighousesex.ru',
+ 'hot-teen-fuck.xyz',
+ 'casualteen.club',
+ 'teentaboosex.xyz',
+ 'reallove.xyz',
+ 'camstar.pw',
+ 'mynelly.net',
+ 'matureclub.top',
+ 'four.migel.club',
+ 'darkkis.icu',
+ 'openhole.online',
+ 'sexgid.ml',
+ 'freeteen17.ru',
+ 'teenangels.click',
+ 'nn-free.click',
+ 'ass-teens.ru',
+ 'teenmodels.one',
+ 'xxxcollection.online',
+ 'hotcute.pw',
+ 'girlsaresweet.pw',
+ 'sweetpea.pw',
+ 'bestlolis.xyz',
+ 'omgteentube.com',
+ 'ohdear.pw',
+ 'amateurpv.com',
+ 'photoangel.pw',
+ 'lolaland.site',
+ 'xxxvideo9.com',
+ 'big-assyoung.ru',
+ 'trueteen.club',
+ 'ls-magazine.one',
+ 'lovemur.pw',
+ 'magiclove.pw',
+ 'youlove.host',
+ 'premiss.icu',
+ 'topdolls.pw',
+ 'hmamateur.com',
+ 'boo-box.ru',
+ '1nudism.com',
+ 'hotxxl.xyz',
+ 'niceteens.xyz',
+ 'oldertube.xyz',
+ 'inlove.fun',
+ 'porno-cool.ml',
+ 'sexyteensgirls.xyz',
+ '365porno365.ru',
+ 'cutemodels.biz',
+ 'yes-porn-please.ru',
+ 'daduploads.com',
+ 'teen-xxx.ru',
+ 'allfuckteens.com',
+ 'homevids.club',
+ 'porno-every-day.tk',
+ 'crazyholiday.pw',
+ 'teenbeauties.xyz',
+ 'free-girls.tk',
+ 'popcar.xyz',
+ 'sex-young-teens.ru',
+ 'pt-video.com',
+ 'fr3-porn.ml',
+ 'somepics.top',
+ 'deerdad.fun',
+ 'hot-teen-xxx.pw',
+ 'miniteens.site',
+ 'niceone.pw',
+ 'secretstars.pw',
+ 'hotdolls.site',
+ 'haphap.work',
+ 'nnmodels.top',
+ 'bestmature.top',
+ 'porno-house.ml',
+ 'mygfpro.com',
+ 'loveis.bz']
+==================================================
+User: f7952504-dfee-4463-89aa-a7da14e3124f:24/3
+Probability: 34.83%
+Scores Histogram:
+tensor([[0.2059, 0.0294, 0.7647]])
+Scores Counts:
+tensor([[2.6458, 1.0000, 5.0990]])
+Malicious URLS:
+['dolohen.com']
+==================================================
+User: 1e73971f-a4e6-4e2e-9a52-960ec4e34027:14/3
+Probability: 21.58%
+Scores Histogram:
+tensor([[0.0000, 0.9981, 0.0019]])
+Scores Counts:
+tensor([[  0.0000, 301.7250,  13.1529]])
+Malicious URLS:
+[]
