@@ -62,30 +62,18 @@ def evaluate(model, attacker, featurizer, dataset):
     helper.explain_model(
         model,
         dataset.qps_tst_ben + att_res_tst.get_query_profiles(),
-        dataset.labels_tst_ben + dataset.labels_tst_mal,
-        title="Final k-NN"
+        dataset.labels_tst_ben + dataset.labels_tst_mal
     )
 
 
 seed(42)
 
-###########
-experiment_filepath: str = False
 ################
-#
-# requests_filepath = "data/http_fee_ctu/user_queries.csv"
-# scores_filepath = "data/http_fee_ctu/url_scores.csv"
-# critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
-# experiment_filepath = "../results/experiments/http_fee_ctu/fgsm_more_features/"
 
 requests_filepath = "../data/trend_micro_full/user_queries.csv"
 scores_filepath = "../data/trend_micro_full/url_scores.csv"
 critical_urls_filepath = "../data/trend_micro_full/critical_urls.csv"
-experiment_filepath = "../../results/experiments/trend_micro_full/knn_fgsm_FPR_1/"
-
-# requests_filepath = "data/user_queries.csv"
-# scores_filepath = "data/url_scores.csv"
-# critical_urls_filepath = "data/critical_urls.csv"
+experiment_filepath = "../../results/experiments_config/trend_micro_full/knn_fgsm_FPR_1/"
 
 ##########
 

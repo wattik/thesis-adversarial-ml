@@ -100,11 +100,9 @@ class ExperimentHelper:
     def load(save_folder, version="final"):
         version = str(version)
 
-        if save_folder:
-            with open(os.path.join(save_folder, "model-%s.torch" % version), "rb") as file:
-                model = pickle.load(file)
-                featurizer = model.featurizer
-                attacker = model.attacker if hasattr(model, "attacker") else None
-            return model, featurizer, attacker
-        else:
-            print("Model not loaded. (Missing experiment folder)")
+        with open(os.path.join(save_folder, "model-%s.torch" % version), "rb") as file:
+            model = pickle.load(file)
+            featurizer = model.featurizer
+            attacker = model.attacker if hasattr(model, "attacker") else None
+
+        return model, featurizer, attacker

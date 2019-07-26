@@ -53,7 +53,6 @@ class MonteCarloTrainer:
         ])
 
         # WEIGHTS update
-        p_b = lam / (1 + lam)
         for phi, delta_phi_mal, delta_phi_ben in zip(self.phi_groups, updates_mal, updates_ben):
             phi.data.add_(self.learning_rate * (delta_phi_mal + lam * delta_phi_ben))
 

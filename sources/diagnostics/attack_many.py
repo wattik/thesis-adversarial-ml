@@ -3,146 +3,96 @@ from random import seed
 
 from dataset import Dataset
 from evaluate import accuracy
-# from features.features_creator import FeaturesComposer, SpecificityHistogram, EntriesCount
 from show import ExperimentHelper
-from threat_model.good_queries_attacker import GoodQueriesAttacker
 from threat_model.histogram_attacker import FGSMAttacker
 
 
-def evaluate(model, attacker, featurizer, dataset):
-    helper = ExperimentHelper(
-        featurizer,
-        dataset.qps_trn
-    )
-
+def evaluate(model, attacker, dataset):
     att_res_trn = attacker.attack(model, dataset.qps_trn_mal)
     accuracy_trn = accuracy(model, dataset.qps_tst_ben, dataset.labels_tst_ben)
-    # lam = float(model.model.lam)
+    lam = float(model.model.lam)
 
-    helper.log("Accuracy on Benign Data: %5.2f%%" % (accuracy_trn * 100))
-    helper.log("Detection Rate: %5.2f%%" % (100 * (1 - att_res_trn.attack_success_rate)))
+    print("Accuracy on Benign Data: %5.2f%%" % (accuracy_trn * 100))
+    print("Detection Rate: %5.2f%%" % (100 * (1 - att_res_trn.attack_success_rate)))
 
-    # helper.log("Lambda: %5.2f" % lam)
-    # helper.log("p(B): %7.4f" % (lam / (1 + lam)))
+    print("Lambda: %5.2f" % lam)
+    print("p(B): %7.4f" % (lam / (1 + lam)))
 
-    helper.log("Total benign samples number: %d" % len(dataset.qps_trn_ben))
-    helper.log("Total attacks number: %d" % att_res_trn.total_attacks_number)
+    print("Total benign samples number: %d" % len(dataset.qps_trn_ben))
+    print("Total attacks number: %d" % att_res_trn.total_attacks_number)
 
-    helper.log("No Attack Rate %5.2f%%" % (100 * att_res_trn.no_attack_rate))
-    helper.log("Attack Success: %5.2f%%" % (100 * att_res_trn.attack_success_rate))
-    helper.log("No Obfuscation Success: %5.2f%%" % (100 * att_res_trn.no_obfuscation_success_rate))
-    helper.log("Mean attack iter: %5.2f" % att_res_trn.mean_attack_step)
-    #
-    # helper.explain_model(
-    #     model,
-    #     dataset.qps_trn_ben + att_res_trn.get_query_profiles(),
-    #     dataset.labels_trn_ben + dataset.labels_trn_mal,
-    #     title="Attack Results in Training"
-    # )
+    print("No Attack Rate %5.2f%%" % (100 * att_res_trn.no_attack_rate))
+    print("Attack Success: %5.2f%%" % (100 * att_res_trn.attack_success_rate))
+    print("No Obfuscation Success: %5.2f%%" % (100 * att_res_trn.no_obfuscation_success_rate))
+    print("Mean attack iter: %5.2f" % att_res_trn.mean_attack_step)
 
     #######
 
-    helper.log()
-    helper.log("TST RESULTS")
+    print()
+    print("TST RESULTS")
 
     att_res_tst = attacker.attack(model, dataset.qps_tst_mal)
     accuracy_tst = accuracy(model, dataset.qps_tst_ben, dataset.labels_tst_ben)
 
-    helper.log("Accuracy on Benign Data: %5.2f %%" % (accuracy_tst * 100))
-    helper.log("Detection Rate: %5.2f%%" % (100 * (1 - att_res_tst.attack_success_rate)))
+    print("Accuracy on Benign Data: %5.2f %%" % (accuracy_tst * 100))
+    print("Detection Rate: %5.2f%%" % (100 * (1 - att_res_tst.attack_success_rate)))
 
-    helper.log("Total benign samples number: %d" % len(dataset.qps_tst_ben))
-    helper.log("Total attacks number: %d" % att_res_tst.total_attacks_number)
+    print("Total benign samples number: %d" % len(dataset.qps_tst_ben))
+    print("Total attacks number: %d" % att_res_tst.total_attacks_number)
 
-    helper.log("NAR %5.2f%%" % (100 * att_res_tst.no_attack_rate))
-    helper.log("SCR: %5.2f%%" % (100 * att_res_tst.attack_success_rate))
-    helper.log("OBR: %5.2f%%" % (100 * (att_res_tst.attack_success_rate / (1 - att_res_tst.no_attack_rate + 0.00000001))))
-    helper.log("No Obfuscation Success: %5.2f%%" % (100 * att_res_tst.no_obfuscation_success_rate))
-    helper.log("MAL: %5.2f" % att_res_tst.mean_attack_step)
-
-    # helper.explain_model(
-    #     model,
-    #     dataset.qps_trn_ben + att_res_tst.get_query_profiles(),
-    #     dataset.labels_trn_ben + dataset.labels_trn_mal,
-    #     title="Attack Results in Testing"
-    # )
-
-    for qp in att_res_tst.get_query_profiles()[0:3]:
-        helper.log(qp)
-        helper.log()
+    print("NAR %5.2f%%" % (100 * att_res_tst.no_attack_rate))
+    print("SCR: %5.2f%%" % (100 * att_res_tst.attack_success_rate))
+    print(
+        "OBR: %5.2f%%" % (100 * (att_res_tst.attack_success_rate / (1 - att_res_tst.no_attack_rate + 0.00000001))))
+    print("No Obfuscation Success: %5.2f%%" % (100 * att_res_tst.no_obfuscation_success_rate))
+    print("MAL: %5.2f" % att_res_tst.mean_attack_step)
 
 
 seed(42)
 
 ################
-#
-# requests_filepath = "data/http_fee_ctu/user_queries.csv"
-# scores_filepath = "data/http_fee_ctu/url_scores.csv"
-# critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
-# experiment_filepath = "../results/experiments/http_fee_ctu/fgsm_more_features/"
-
 requests_filepath = "../data/trend_micro_full/user_queries.csv"
 scores_filepath = "../data/trend_micro_full/url_scores.csv"
 critical_urls_filepath = "../data/trend_micro_full/critical_urls.csv"
-
-# requests_filepath = "data/user_queries.csv"
-# scores_filepath = "data/url_scores.csv"
-# critical_urls_filepath = "data/critical_urls.csv"
-
 ##########
 
-experiment_root = "../../results/experiments/"
-experiments = [
-    # "trend_micro_full/langrange_net_fgsm_milder_conditions_full_features",
-    # "trend_micro_full/langrange_net_fgsm_small_input_space",
-    # ("trend_micro_full/langrange_net_fgsm_FPR_1", "final"),
-    # ("trend_micro_full/langrange_net_fgsm_FPR_0.1:b=32_lr=0.001", "83"),
-    # ("trend_micro_full/langrange_net_fgsm_FPR_0.1:b=32_lr=0.001", "81"),
-    # ("trend_micro_full/langrange_net_fgsm_FPR_0.1", "51"),
-    # ("trend_micro_full/knn_fgsm_FPR_1", "final"),
-    # ("trend_micro_full/knn_fgsm_FPR_0.1", "final"),
-    ("trend_micro_full/knn_fgsm_FPR_0.01", "final"),
+experiment_root = "../../results/experiments/trend_micro_full/"
+experiments_config = [
+    # ("langrange_net_fgsm_FPR_0.01_cont_2", "199"),
+    # ("langrange_net_fgsm_FPR_0.01_cont_2", "200"),
+
+    ("langrange_net_fgsm_FPR_0.1:b=32_lr=0.001", "83"),
+    ("langrange_net_fgsm_FPR_0.1:b=32_lr=0.001", "82"),
+
+    # ("langrange_net_fgsm_FPR_1", "16"),
+    # ("langrange_net_fgsm_FPR_1", "15"),
 ]
 
 dataset = Dataset(scores_filepath, requests_filepath, critical_urls_filepath)
 
+experiments_loaded = [
+    ExperimentHelper.load(os.path.join(experiment_root, experiment), version=version)
+    for experiment, version in experiments_config
+]
 #################
-for experiment, version in experiments:
-    experiment_filepath = os.path.join(experiment_root, experiment)
-
-    print(experiment_filepath, version)
-
-    model, featurizer, _ = ExperimentHelper.load(experiment_filepath, version=version)
-
-    # attacker_GRAD = FGSMAttacker(
-    #     featurizer,
-    #     dataset.urls,
-    #     {
-    #         "max_attack_cost": 100.0,
-    #         "private_cost_multiplier": 0.5,
-    #         "uncover_cost": 100.0
-    #     },
-    #     dataset.specificity,
-    #     max_iterations=400,
-    #     change_rate=1.0
-    # )
-
-    attacker_GQAT = GoodQueriesAttacker(
+for (model, featurizer, _), name in zip(experiments_loaded, experiments_config):
+    attacker_GRAD = FGSMAttacker(
         featurizer,
-        dataset.legitimate_queries,
+        dataset.urls,
         {
-            "max_attack_cost": 99.0,
+            "max_attack_cost": 100.0,
             "private_cost_multiplier": 0.5,
             "uncover_cost": 100.0
         },
-        100
+        dataset.specificity,
+        max_iterations=400,
+        change_rate=1.0
     )
-    #
-    # print("GRAD:")
-    # evaluate(model, attacker_GRAD, featurizer, dataset)
 
-    print("GQAT:")
-    evaluate(model, attacker_GQAT, featurizer, dataset)
+    print(name)
+
+    print("GRAD ATTACKER:")
+    evaluate(model, attacker_GRAD, dataset)
 
     print()
     print()

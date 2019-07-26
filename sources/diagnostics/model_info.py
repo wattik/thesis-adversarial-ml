@@ -14,12 +14,13 @@ experiment_filepath: str = False
 # requests_filepath = "data/http_fee_ctu/user_queries.csv"
 # scores_filepath = "data/http_fee_ctu/url_scores.csv"
 # critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
-# experiment_filepath = "../results/experiments/http_fee_ctu/fgsm_more_features/"
+# experiment_filepath = "../results/experiments_config/http_fee_ctu/fgsm_more_features/"
 
 requests_filepath = "data/trend_micro_full/user_queries.csv"
 scores_filepath = "data/trend_micro_full/url_scores.csv"
 critical_urls_filepath = "data/trend_micro_full/critical_urls.csv"
-experiment_filepath = "../../results/experiments/trend_micro_full/langrange_net_fgsm_FPR_0.01/"
+experiment_filepath = "../../results/experiments_config/trend_micro_full/" \
+                      "langrange_net_fgsm_FPR_0.01_cont_2"
 
 # requests_filepath = "data/user_queries.csv"
 # scores_filepath = "data/url_scores.csv"
