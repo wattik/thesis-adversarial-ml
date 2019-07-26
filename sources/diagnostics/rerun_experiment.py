@@ -12,11 +12,6 @@ seed(42)
 experiment_filepath: str = False
 ################
 
-# requests_filepath = "data/http_fee_ctu/user_queries.csv"
-# scores_filepath = "data/http_fee_ctu/url_scores.csv"
-# critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
-# experiment_filepath = "../results/experiments_config/http_fee_ctu/test/"
-
 requests_filepath = "../data/trend_micro_full/user_queries.csv"
 scores_filepath = "../data/trend_micro_full/url_scores.csv"
 critical_urls_filepath = "../data/trend_micro_full/critical_urls.csv"
@@ -34,7 +29,7 @@ model.trainer.learning_rate = 0.001
 # model.trainer.fp_thresh = 0.01/100
 # model.trainer.lambda_learning_rate = 5.0
 model.model.lam = 500.0
-model.trainer.attacker.max_attack_iters = 800
+# model.trainer.attacker.max_attack_iters = 800
 
 # #######################################
 

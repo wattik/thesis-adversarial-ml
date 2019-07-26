@@ -4,7 +4,6 @@ from random import seed
 
 import numpy as np
 from matplotlib import pyplot as plt
-# from features.features_creator import FeaturesComposer, SpecificityHistogram, EntriesCount
 from matplotlib.ticker import PercentFormatter
 
 from show import ExperimentHelper
@@ -12,35 +11,15 @@ from show import ExperimentHelper
 seed(42)
 
 ################
-#
-# requests_filepath = "data/http_fee_ctu/user_queries.csv"
-# scores_filepath = "data/http_fee_ctu/url_scores.csv"
-# critical_urls_filepath = "data/http_fee_ctu/critical_urls.csv"
-# experiment_filepath = "../results/experiments_config/http_fee_ctu/fgsm_more_features/"
-
 requests_filepath = "data/trend_micro_full/user_queries.csv"
 scores_filepath = "data/trend_micro_full/url_scores.csv"
 critical_urls_filepath = "data/trend_micro_full/critical_urls.csv"
-# experiment_filepath = "../results/experiments_config/trend_micro_full/langrange_net_fgsm_small_input_space/"
-
-# requests_filepath = "data/user_queries.csv"
-# scores_filepath = "data/url_scores.csv"
-# critical_urls_filepath = "data/critical_urls.csv"
-
-#################
+#
 experiment_root = "../../results/experiments/"
 dataset = "trend_micro_full"
 experiment = "langrange_net_fgsm_FPR_1"
 
-# experiment = "langrange_net_fgsm_FPR_0.1:b=32_lr=0.001"
-# few satisfactory models found during training, but mostly prone to flucatuations around the threshold
-
-# experiment = "langrange_net_fgsm_FPR_0.01"
-# none satisfactory, but well-shaped learning curve promising results with additional training
-
-# experiment = "langrange_net_fgsm_FPR_0.01_cont_2"
-# The most promising is the model 199
-
+#################
 experiment_filepath = os.path.join(experiment_root, dataset, experiment)
 
 # UnPickling
@@ -52,9 +31,6 @@ with open(os.path.join(experiment_filepath, "benign_accuracy_trn.pickle"), "rb")
 
 with open(os.path.join(experiment_filepath, "benign_accuracy_tst.pickle"), "rb") as file:
     benign_accuracy_tst = pickle.load(file)
-
-# with open(os.path.join(experiment_filepath, "att_res_trn.pickle"), "rb") as file:
-#     att_res_trn = pickle.load(file)
 
 with open(os.path.join(experiment_filepath, "att_res_tst.pickle"), "rb") as file:
     att_res_tst = pickle.load(file)
@@ -101,7 +77,7 @@ plt.show()
 ######################
 
 for i, (fpr, sar, nar) in enumerate(zip(fprs, sars, nars)):
-    if fpr <= 1/100 and sar <= 0.30:
+    if fpr <= threshold/100:
         print("%d" % i)
         print("FPR: %5.4f%%" % (100 * fpr))
         print("SAR: %5.2f%%" % (100 * sar))
